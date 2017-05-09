@@ -1,0 +1,103 @@
+# $Id$
+#
+# Makefile for compiling and linking LISFLOOD
+
+# ************************************************************
+# DEFAULT CONFIGURATION
+# Default options for simple scalar compilation using g++
+# for bluecrystal/dylan/any linux installation.
+# ************************************************************
+
+# Use "g++" to compile source files
+CC = g++
+# Use "g++" to link object files
+LD = g++
+# Compiler flags
+CFLAGS = -w -O3
+# -openmp-profile
+# Linker flags
+LDFLAGS = -w -O3
+
+
+# ************************************************************
+# OMP PARALLEL CONFIGURATION
+# Options for openmp parallel compilation using icpc
+# for bluecrystal.
+# Compiled static to include openmp libraries for increased
+# portability.
+# Use edit omp variable to access openmp version
+# 0=scalar
+# 1=openmp
+# ************************************************************
+
+# Use "icpc" to compile source files
+#CCIN = icpc
+# Use "icpc" to link object files
+#LDIN = icpc
+# Compiler flags
+#OMPCFLAGS = -w -O3 -parallel -openmp -static 
+# Linker flags
+#OMPLDFLAGS = -w -O3 -parallel -openmp -static 
+# -openmp-profile
+
+
+# ************************************************************
+# Remove files
+RM = rm -f
+# ************************************************************
+
+# ************************************************************
+# Declare the main object files to link
+# Only change these when core files are
+# added (or renamed) to the LISFLOOD model
+MAINOBJS = 	lisflood.o \
+		pars.o \
+		input.o \
+		iterateq.o \
+		boundary.o \
+		fp_flow.o \
+		fp_acc.o \
+		fp_trent.o \
+		ch_flow.o \
+		util.o \
+		output.o \
+		chkpnt.o \
+		por_flow.o \
+		weir_flow.o \
+		sgc.o \
+		infevap.o
+
+# ************************************************************
+# Program executable filename
+EXE = lisflood_lin_gus
+
+# ************************************************************
+# Openmp switch (if=0 then scalar; if=1 then openmp)
+omp = 0
+
+# Top-level rule to compile everything
+all: $(EXE)
+
+ifeq ($(omp)$,0)
+# Linkage rule
+$(EXE): $(MAINOBJS)
+	$(LD) $(LDFLAGS) $(MAINOBJS) -o $(EXE)
+
+# Compile main object files
+$(MAINOBJS): %.o: %.cpp
+	$(CC) $(CFLAGS) -c $< -o $@
+endif
+
+ifeq ($(omp)$,1)
+# Linkage rule
+$(EXE): $(MAINOBJS)
+	$(LDIN) $(OMPLDFLAGS) $(MAINOBJS) -o $(EXE)
+# Compile main object files
+$(MAINOBJS): %.o: %.cpp		
+	$(CCIN) $(OMPCFLAGS) -c $< -o $@
+endif
+
+# ************************************************************
+# Remove object files after compilation and linking
+clean:
+	$(RM) $(MAINOBJS)

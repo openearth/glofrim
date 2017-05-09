@@ -1,0 +1,67 @@
+MANUAL COUPLING FRAMEWORK v1.0
+
+The files in this folder can be used to couple PCR-GLOBWB with two hydrodynamic models: Delft3D Flexible Mesh and LISFLOOD-FP.
+The coupling process is facilitated by the use of the Basic Model Interface (BMI). 
+Currently, the coupling process in only one-dimensional, i.e. from PCR-GLOBWB to hydrodynamic models. 
+Work is currently performed to extend it to a full feedback loop.
+
+So far, the following hydrodynamic models have successfully been coupled:
+First, the in-house Delft3D Flexible Mesh (FM) which needs to be at version 1.1.201 or higher.
+Second, the LISFLOOD-FP model from University of Bristol at version 5.9 which has been extended with BMI-functionality.
+Please note that the downloadable LISFLOOD-FP version is not meant for further unauthorized distribution! 
+
+Running the coupled set-up:
+To run the coupling framework, type the following command:
+"python couplingFramework_v1.py default.ini"
+
+The ini-file provided in the folder is a template where all required paths needs to be set.
+All relevant information regarding model set-ups and settings are provided there.
+The framework has successfully been tested on Linux platforms. Please note that it running it on Windows is limited as no dll is yet compiled for LFP.
+
+Together with the code for the computational framework and the settings-file, we provide the code for LISFLOOD-FP 5.9 including BMI and PCR-GLOBWB with BMI.
+Please be aware that due to on-going model development these versions do not represent the latest versions.
+Yet, it is ensured that all key model functionalities are accessible.
+
+Along with the files required for coupling, we provide explanatory model files for the three models currently implemented.
+All files should be self-explanatory. In case issues with model set-up are encountered, we refer to the specific read-mes and manuals of the models. 
+
+For questions, lessons learnt, experiences made or if any problems are encountered, please contact Jannis Hoch (j.m.hoch@uu.nl)
+
+Relevant scientific work:
+
+For 1way-coupling:
+Hoch, J. M., Haag, A. V., van Dam, A., Winsemius, H. C., van Beek, L. P. H., and Bierkens, M. F. P.
+Assessing the impact of hydrodynamics on large-scale flood wave propagation – a case study for the Amazon Basin
+Hydrol. Earth Syst. Sci., 21, 117-132, 2017.
+http://doi:10.5194/hess-21-117-2017 
+
+For BMI:
+Scott D. Peckham, Eric W.H. Hutton, Boyana Norris
+A component-based approach to integrated modeling in the geosciences: The design of CSDMS
+Computers & Geosciences, Volume 53, April 2013, Pages 3-12, ISSN 0098-3004
+http://dx.doi.org/10.1016/j.cageo.2012.04.002.
+
+For PCR-GLOBWB:
+Rens van Beek, Marc F.P. Bierkens
+The Global Hydrological Model PCR-GLOBWB: Conceptualization, Parameterization and Verification, 2008
+http://vanbeek.geo.uu.nl/suppinfo/vanbeekbierkens2009.pdf
+
+For Delft3D Flexible Mesh:
+Herman W. J. Kernkamp, Arthur Van Dam, Guus S. Stelling, Erik D. de Goede
+Efficient scheme for the shallow water equations on unstructured grids with application to the Continental Shelf
+Ocean Dynamics (2011) 61: 1175. 
+http://doi:10.1007/s10236-011-0423-6
+
+For LISFLOOD-FP:
+P.D Bates, A.P.J De Roo
+A simple raster-based model for flood inundation simulation
+Journal of Hydrology, Volume 236, Issues 1–2, 10 September 2000, Pages 54-77, ISSN 0022-1694
+http://dx.doi.org/10.1016/S0022-1694(00)00278-X.
+
+
+
+
+
+
+
+
