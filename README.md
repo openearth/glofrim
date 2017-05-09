@@ -1,15 +1,29 @@
 # GLOFRIM
 Globally Applicable Framework for Integrated Hydrological-Hydrodynamic Modelling (GLOFRIM)
 
-# Introduction:
-The coupling is achieved by making use of the Basic Model Interface (BMI) which allows for initializing,
-updating, data manipulation, and finalization of models from a shell-like environment as for instance this python-script. 
-For couple Delft3D FM or LISFLOOD-FP, the python-module "bmi.wrapper" has to be loaded.
-For Delft3D FM, any compiled version (>1.1.201.48898) has already implemented a BMI-compatible structure, and the 
-required variables accessible to the user (downloadable upon request).
-For LISFLOOD-FP, however, a specifically designed version needs to be compiled which is currently only available for
-version 5.9 as the model is not generically BMI-compatible (also downloadable here).
-Also for PCR-GLOBWB, a BMI-compatible version needs to be used (also downloadable here).
+# MANUAL COUPLING FRAMEWORK v1.0
+The files in this folder can be used to couple PCR-GLOBWB with two hydrodynamic models: Delft3D Flexible Mesh and LISFLOOD-FP.
+The coupling process is facilitated by the use of the Basic Model Interface (BMI). 
+Currently, the coupling process in only one-dimensional, i.e. from PCR-GLOBWB to hydrodynamic models. 
+Work is currently performed to extend it to a full feedback loop.
+
+So far, the following hydrodynamic models have successfully been coupled:
+First, the in-house Delft3D Flexible Mesh (FM) which needs to be at version 1.1.201 or higher.
+Second, the LISFLOOD-FP model from University of Bristol at version 5.9 which has been extended with BMI-functionality.
+Please note that the downloadable LISFLOOD-FP version is not meant for further unauthorized distribution! 
+
+The ini-file provided in the folder is a template where all required paths needs to be set.
+All relevant information regarding model set-ups and settings are provided there.
+The framework has successfully been tested on Linux platforms. Please note that it running it on Windows is limited as no dll is yet compiled for LFP.
+
+Together with the code for the computational framework and the settings-file, we provide the code for LISFLOOD-FP 5.9 including BMI and PCR-GLOBWB with BMI.
+Please be aware that due to on-going model development these versions do not represent the latest versions.
+Yet, it is ensured that all key model functionalities are accessible.
+
+Along with the files required for coupling, we provide explanatory model files for the three models currently implemented.
+All files should be self-explanatory. In case issues with model set-up are encountered, we refer to the specific read-mes and manuals of the models. 
+
+For questions, lessons learnt, experiences made or if any problems are encountered, please contact Jannis Hoch (j.m.hoch@uu.nl)
 
 # Literature and sources:
 	BMI         -> https://csdms.colorado.edu/wiki/BMI_Description
