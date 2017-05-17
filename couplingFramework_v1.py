@@ -63,9 +63,9 @@ import numpy as np
 import pyproj as pyproj
 import datetime
 import bmi.wrapper
-import pcrglobwb_203_30min_1way_prefactored as pcrglobwb_203_30min_1way_prefactored
-from pcrglobwb_203_30min_1way_prefactored import pcrglobwb_bmi
-from pcrglobwb_203_30min_1way_prefactored import disclaimer  
+import pcrglobwb-bmi_v203 as pcrglobwb-bmi_v203
+from pcrglobwb-bmi_v203 import pcrglobwb_bmi
+from pcrglobwb-bmi_v203 import disclaimer  
 from coupling_PCR_FM import coupling_functions
 from coupling_PCR_FM import model_functions
 from coupling_PCR_FM import configuration
@@ -160,7 +160,7 @@ disclaimer.print_disclaimer()
 time.sleep(5)
 
 # initiate PCR-GLOBWB
-model_pcr = pcrglobwb_203_30min_1way_prefactored.pcrglobwb_bmi.pcrglobwbBMI()
+model_pcr = pcrglobwb-bmi_v203.pcrglobwb_bmi.pcrglobwbBMI()
 model_pcr.initialize(config_pcr)
 print '\n>>> PCR-GLOBWB Initialized <<<\n' 
 
