@@ -25,7 +25,7 @@ from coupling_PCR_FM import coupling_functions
 
 # =============================================================================
 
-def write2log(model_dir, model_file, latlon, useFluxes, use_RFS, t_start, t_end = 0.):
+def write2log(model_dir, model_file, latlon, use_fluxes, use_RFS, t_start, t_end = 0.):
     """
     Writing model settings/paths/etc to a txt-file in directory.
     Note that PCR-GLOBWB is additionally writing its own log-file and Delft3D DFM adds model
@@ -55,7 +55,7 @@ def write2log(model_dir, model_file, latlon, useFluxes, use_RFS, t_start, t_end 
     fo.write('lat-lon activated: ')
     fo.write(str(latlon) + os.linesep)
     fo.write('forcing by fluxes activated: ') 
-    fo.write(str(useFluxes) + os.linesep)
+    fo.write(str(use_fluxes) + os.linesep)
     fo.write('river-floodplain-scheme activated: ')
     fo.write(str(use_RFS) + os.linesep)
     fo.write('model end-time:')
@@ -68,7 +68,7 @@ def write2log(model_dir, model_file, latlon, useFluxes, use_RFS, t_start, t_end 
         print '##############################'
         print '\nmodel file chosen: ', model_file
         print 'lat-lon on: ', latlon
-        print 'fluxes on: ', useFluxes
+        print 'fluxes on: ', use_fluxes
         print 'RFS on: ', use_RFS
         print '\nModel Start-Time: ', t_start
         print '\nVerbose Output and Log-File saved in: ', folder_name + os.linesep
@@ -419,7 +419,7 @@ def calculateDeltaVolumes(model_pcr, missing_value_pcr, secPerDay, CoupledPCRcel
     
 # =============================================================================
 
-def calculateDeltaWater(CouplePCR2model, CoupleModel2PCR, delta_volume_PCR_coupled, CellAreaSpherical, fraction_timestep, model_type, useFluxes, verbose):
+def calculateDeltaWater(CouplePCR2model, CoupleModel2PCR, delta_volume_PCR_coupled, CellAreaSpherical, fraction_timestep, model_type, use_fluxes):
     """
     In this function the calculated daily delta volumes [m3/d] is translated to suitable units later to be used in the updating step.
     The input volumes of PCR-GLOBWB are here divided over the number of hydrodynamic cells within each PCR-cell.
@@ -468,23 +468,23 @@ def calculateDeltaWater(CouplePCR2model, CoupleModel2PCR, delta_volume_PCR_coupl
             os.sys.exit('delta volume PCR coupled is negative, should not be the case!')
                    
     # calculate additional water levels or fluxes based on chosen settings
-    if (useFluxes == False) and (model_type == 'DFM'):
+    if (use_fluxes == False) and (model_type == 'DFM'):
         delta_water = additional_water_level / fraction_timestep        # [m/timestep]
         
-    elif (useFluxes == False) and (model_type == 'LFP'):
+    elif (use_fluxes == False) and (model_type == 'LFP'):
         delta_water = np.copy(additional_water_level)                   # [m/day]
    
-    elif (useFluxes == True) and (model_type == 'DFM'):              
+    elif (use_fluxes == True) and (model_type == 'DFM'):              
         delta_water = additional_water_level * 1000.                    # [mm/day]
         
-    elif (useFluxes == True) and (model_type == 'LFP'):              
+    elif (use_fluxes == True) and (model_type == 'LFP'):              
         delta_water = additional_water_volume / 86400.                  # [m3/s]
         
     return delta_water, verbose_volume
     
 # =============================================================================
     
-def updateModel(model, delta_water, update_step, separator, useFluxes, use_RFS, model_type, verbose):
+def updateModel(model, delta_water, update_step, separator, use_fluxes, use_RFS, model_type, verbose):
     """
     Calculating the new water depth based on current depth and previously computed delta water depth (see calculateDeltaWater).
     Returning the new water depth to the hydrodynamic model and updating it according with user-specified time step.
@@ -500,7 +500,7 @@ def updateModel(model, delta_water, update_step, separator, useFluxes, use_RFS, 
 		- check_array_in: can be used to assess whether delta_volumes and delta_water are correctly set into hydrodynamic model
     """
     
-    if useFluxes == False:
+    if use_fluxes == False:
 		
         if model_type == 'DFM':
 			
@@ -550,7 +550,7 @@ def updateModel(model, delta_water, update_step, separator, useFluxes, use_RFS, 
             # overwriting current with new water levels
             model.get_var('H')[:] = new_water_levels 
             
-    elif useFluxes == True:
+    elif use_fluxes == True:
 
         if model_type == 'DFM': 
                     

@@ -254,7 +254,7 @@ model_functions.noLDD(model_pcr, CoupledPCRcellIndices, verbose_folder, verbose)
 delta_volume_PCR_coupled = model_functions.calculateDeltaVolumes(model_pcr, missing_value_pcr, secPerDay, CoupledPCRcellIndices, cellarea_data_pcr)
 
 # dividing delta volume from PCR-GLOBWB over hydraulic cells, depending on model specifications
-delta_water_fm, verbose_volume = model_functions.calculateDeltaWater(CouplePCR2model, CoupleModel2PCR, delta_volume_PCR_coupled, cellAreaSpherical, fraction_timestep, model_type, use_Fluxes, verbose)
+delta_water_fm, verbose_volume = model_functions.calculateDeltaWater(CouplePCR2model, CoupleModel2PCR, delta_volume_PCR_coupled, cellAreaSpherical, fraction_timestep, model_type, use_Fluxes)
 
 # saving PCR-GLOBWB output volumes and volumes used as input to hydraulic models to verbose-folder
 if verbose == True:
