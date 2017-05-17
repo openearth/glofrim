@@ -110,97 +110,75 @@ def getVerticesFromMidPoints(xCoord, yCoord, xResolution, yResolution, verbose =
 def getPCRcoords(PCRmap, missing_value_pcr=-999):
     """
     Get all vertices coordinates of a PCRaster map.
-    
+
     Input:
 	-----
 	pcraster map (preferrably landmask)
 	value for MV (optional, default at -999)
-    
-    Output: 
+
+    Output:
 	------
 	list of (x,y) coordinates of each polygon
-	
+
     """
     # Get coordinates as numpy array:
     # upper left coordinates
     pcr.setglobaloption("coorul")
-    
+
     xcoord_pcr_ul_map           = pcr.xcoordinate(PCRmap)
     xcoord_pcr_ul_np            = pcr.pcr2numpy(xcoord_pcr_ul_map,missing_value_pcr)
-    
+
     ycoord_pcr_ul_map           = pcr.ycoordinate(PCRmap)
     ycoord_pcr_ul_np            = pcr.pcr2numpy(ycoord_pcr_ul_map,missing_value_pcr)
-    
+
     # lower right coordinates
     pcr.setglobaloption("coorlr")
-    
+
     xcoord_pcr_lr_map           = pcr.xcoordinate(PCRmap)
     xcoord_pcr_lr_np            = pcr.pcr2numpy(xcoord_pcr_lr_map,missing_value_pcr)
-    
+
     ycoord_pcr_lr_map           = pcr.ycoordinate(PCRmap)
     ycoord_pcr_lr_np            = pcr.pcr2numpy(ycoord_pcr_lr_map,missing_value_pcr)
-    
+
     # centroid coordinates
     pcr.setglobaloption("coorcentre")
-    
+
     xcoord_pcr_centr_map        = pcr.xcoordinate(PCRmap)
     xcoord_pcr_centr_np         = pcr.pcr2numpy(xcoord_pcr_centr_map,missing_value_pcr)
-    
+
     ycoord_pcr_centr_map        = pcr.ycoordinate(PCRmap)
     ycoord_pcr_centr_np         = pcr.pcr2numpy(ycoord_pcr_centr_map,missing_value_pcr)
-    
-    # Construct collection of polygon vertices:    
+
+    # Construct collection of polygon vertices:
     # number of arrays/elements to loop over and/or construct new arrays
     array_count_pcr             = len(ycoord_pcr_lr_np)
     elements_per_array_pcr      = np.size(ycoord_pcr_lr_np)/array_count_pcr
     nonmiss_val_per_array_pcr   = np.sum(ycoord_pcr_lr_np!=missing_value_pcr)
-    
-    # empty arrays
-    xcoord_pcr_lr_np_nonmiss    = np.zeros(nonmiss_val_per_array_pcr)
-    xcoord_pcr_ul_np_nonmiss    = np.zeros(nonmiss_val_per_array_pcr)
-    xcoord_pcr_ll_np_nonmiss    = np.zeros(nonmiss_val_per_array_pcr)
-    xcoord_pcr_ur_np_nonmiss    = np.zeros(nonmiss_val_per_array_pcr)
-    
-    ycoord_pcr_lr_np_nonmiss    = np.zeros(nonmiss_val_per_array_pcr)
-    ycoord_pcr_ul_np_nonmiss    = np.zeros(nonmiss_val_per_array_pcr)
-    ycoord_pcr_ll_np_nonmiss    = np.zeros(nonmiss_val_per_array_pcr)
-    ycoord_pcr_ur_np_nonmiss    = np.zeros(nonmiss_val_per_array_pcr)
-    
-    xcoord_pcr_centr_np_nonmiss = np.zeros(nonmiss_val_per_array_pcr)
-    ycoord_pcr_centr_np_nonmiss = np.zeros(nonmiss_val_per_array_pcr)
-    
-    # initialize index to fill empty arrays
-    count = 0
-    
+
+
     # filling empty arrays while looping over data
-    for i in range(array_count_pcr):
-        for j in range(elements_per_array_pcr):
-            if xcoord_pcr_lr_np[i][j] != missing_value_pcr:
-                xcoord_pcr_lr_np_nonmiss[count]    = xcoord_pcr_lr_np[i][j]
-                xcoord_pcr_ul_np_nonmiss[count]    = xcoord_pcr_ul_np[i][j]
-                xcoord_pcr_ll_np_nonmiss[count]    = xcoord_pcr_ul_np[i][j]
-                xcoord_pcr_ur_np_nonmiss[count]    = xcoord_pcr_lr_np[i][j]
-                
-                ycoord_pcr_lr_np_nonmiss[count]    = ycoord_pcr_lr_np[i][j]
-                ycoord_pcr_ul_np_nonmiss[count]    = ycoord_pcr_ul_np[i][j]
-                ycoord_pcr_ll_np_nonmiss[count]    = ycoord_pcr_lr_np[i][j]
-                ycoord_pcr_ur_np_nonmiss[count]    = ycoord_pcr_ul_np[i][j]
-                
-                xcoord_pcr_centr_np_nonmiss[count] = xcoord_pcr_centr_np[i][j]
-                ycoord_pcr_centr_np_nonmiss[count] = ycoord_pcr_centr_np[i][j]
-                
-                count += 1
-    
+    i, j = np.where(xcoord_pcr_lr_np != missing_value_pcr)
+    xcoord_pcr_lr_np_nonmiss = xcoord_pcr_lr_np[i, j]
+    xcoord_pcr_ul_np_nonmiss = xcoord_pcr_ul_np[i, j]
+    xcoord_pcr_ll_np_nonmiss = xcoord_pcr_ul_np[i, j]
+    xcoord_pcr_ur_np_nonmiss = xcoord_pcr_lr_np[i, j]
+
+    ycoord_pcr_lr_np_nonmiss = ycoord_pcr_lr_np[i, j]
+    ycoord_pcr_ul_np_nonmiss = ycoord_pcr_ul_np[i, j]
+    ycoord_pcr_ll_np_nonmiss = ycoord_pcr_lr_np[i, j]
+    ycoord_pcr_ur_np_nonmiss = ycoord_pcr_ul_np[i, j]
+
+    xcoord_pcr_centr_np_nonmiss = xcoord_pcr_centr_np[i, j]
+    ycoord_pcr_centr_np_nonmiss = ycoord_pcr_centr_np[i, j]
+
     # empty collection for polygons
-    all_cell_coords_pcr = []
-    
-    # fill collection with all polygons
-    for i in range(len(xcoord_pcr_lr_np_nonmiss)):
-        all_cell_coords_pcr.append([(xcoord_pcr_ll_np_nonmiss[i],ycoord_pcr_ll_np_nonmiss[i]),\
-                                    (xcoord_pcr_lr_np_nonmiss[i],ycoord_pcr_lr_np_nonmiss[i]),\
-                                    (xcoord_pcr_ur_np_nonmiss[i],ycoord_pcr_ur_np_nonmiss[i]),\
-                                    (xcoord_pcr_ul_np_nonmiss[i],ycoord_pcr_ul_np_nonmiss[i])])
-    
+    ll = zip(xcoord_pcr_ll_np_nonmiss, ycoord_pcr_ll_np_nonmiss)
+    lr = zip(xcoord_pcr_lr_np_nonmiss, ycoord_pcr_lr_np_nonmiss)
+    ur = zip(xcoord_pcr_ur_np_nonmiss, ycoord_pcr_ur_np_nonmiss)
+    ul = zip(xcoord_pcr_ul_np_nonmiss, ycoord_pcr_ul_np_nonmiss)
+    # wrap all cell coordinates into a list of lists (one list per cell, with multiple tuples per cell corner)
+    all_cell_coords_pcr = [[ll[i], lr[i], ur[i], ul[i]] for i in range(len(ll))]
+
     return all_cell_coords_pcr
 	
 # =============================================================================
@@ -451,13 +429,15 @@ def assignPCR2cells(landmask_pcr, hydroCoords, verbose):
 	
 	Input:  
 	-----
-	list of (x,y) coordinates of each hydrodynamic cell
-	
+    :param landmask_pcr: land mask of hydrological model
+    :param hydroCoords: list of (x,y) coordinates of each hydrodynamic cell
+    :param verbose: print information yes/no
+
 	Output:
 	------
-	double containing coupled PCR cell per cell of hydrodynamic model
-	double containing all hydrodynamic cells per coupled PCR cell
-	indices pointing to all coupled PCR cells in an array
+	coupledHydro2PCR: double containing coupled PCR cell per cell of hydrodynamic model
+	coupledPCR2hydro: double containing all hydrodynamic cells per coupled PCR cell
+	zipPCRIndices: indices pointing to all coupled PCR cells in an array
     """
 
     #-read in x and y coordinates set clone, get its attributes and read in landmask
