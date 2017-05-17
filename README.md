@@ -6,7 +6,7 @@ Globally Applicable Framework for Integrated Hydrological-Hydrodynamic Modelling
 	default.set: example of the coupling settings-file
 	coupling: python library containing functions to perform coupling
 	lisflood-bmi-v5.9: BMI-compatible LISFLOOD-FP model at version 5.9
-	pcr-globwb-203-30min-1way-prefactored: BMI-compatible PCR-GLOBWB model supporting application at 30 arcmin resolution
+	pcrglobwb-bmi_v203: BMI-compatible PCR-GLOBWB model supporting application at 30 arcmin resolution
 	
 # Manual
 The script provided can be used to couple PCR-GLOBWB with two hydrodynamic models: Delft3D Flexible Mesh (DFM) and LISFLOOD-FP (LFP).
@@ -25,7 +25,7 @@ The framework has successfully been tested on Linux platforms. Please note that 
 
 # Getting started
 Before coupling is possible, a few steps need to be taken. 
-First, the packages "coupling" and "pcr-globwb-203-30min-1way-prefactored" need to be converted
+First, the packages "coupling" and "pcrglobwb-bmi_v203" need to be converted
 to python library by typing "python setup.py develop" in the respective folders. Besides, a python-compatible BMI-wrapper needs to be downloaded (see link below) and also converted
 to a python library.
 In case PCR shall be coupled to DFM, a DFM version has to be installed first. Currently please contact Deltares (see link below) for receiving one. Please specify which environment you are
