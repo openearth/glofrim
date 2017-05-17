@@ -223,7 +223,7 @@ PCRcoords = coupling_functions.getPCRcoords(landmask_data_pcr)
 CoupledCellsInfoAll = coupling_functions.coupleAllCells(modelCoords,PCRcoords)
 
 # actual spatial coupling process, converting single indices of coupled PCR cells to double (array,column) indices
-CoupleModel2PCR, CouplePCR2model, CoupledPCRcellIndices = coupling_functions.assignPCR2FMcells(landmask_pcr, modelCoords, verbose)
+CoupleModel2PCR, CouplePCR2model, CoupledPCRcellIndices = coupling_functions.assignPCR2cells(landmask_pcr, modelCoords, verbose)
 
 # saving plots of coupled cells to verbose-folder
 if (verbose == True) and (use_RFS != True): 
