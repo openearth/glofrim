@@ -1,27 +1,36 @@
 # GLOFRIM
 Globally Applicable Framework for Integrated Hydrological-Hydrodynamic Modelling (GLOFRIM)
 
-# MANUAL COUPLING FRAMEWORK v1.0
-The files in this folder can be used to couple PCR-GLOBWB with two hydrodynamic models: Delft3D Flexible Mesh and LISFLOOD-FP.
+# Content of package
+The downloadable release contains the following files:
+	- couplingFramework_v1.py: script to execute the coupling process
+	- default.ini: example of the coupling settings-file
+	- coupling: python library containing functions to perform coupling
+	- lisflood-bmi-v5.9: BMI-compatible LISFLOOD-FP model at version 5.9
+	- pcr-globwb-203-30min-1way-prefactored: BMI-compatible PCR-GLOBWB model supporting application at 30 arcmin resolution
+	
+# Manual
+The script provided can be used to couple PCR-GLOBWB with two hydrodynamic models: Delft3D Flexible Mesh (DFM) and LISFLOOD-FP (LFP).
 The coupling process is facilitated by the use of the Basic Model Interface (BMI). 
 Currently, the coupling process in only one-dimensional, i.e. from PCR-GLOBWB to hydrodynamic models. 
 Work is currently performed to extend it to a full feedback loop.
 
 So far, the following hydrodynamic models have successfully been coupled:
-First, the in-house Delft3D Flexible Mesh (FM) which needs to be at version 1.1.201 or higher.
+First, the in-house Delft3D Flexible Mesh which needs to be at version 1.1.201 or higher.
 Second, the LISFLOOD-FP model from University of Bristol at version 5.9 which has been extended with BMI-functionality.
-Please note that the downloadable LISFLOOD-FP version is not meant for further unauthorized distribution! 
+Please note that the downloadable LISFLOOD-FP version is not meant for further unauthorized distribution.
 
 The ini-file provided in the folder is a template where all required paths needs to be set.
 All relevant information regarding model set-ups and settings are provided there.
 The framework has successfully been tested on Linux platforms. Please note that it running it on Windows is limited as no dll is yet compiled for LFP.
 
-Together with the code for the computational framework and the settings-file, we provide the code for LISFLOOD-FP 5.9 including BMI and PCR-GLOBWB with BMI.
-Please be aware that due to on-going model development these versions do not represent the latest versions.
-Yet, it is ensured that all key model functionalities are accessible.
-
-Along with the files required for coupling, we provide explanatory model files for the three models currently implemented.
-All files should be self-explanatory. In case issues with model set-up are encountered, we refer to the specific read-mes and manuals of the models. 
+# Getting started
+Before coupling is possible, a few steps need to be taken. 
+First, the packages "coupling" and "pcr-globwb-203-30min-1way-prefactored" need to be converted
+to python library by typing "python setup.py develop" in the respective folders. Besides, the BMI-wrapper needs to be downloaded (see link below) and also converted
+to a python library.
+Additionally, a DFM version has to be installed. Currently please contact Deltares (see link below) for receiving one. Please specify which environment you are
+working it (Linux or Windows) and also state your purpose.
 
 For questions, lessons learnt, experiences made or if any problems are encountered, please contact Jannis Hoch (j.m.hoch@uu.nl)
 
@@ -30,7 +39,8 @@ For questions, lessons learnt, experiences made or if any problems are encounter
 				-> http://www.sciencedirect.com/science/article/pii/S0098300412001252
 	bmi.wrapper -> https://github.com/openearth/bmi-python
 	PCR-GLOBWB	-> http://vanbeek.geo.uu.nl/suppinfo/vanbeekbierkens2009.pdf
-	Delft3D FM	-> https://link.springer.com/article/10.1007%2Fs10236-011-0423-6
+	Delft3D FM	-> https://link.springer.com/article/10.1007%2Fs10236-011-0423-6 (Technical Description)
+				-> https://www.deltares.nl/en/software/delft3d-flexible-mesh-suite/#7 (Contact page)
 	LISFLOOD-FP	-> http://www.sciencedirect.com/science/article/pii/S002216940000278X
 
 # Running the script:
