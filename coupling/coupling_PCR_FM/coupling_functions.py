@@ -21,6 +21,35 @@ import matplotlib.pyplot as plt
 
 # =============================================================================
 
+def getFMcoords(cell_pointsFM, xFM, yFM):
+    """
+    Get all relevant coordinates of a FM grid.
+    
+    Input:  flow element nodes, x, y values of an FM grid
+    
+    Output: list of list of (x,y) coordinates of each polygon
+    """
+    # get all cell sizes and total cell count
+    cell_sizes_fm = (cell_pointsFM > 0).sum(1)
+    cell_count_fm = len(cell_pointsFM)
+    # Create list of list with all FM cell coordinates
+    # initial empty list
+    all_cell_coords_fm = []
+    # loop over all cells
+    for i in range(cell_count_fm):
+        # get current cell size
+        cell_size = cell_sizes_fm[i]
+        # empty list
+        cell_coords = []
+        # loop over all cell vertices
+        for j in range(cell_size):
+            # get coordinates of current cell vertex and append to list
+            cell_coords.append((xFM[cell_pointsFM[i, j] - 1], yFM[cell_pointsFM[i, j] - 1]))
+        # add list of coordinates of current cell to total list
+        all_cell_coords_fm.append(cell_coords)
+        
+    return all_cell_coords_fm
+	
 def getVerticesFromMidPoints(xCoord, yCoord, xResolution, yResolution, verbose = False, proj0 = pyproj.Proj(init='epsg:4326'), proj1 = pyproj.Proj(init='epsg:4326')):
     
     """
