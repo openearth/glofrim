@@ -2,12 +2,12 @@
 """
 Introduction:
 -------------
-This is the key script to couple PCR-GLOBWB with either Delft3D Flexible Mesh by Deltares or 
-LISFLOOD-FP by University of Bristol.
+This is the key script to couple PCR-GLOBWB with either Delft3D Flexible Mesh ("DFM") by Deltares or
+LISFLOOD-FP ("LFP") by University of Bristol.
 The coupling is achieved by making use of the Basic Model Interface (BMI) which allows for initializing,
-updating, data manipulation, and finalization of models from a shell-like environment. 
+updating, data manipulation, and finalization of models from a shell-like environment.
 For couple Delft3D FM or LISFLOOD-FP, the python-module "bmi.wrapper" has to be loaded.
-For Delft3D FM, any compiled version (>1.1.201.48898) has already implemented a BMI-compatible structure, and the 
+For Delft3D FM, any compiled version (>1.1.201.48898) has already implemented a BMI-compatible structure, and the
 required variables accessible to the user.
 For LISFLOOD-FP, however, a specifically designed version needs to be compiled which is currently only available for
 version 5.9 as the model is not originally BMI-compatible.
@@ -21,19 +21,19 @@ Literature and sources:
 
 Running the script:
 -------------------
-To run the script, an ini-file containg the required specifications and paths is necessary.
+To run the script, an ini-file containing the required specifications and paths is necessary.
 Using python, run this file along with the ini-file as follows:
-	python thisfile.py modelspecs.ini
-	
+	python couplingFramework_v1.py default.set
+
 Disclaimer:
 -----------
 The disclaimers of each component involved in this coupling (i.e. PCR-GLOBWB, LIFLOOD-FP, Delft3D Flexible Mesh)
 remain valid.
-No warranty/responsibilyt for any outcome of using this coupling script.
+No warranty/responsibility for any outcome of using this coupling script.
 Please ensure to cite the models involved when using this coupling script.
 
-@author: Jannis Hoch, Department of Physical Geography, Geosciences, Utrecht University (j.m.hoch@uu.nl)
-@date: 14-12-2016
+@author: Jannis Hoch, Department of Physical Geography, Faculty of Geosciences, Utrecht University (j.m.hoch@uu.nl)
+@date: 22-05-2017
 """
 
 # -------------------------------------------------------------------------------------------------
@@ -52,7 +52,7 @@ import numpy as np
 import pyproj as pyproj
 import datetime
 import bmi.wrapper
-import pcrglobwb-bmi_v203 as pcrglobwb-bmi_v203
+import pcrglobwb_bmi_v203 as pcrglobwb_bmi_v203
 from coupling_PCR_FM import coupling_functions
 from coupling_PCR_FM import model_functions
 from coupling_PCR_FM import configuration
@@ -149,7 +149,7 @@ t_start = datetime.datetime.now()
 verbose_folder = model_functions.write2log(model_dir, model_file, latlon, use_Fluxes, use_RFS, t_start)
 
 # initiate PCR-GLOBWB
-model_pcr = pcrglobwb-bmi_v203.pcrglobwb_bmi.pcrglobwbBMI()
+model_pcr = pcrglobwb_bmi_v203.pcrglobwb_bmi.pcrglobwbBMI()
 model_pcr.initialize(config_pcr)
 print '\n>>> PCR-GLOBWB Initialized <<<\n' 
 

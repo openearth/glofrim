@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-setup(name='pcrglobwb-bmi_v203',
+setup(name='pcrglobwb_bmi_v203',
       version='1.0',
       description="PCR-GLOBWB, version 2.0.3, allowing for discharge calibration at 30min resolution (only!), extended with BMI, adapted for 2-way coupling to Delft3D Flexible Mesh, converted to a library",
       long_description="""\
