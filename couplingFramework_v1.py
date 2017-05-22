@@ -1,8 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-
-JUST TESTING FOR GIT COMMIT
-
 Introduction:
 -------------
 This is the key script to couple PCR-GLOBWB with either Delft3D Flexible Mesh ("DFM") by Deltares or
