@@ -42,20 +42,19 @@ Please ensure to cite the models involved when using this coupling script.
 
 import netCDF4
 from distutils.util import strtobool
-import pdb as pdb
 import pylab
 import matplotlib
 import matplotlib.pyplot as plt
 import sys
 import os
+import platform
 import numpy as np
 import pyproj as pyproj
 import datetime
 import bmi.wrapper
-import pcrglobwb_203_30min_1way_prefactored as pcrglobwb_203_30min_1way_prefactored
-from pcrglobwb_203_30min_1way_prefactored import pcrglobwb_bmi  
+import pcrglobwb-bmi_v203 as pcrglobwb-bmi_v203
 from coupling_PCR_FM import coupling_functions
-from coupling_PCR_FM import model_functions_fromHessel as model_functions
+from coupling_PCR_FM import model_functions
 from coupling_PCR_FM import configuration
 
 # -------------------------------------------------------------------------------------------------
@@ -94,7 +93,7 @@ threshold_inundated_depth_rivers      = float(config.numerical_settings['thresho
 threshold_inundated_depth_floodplains = float(config.numerical_settings['threshold_inundated_depth_floodplains'])                          
 
 # other
-missing_value_landmask                = 255                         # 05min resolution landmask
+missing_value_landmask                = 255
 missing_value_pcr                     = -999
 
 # -------------------------------------------------------------------------------------------------
@@ -126,11 +125,19 @@ clone_pcr        	=  config.PCR_settings['clone_pcr']
 
 # these may be changed according to personal file and folder structure
 if model_type == 'DFM':
-    model_path 			= '/home/jannis/Programmes/DFLOWFM/lib/libdflowfm.so'
+    if platform.system() == 'Linux':
+        model_path = '/path/to/DFLOWFM/lib/libdflowfm.so'  # for Linux
+    elif platform.system() == 'Windows':
+         model_path = '/path/to/DFLOWFM/lib/libdflowfm.dll'  # for Windows
+
 elif model_type == 'LFP':
-    model_path 			= '/home/jannis/Programmes/LISFLOODFP/lisflood-bmi-v5.9/liblisflood.so' 
+    if platform.system() == 'Linux':
+        model_path = '/path/to/lisflood-bmi-v5.9/liblisflood.so'  # for Linux
+    elif platform.system() == 'Windows':
+        sys.exit('\nLFP v5.9 with BMI currently not supported on Windows - sorry!\n')
+
 else:
-    sys.exit('\nno adequate model defined in ini-file - define either FM or FP!\n')
+    sys.exit('\nno adequate model defined in set-file - define either DFM or LFP!\n')
 
 # -------------------------------------------------------------------------------------------------
 # INITIALIZE AND SPIN-UP PCR-GLOBWB
@@ -142,7 +149,7 @@ t_start = datetime.datetime.now()
 verbose_folder = model_functions.write2log(model_dir, model_file, latlon, use_Fluxes, use_RFS, t_start)
 
 # initiate PCR-GLOBWB
-model_pcr = pcrglobwb_203_30min_1way_prefactored.pcrglobwb_bmi.pcrglobwbBMI()
+model_pcr = pcrglobwb-bmi_v203.pcrglobwb_bmi.pcrglobwbBMI()
 model_pcr.initialize(config_pcr)
 print '\n>>> PCR-GLOBWB Initialized <<<\n' 
 
@@ -163,11 +170,11 @@ print '\n>>> Hydrodynamic Model Initialized <<<\n'
 # -------------------------------------------------------------------------------------------------
 
 if model_type == 'DFM':
-    
-    print 'DFM data retrieved'
+
     #- retrieving data from Delft3D FM    
     x_coords, y_coords, z_coords, bottom_lvl, cell_points_fm, separator_1D, cellAreaSpherical, xz_coords, yz_coords, modelCoords, \
                 cellarea_data_pcr, landmask_data_pcr, clone_data_pcr = model_functions.extractModelData_FM(model_hydr, model_pcr, landmask_pcr, clone_pcr, use_RFS)
+    print '\n>>> DFM data retrieved <<<\n'
          
 elif model_type == 'LFP':
     
@@ -176,9 +183,11 @@ elif model_type == 'LFP':
                 list_x_coords, list_y_coords, coupledFPindices, grid_dA, cellAreaSpherical, SGCQin, \
                 cellarea_data_pcr, landmask_data_pcr, clone_data_pcr = model_functions.extractModelData_FP(model_hydr, model_dir, model_pcr, landmask_pcr, clone_pcr, verbose_folder, use_RFS, verbose)
 
-    separator_1D = 0.
+    separator_1D = 0. # setting separator between 1-D and 2-D to 0 as only used for DFM
+
     #- computing FP-coordinates    
     modelCoords = coupling_functions.getVerticesFromMidPoints(list_x_coords, list_y_coords, dx, dy, verbose)
+    print '\n>>> LFP data retrieved <<<\n'
 
 #- computing PCR-coordinates
 PCRcoords = coupling_functions.getPCRcoords(landmask_data_pcr)
@@ -324,4 +333,5 @@ if verbose == True:
     fo_PCR_V_tot.close()
     fo_verbose_volume.close()
 
+#- finalizing hydrodynamic model to properly end execution
 model_hydr.finalize()
