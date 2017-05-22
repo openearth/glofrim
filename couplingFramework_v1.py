@@ -68,6 +68,7 @@ import pyproj as pyproj
 import datetime
 import bmi.wrapper
 import pcrglobwb_bmi_v203 as pcrglobwb_bmi_v203
+from pcrglobwb_bmi_v203 import pcrglobwb_bmi
 from coupling_PCR_FM import coupling_functions
 from coupling_PCR_FM import model_functions
 from coupling_PCR_FM import configuration
