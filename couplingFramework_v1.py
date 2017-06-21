@@ -142,13 +142,13 @@ clone_pcr        	=  config.PCR_settings['clone_pcr']
 # these may be changed according to personal file and folder structure
 if model_type == 'DFM':
     if platform.system() == 'Linux':
-        model_path = '/path/to/DFLOWFM/lib/libdflowfm.so'  # for Linux
+        model_path = '/home/jannis/Programmes/DFLOWFM/lib/libdflowfm.so'  # for Linux
     elif platform.system() == 'Windows':
          model_path = '/path/to/DFLOWFM/lib/libdflowfm.dll'  # for Windows
 
 elif model_type == 'LFP':
     if platform.system() == 'Linux':
-        model_path = '/path/to/lisflood-bmi-v5.9/liblisflood.so'  # for Linux
+        model_path = '/home/jannis/Programmes/LISFLOODFP/lisflood-bmi-v5.9/liblisflood.so'  # for Linux
     elif platform.system() == 'Windows':
         sys.exit('\nLFP v5.9 with BMI currently not supported on Windows - sorry!\n')
 

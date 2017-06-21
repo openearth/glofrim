@@ -562,3 +562,23 @@ def updateModel(model, delta_water, update_step, separator, useFluxes, use_RFS, 
     return
     
 # =============================================================================  
+
+def checkLocationCoupledPCRcells(model_pcr, CoupledPCRcellIndices):
+    """
+    This is mainly a debug-function to check whether PCR-cells are corretly coupled.
+    
+    Output:
+		- boolean map that allows to assess the locations of the coupled PCR-GLOBWB cells.    
+    """              
+    
+    # retrieving array representing PCR-GLOBWB data extent
+    shapemap = np.copy(model_pcr.get_var(('routing', 'lddMap')))
+    
+    # creating empty array with PCR-GLOBWB extent 
+    check_map = np.zeros([len(shapemap), len(shapemap[0])])
+
+    # assigning True value for all coupled PCR-GLOBWB cells
+    for i in range(len(CoupledPCRcellIndices)):
+        check_map[CoupledPCRcellIndices[i]] = 1.    
+
+    return check_map
