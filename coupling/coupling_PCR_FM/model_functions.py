@@ -191,34 +191,15 @@ def extractModelData_FP(model, model_dir, model_pcr, landmask_pcr, clone_pcr, ve
     # compute list with centre point coords of each LFP-cell to be coupled to PCR-GLOBWB 
     # if RFS active, mask LFP-cells only to those with channel data and without missing values
     if use_RFS == True:
-        # list_x_coords = []
-        # list_y_coords = []
-        # coupledFPindices = []
         i, j = np.where(np.logical_and(SGCwidth > 0., DEM != -9999))
+        list_x_coords = grid_x_coords[i, j]
+        list_y_coords = grid_y_coords[i, j]
+        coupledFPindices = zip(i, j)
     elif use_RFS == False:
         i, j = np.where(DEM != -9999)
         list_x_coords = grid_x_coords[i, j]
         list_y_coords = grid_y_coords[i, j]
         coupledFPindices = zip(i, j)
-        # for i in xrange(len(grid_x_coords)):
-        #     for j in xrange(len(grid_x_coords[1])):
-        #         if (SGCwidth[i][j] > 0.0) and (DEM[i][j] != -9999):
-        #             list_x_coords = np.append(list_x_coords, grid_x_coords[i][j])
-        #             list_y_coords = np.append(list_y_coords, grid_y_coords[i][j])
-        #             coupledFPindices.append((i, j))
- 
-    # otherwise, only mask out those cells containing missing values
-    # elif use_RFS == False:
-    #     list_x_coords = []
-    #     list_y_coords = []
-    #     coupledFPindices = []
-    #
-    #     for i in xrange(len(grid_x_coords)):
-    #         for j in xrange(len(grid_x_coords[1])):
-    #             if DEM[i][j] != -9999:
-    #                 list_x_coords = np.append(list_x_coords, grid_x_coords[i][j])
-    #                 list_y_coords = np.append(list_y_coords, grid_y_coords[i][j])
-    #                 coupledFPindices.append((i, j))
         
     # print and save verbose output
     if verbose == True:

@@ -39,3 +39,4 @@ threshold_inundated_depth_rivers = 0.0
 # [m] (for floodplain cells only)
 threshold_inundated_depth_floodplains = 0.05
 
+
