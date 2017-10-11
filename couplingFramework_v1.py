@@ -274,7 +274,7 @@ else:
 
 # reshaping data for LISFLOOD-FP from list to arrays
 if model_type == 'LFP':
-    delta_water_fm = model_functions.fillFPgrid(model_hydr, coupledFPindices, delta_water_fm, DEM, verbose_folder, verbose)
+    delta_water_fm = model_functions.fillLFPgrid(model_hydr, coupledFPindices, delta_water_fm, DEM, verbose_folder, verbose)
   
 # -------------------------------------------------------------------------------------------------
 # FIRST UPDATE (DAY 1)
@@ -319,7 +319,7 @@ while model_pcr.get_time_step() < nr_pcr_timesteps:
     
     # reshaping data for LISFLOOD-FP from list to arrays
     if model_type == 'LFP':
-        delta_water_fm = model_functions.fillFPgrid(model_hydr, coupledFPindices, delta_water_fm, DEM, verbose_folder, verbose)  
+        delta_water_fm = model_functions.fillLFPgrid(model_hydr, coupledFPindices, delta_water_fm, DEM, verbose_folder, verbose)  
     
     # updating arrays with computed additional volumes; array used depends on model specifications
     if (model_type == 'LFP'):
