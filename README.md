@@ -4,6 +4,7 @@ Globally Applicable Framework for Integrated Hydrological-Hydrodynamic Modelling
 # Content of package
 	couplingFramework_v1.py: script to execute the coupling process
 	default.set: example of the coupling settings-file
+	PCRGLOBWB_30min_GLOFRIM_iniFile.ini: example file to be used with GLOFRIM for PCR-GLOBWB settings
 	coupling: python library containing functions to perform coupling
 	lisflood-bmi-v5.9: BMI-compatible LISFLOOD-FP model at version 5.9
 	pcrglobwb-bmi_v203: BMI-compatible PCR-GLOBWB model supporting application at 30 arcmin resolution
