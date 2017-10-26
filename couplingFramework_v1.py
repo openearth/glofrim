@@ -272,6 +272,7 @@ else:
     print 'FM volume in: ', np.sum(np.asfarray(verbose_volume))
     sys.exit('\nFM input volumes do not match PCR output volumes!\n')
 
+pdb.set_trace()
 # reshaping data for LISFLOOD-FP from list to arrays
 if model_type == 'LFP':
     delta_water_fm = model_functions.fillFPgrid(model_hydr, coupledFPindices, delta_water_fm, DEM, verbose_folder, verbose)
