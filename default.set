@@ -27,8 +27,8 @@ use_RFS 	= True
 verbose 	= False
 
 [numerical_settings]
-# specify model timesteps
-number_of_timesteps = 2556
+# specify model timesteps [days]
+number_of_timesteps = 10
 # [seconds], only active when using s1-forcing in Delft3D FM
 update_step = 1800
 # set threshold above which a cell is considered 'inundated'
@@ -38,4 +38,5 @@ threshold_inundated_depth = 0.05
 threshold_inundated_depth_rivers = 0.0
 # [m] (for floodplain cells only)
 threshold_inundated_depth_floodplains = 0.05
+
 

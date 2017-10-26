@@ -66,6 +66,7 @@ import platform
 import numpy as np
 import pyproj as pyproj
 import datetime
+import time
 import bmi.wrapper
 import pcrglobwb_bmi_v203 as pcrglobwb_bmi_v203
 from pcrglobwb_bmi_v203 import pcrglobwb_bmi
@@ -141,6 +142,7 @@ clone_pcr        	=  config.PCR_settings['clone_pcr']
 
 # these may be changed according to personal file and folder structure
 if model_type == 'DFM':
+<<<<<<< HEAD
     if platform.system() == 'Linux':
         model_path = '/home/jannis/Programmes/DFLOWFM/lib/libdflowfm.so'  # for Linux
     elif platform.system() == 'Windows':
@@ -152,8 +154,13 @@ elif model_type == 'LFP':
     elif platform.system() == 'Windows':
         sys.exit('\nLFP v5.9 with BMI currently not supported on Windows - sorry!\n')
 
+=======
+    model_path 			= '/path/to/DFLOWFM/lib/libdflowfm.so'
+elif model_type == 'LFP':
+    model_path 			= '/path/to/lisflood-bmi-v5.9/liblisflood.so' 
+>>>>>>> 0b6bd50385ddac1b2f4198fb32ee2320ebc8c95a
 else:
-    sys.exit('\nno adequate model defined in set-file - define either DFM or LFP!\n')
+    sys.exit('\nno adequate model defined in ini-file - define either FM or FP!\n')
 
 # -------------------------------------------------------------------------------------------------
 # INITIALIZE AND SPIN-UP PCR-GLOBWB
@@ -164,8 +171,13 @@ t_start = datetime.datetime.now()
 # initiate logging and define folder for verbose-output
 verbose_folder = model_functions.write2log(model_dir, model_file, latlon, use_Fluxes, use_RFS, t_start)
 
+# print disclaimer
+print '\n>>> Please consider reading the PCR-GLOBWB Disclaimer <<<\n' 
+disclaimer.print_disclaimer()
+time.sleep(5)
+
 # initiate PCR-GLOBWB
-model_pcr = pcrglobwb_bmi_v203.pcrglobwb_bmi.pcrglobwbBMI()
+model_pcr = pcrglobwb_203_30min_1way_prefactored.pcrglobwb_bmi.pcrglobwbBMI()
 model_pcr.initialize(config_pcr)
 print '\n>>> PCR-GLOBWB Initialized <<<\n' 
 
@@ -275,7 +287,7 @@ else:
 pdb.set_trace()
 # reshaping data for LISFLOOD-FP from list to arrays
 if model_type == 'LFP':
-    delta_water_fm = model_functions.fillFPgrid(model_hydr, coupledFPindices, delta_water_fm, DEM, verbose_folder, verbose)
+    delta_water_fm = model_functions.fillLFPgrid(model_hydr, coupledFPindices, delta_water_fm, DEM, verbose_folder, verbose)
   
 # -------------------------------------------------------------------------------------------------
 # FIRST UPDATE (DAY 1)
@@ -320,7 +332,7 @@ while model_pcr.get_time_step() < nr_pcr_timesteps:
     
     # reshaping data for LISFLOOD-FP from list to arrays
     if model_type == 'LFP':
-        delta_water_fm = model_functions.fillFPgrid(model_hydr, coupledFPindices, delta_water_fm, DEM, verbose_folder, verbose)  
+        delta_water_fm = model_functions.fillLFPgrid(model_hydr, coupledFPindices, delta_water_fm, DEM, verbose_folder, verbose)  
     
     # updating arrays with computed additional volumes; array used depends on model specifications
     if (model_type == 'LFP'):
