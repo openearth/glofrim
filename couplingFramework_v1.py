@@ -208,7 +208,7 @@ elif model_type == 'LFP':
     #- computing FP-coordinates    
     modelCoords = coupling_functions.getVerticesFromMidPoints(list_x_coords, list_y_coords, dx, dy, verbose)
     print '\n>>> LFP data retrieved <<<\n'
-
+	
 #- computing PCR-coordinates
 PCRcoords = coupling_functions.getPCRcoords(landmask_data_pcr)
 		
@@ -276,7 +276,6 @@ else:
     print 'FM volume in: ', np.sum(np.asfarray(verbose_volume))
     sys.exit('\nFM input volumes do not match PCR output volumes!\n')
 
-pdb.set_trace()
 # reshaping data for LISFLOOD-FP from list to arrays
 if model_type == 'LFP':
     delta_water_fm = model_functions.fillLFPgrid(model_hydr, coupledFPindices, delta_water_fm, DEM, verbose_folder, verbose)
