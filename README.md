@@ -1,9 +1,6 @@
 # GLOFRIM
 Globally Applicable Framework for Integrated Hydrological-Hydrodynamic Modelling (GLOFRIM)
 
-# NESTING
-this branch will be developed for coupling hydrology -> routing -> 1d/2d hydrodynamics
-
 # Content of package
 	couplingFramework_v1.py: script to execute the coupling process
 	default.set: example of the coupling settings-file
@@ -11,11 +8,11 @@ this branch will be developed for coupling hydrology -> routing -> 1d/2d hydrody
 	coupling: python library containing functions to perform coupling
 	lisflood-bmi-v5.9: BMI-compatible LISFLOOD-FP model at version 5.9
 	pcrglobwb-bmi_v203: BMI-compatible PCR-GLOBWB model supporting application at 30 arcmin resolution
-
+	
 # Manual
 The script provided can be used to couple PCR-GLOBWB with two hydrodynamic models: Delft3D Flexible Mesh (DFM) and LISFLOOD-FP (LFP).
-The coupling process is facilitated by the use of the Basic Model Interface (BMI).
-Currently, the coupling process in only one-dimensional, i.e. from PCR-GLOBWB to hydrodynamic models.
+The coupling process is facilitated by the use of the Basic Model Interface (BMI). 
+Currently, the coupling process in only one-dimensional, i.e. from PCR-GLOBWB to hydrodynamic models. 
 Work is currently performed to extend it to a full feedback loop.
 
 So far, the following hydrodynamic models have successfully been coupled:
@@ -28,7 +25,7 @@ All relevant information regarding model set-ups and settings are provided there
 The framework has successfully been tested on Linux platforms. Please note that it running it on Windows is currently not supported as no dll is yet compiled for LFP.
 
 # Getting started
-Before coupling is possible, a few steps need to be taken.
+Before coupling is possible, a few steps need to be taken. 
 First, the packages "coupling" and "pcrglobwb-bmi_v203" need to be converted
 to python library by typing "python setup.py develop" in the respective folders. Besides, a python-compatible BMI-wrapper needs to be downloaded (see link below) and also converted
 to a python library.
@@ -44,17 +41,17 @@ For questions, lessons learnt, experiences made or if any problems are encounter
 	BMI
 	https://csdms.colorado.edu/wiki/BMI_Description
 	http://www.sciencedirect.com/science/article/pii/S0098300412001252
-
+	
 	BMI-wrapper
 	https://github.com/openearth/bmi-python
-
+	
 	PCR-GLOBWB
 	http://vanbeek.geo.uu.nl/suppinfo/vanbeekbierkens2009.pdf
-
+	
 	Delft3D Flexible Mseh
 	https://link.springer.com/article/10.1007%2Fs10236-011-0423-6 (Technical Description)
 	https://www.deltares.nl/en/software/delft3d-flexible-mesh-suite/#7 (Contact page)
-
+	
 	LISFLOOD-FP
 	http://www.sciencedirect.com/science/article/pii/S002216940000278X
 
@@ -62,7 +59,7 @@ For questions, lessons learnt, experiences made or if any problems are encounter
 To run the script, an set-file containing the required specifications and paths is necessary.
 Using python, run this file along with the set-file as follows:
 	python couplingFramework_v1.py default.set
-
+	
 # Disclaimer:
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -84,3 +81,4 @@ remain valid unless stated otherwise.
 No warranty/responsibility for any outcome of using this coupling script.
 Please ensure to cite the models involved in case of making use of this coupling script.
 And of course don't forget to cite the associated paper as well :)
+
