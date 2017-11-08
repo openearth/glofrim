@@ -1,0 +1,41 @@
+Assuming new features are supposed to be pushed to origin/master.
+
+Aims:
+ * keep history simple (linear if possible, but make it easy to see
+   multi-commit features)
+ * use pull requests for review (but person making request is responsible
+   for merging/pushing)
+ * try to minimize branch shuffling during the process
+
+1) Make sure you are up to date:
+  git fetch
+2) Make a new feature branch off tip:
+  git checkout -b <feature> origin/master
+3) Do work and commit
+4) Update one last time before pull request:
+  git pull --rebase
+  ... resolve conflicts/check result ...
+5) Push feature branch:
+  git push origin <feature>
+6) Create pull request (and wait for approval)
+7) Push to master:
+  git push origin <feature>:master
+
+If step 7 fails, you probably need to do step 4 again (pull rebase).
+
+If you have several commits in the branch it may be better to
+7') Update and checkout master (assuming there is no local master branch):
+  git fetch
+  git checkout -b master origin/master
+8') Make a merge commit:
+  git merge --no-ff <feature>
+  ... amend merge commit message if desired ...
+9') Push to master:
+  git push master
+
+If you want to use the automatic GitHub pull request accept
+7'') Push the accept pull request button (this should result in something
+     similar to the 7'-9' flow above).
+
+After all of this, it should be safe to delete <feature> (and the local
+master, assuming you used the merge flow).
