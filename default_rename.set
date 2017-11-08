@@ -1,8 +1,8 @@
-[hydrological_model]
+[hydrologic_model]
 # PCR for PCRGLOB-WB or (not yet implemented) WFW for WFLOW
-model_name = CMF
+model_name = PCR
 # hydrological model ini-file
-config_pcr = /path/to/pcrglobwb/iniFile/filename.ini
+config_file = /path/to/pcrglobwb/iniFile/filename.ini
 # TODO: read specific arguments from PCR .ini file (these are deleted here)
 
 [routing_model]
