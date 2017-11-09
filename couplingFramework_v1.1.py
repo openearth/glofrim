@@ -87,6 +87,8 @@ config.parse_configuration_file(sys.argv[1])
 # SPECIFY MODEL SETTINGS
 # -------------------------------------------------------------------------------------------------
 
+pdb.set_trace()
+
 type_hydrodynamicModel = config.hydrodynamic_model['model_name']  
 type_routingModel          = config.routing_model['model_name']  
 type_hydrologicModel      = config.hydrologic_model['model_name']                                            
@@ -132,7 +134,7 @@ routingModel_dir       		= config.routing_model['model_dir']
 routingModel_file      		= config.routing_model['model_file']                            
 
 # hydrologic model
-hydrologicModel_config       	=  config.hydrological_model['config_file']
+hydrologicModel_config       	= config.hydrologic_model['config_file']
 configPCR 				= configuration.Configuration()
 configPCR.parse_configuration_file(hydrologicModel_config)
 inputDIR 				= configPCR.globalOptions['inputDir'] 
@@ -158,7 +160,7 @@ elif type_hydrodynamicModel == 'LFP':
 		
 if type_routingModel == 'CMF':
 	if platform.system() == 'Linux':
-		path_to_routingModel = '/path/to/CaMa-BMI/src/libcama.so'
+		path_to_routingModel = '/home/jannis/Programmes/LISFLOODFP/lisflood-bmi-v5.9/liblisflood.so'
 	elif platform.system() == 'Windows':
 		sys.exit('\nCaMa-Flood with BMI currently not supported on Windows!\n')
 		
