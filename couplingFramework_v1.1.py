@@ -72,6 +72,7 @@ import time
 import bmi.wrapper
 import pcrglobwb_bmi_v203 as pcrglobwb_bmi_v203
 from pcrglobwb_bmi_v203 import pcrglobwb_bmi
+from pcrglobwb_bmi_v203 import disclaimer
 from coupling_PCR_FM import coupling_functions
 from coupling_PCR_FM import model_functions
 from coupling_PCR_FM import configuration
@@ -185,7 +186,7 @@ disclaimer.print_disclaimer()
 time.sleep(5)
 
 # initiate PCR-GLOBWB
-hydrologicModel = pcrglobwb_203_30min_1way_prefactored.pcrglobwb_bmi.pcrglobwbBMI()
+hydrologicModel = pcrglobwb_bmi_v203.pcrglobwb_bmi.pcrglobwbBMI()
 hydrologicModel.initialize(hydrologicModel_config)
 print '\n>>> Hydrologic Model Initialized <<<\n' 
 
