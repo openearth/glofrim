@@ -87,3 +87,7 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# Ignore CaMa-Flood nam-files
+*/input_flood.nam
+
