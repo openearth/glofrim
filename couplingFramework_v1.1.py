@@ -128,17 +128,16 @@ hydrodynamicModel_file      	= config.hydrodynamic_model['model_file']
 hydrodynamicModel_proj		= config.hydrodynamic_model['model_projection']  
 
 # routing model      
-routingModel_dir       	= config.routing_model['model_dir'] 
-routingModel_file      	= config.routing_model['model_file']                            
+routingModel_dir       		= config.routing_model['model_dir'] 
+routingModel_file      		= config.routing_model['model_file']                            
 
 # hydrologic model
 hydrologicModel_config       	=  config.hydrological_model['config_file']
-#TODO: the paths to both landmask and clone should be directly derived from hydrologicModel_config file (i.e. ini-file)
-if type_hydrologicModel == 'PCR':
-	landmask_pcr     =  config.hydrologic_model['landmask_pcr']
-	clone_pcr        	=  config.hydrologic_model['clone_pcr']
-else:
-	sys.exit('\nWats gebeurt!?\n')
+configPCR 				= configuration.Configuration()
+configPCR.parse_configuration_file(hydrologicModel_config)
+inputDIR 				= configPCR.globalOptions['inputDir'] 
+clone_pcr 				= os.path.join(inputDIR, configPCR.globalOptions['cloneMap']) 
+landmask_pcr 				= os.path.join(inputDIR, configPCR.globalOptions['landmask'])
 
 # -------------------------------------------------------------------------------------------------
 # SET PATHS TO .SO / .DLL FILES
