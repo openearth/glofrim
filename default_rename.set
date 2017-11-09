@@ -3,7 +3,6 @@
 model_name = PCR
 # hydrological model ini-file
 config_file = /path/to/pcrglobwb/iniFile/filename.ini
-# TODO: read specific arguments from PCR .ini file (these are deleted here)
 
 [routing_model]
 # CMF for CaMa-Flood
