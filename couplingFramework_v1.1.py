@@ -88,8 +88,6 @@ config.parse_configuration_file(sys.argv[1])
 # SPECIFY MODEL SETTINGS
 # -------------------------------------------------------------------------------------------------
 
-pdb.set_trace()
-
 type_hydrodynamicModel = config.hydrodynamic_model['model_name']  
 type_routingModel          = config.routing_model['model_name']  
 type_hydrologicModel      = config.hydrologic_model['model_name']                                            
