@@ -159,7 +159,7 @@ elif type_hydrodynamicModel == 'LFP':
 		
 if type_routingModel == 'CMF':
 	if platform.system() == 'Linux':
-		path_to_routingModel = '/home/jannis/Programmes/LISFLOODFP/lisflood-bmi-v5.9/liblisflood.so'
+		path_to_routingModel = '/path/to/CaMa-BMI/src/libcama.so'
 	elif platform.system() == 'Windows':
 		sys.exit('\nCaMa-Flood with BMI currently not supported on Windows!\n')
 		
