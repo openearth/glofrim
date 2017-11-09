@@ -89,5 +89,5 @@ ENV/
 .ropeproject
 
 # Ignore CaMa-Flood nam-files
-*/input_flood.nam
+test_Elbe/CFM_Elbe/input_flood.nam
 
