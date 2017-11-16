@@ -14,6 +14,7 @@ REAL(KIND=JPRB),ALLOCATABLE   ::  D2FLDOUT_IN(:,:)     !! floodplain outflow [m3
 
 
 REAL(KIND=JPRB),ALLOCATABLE   ::  D2RUNOFF(:,:)        !! input runoff       [m3/s]
+REAL(KIND=JPRB),ALLOCATABLE, TARGET   ::  R2ROFFIN(:,:)        !! input runoff       [m3/s]
 REAL(KIND=JPRB),ALLOCATABLE   ::  D2BOUND(:,:)         !! boundary condition [m]
 
 REAL(KIND=JPRB),ALLOCATABLE, TARGET   ::  D2RIVSTO_OUT(:,:)    !! river      storage [m3]

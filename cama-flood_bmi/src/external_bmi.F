@@ -250,6 +250,8 @@ contains
     var_name = char_array_to_string(c_var_name)
 
     select case(var_name)
+    case('runoff')
+       type_name = 'double'
     case('rivinf')
        type_name = 'double'
     case('rivdph')
@@ -310,6 +312,8 @@ contains
     var_name = char_array_to_string(c_var_name)
 
     select case(var_name)
+    case("runoff")
+       rank = size(shape(R2ROFFIN))
     case("rivinf")
        rank = size(shape(D2RIVINF))
     case("rivdph")
@@ -367,6 +371,8 @@ contains
     the_shape = (/0, 0, 0, 0, 0, 0/)
 
     select case(var_name)
+    case("runoff")
+       the_shape(1:size(shape(R2ROFFIN))) = shape(R2ROFFIN)
     case("rivinf")
        the_shape(1:size(shape(D2RIVINF))) = shape(D2RIVINF)
     case("rivdph")
@@ -425,6 +431,8 @@ contains
     var_name = char_array_to_string(c_var_name)
 
     select case(var_name)
+    case("runoff")
+       x = c_loc(R2ROFFIN)
     case("rivinf")
        x = c_loc(D2RIVINF)
     case("rivdph")
@@ -499,6 +507,9 @@ contains
     var_name = char_array_to_string(c_var_name)
 
     select case(var_name)
+    case("runoff")
+       call c_f_pointer(xptr, x_2d_double_ptr, shape(R2ROFFIN))
+       R2ROFFIN(:, :) = x_2d_double_ptr
     case("rivinf")
        call c_f_pointer(xptr, x_2d_double_ptr, shape(D2RIVINF))
        D2RIVINF(:, :) = x_2d_double_ptr
