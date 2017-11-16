@@ -101,10 +101,12 @@ cama-flood_bmi/adm/Mkinclude
 # Fortran object and modulefiles
 *.o
 *.mod
-*.f90 # f90 files are generated in compilation, copied from .F files
+*.f90
 
 # Copiled static library
 *.a
 
 # Executable
 *.dSYM
+
+*.swp
