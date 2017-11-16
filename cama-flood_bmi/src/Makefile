@@ -18,6 +18,7 @@ calc_watbal.o \
 create_outcdf.o \
 create_outbin.o \
 control_inp.o \
+control_inp_bmi.o \
 control_bound.o\
 control_phy.o \
 control_out.o \

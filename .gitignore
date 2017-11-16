@@ -107,6 +107,7 @@ cama-flood_bmi/adm/Mkinclude
 *.a
 
 # Executable
+MAIN_day
 *.dSYM
 
 *.swp
