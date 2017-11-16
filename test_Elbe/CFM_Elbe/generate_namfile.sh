@@ -63,17 +63,19 @@ LDIKHGT=".FALSE."                     #    true: input dike data
 
 ##### Input Runoff Forcing ################# input runoff resolution should be consistent with "inpmat.bin"
 #TODO: INPUT VARIABLES SHOULD BE EXPOSED, WHICH SHOULD BE THE OUTPUT FROM PCR
-#LINTERP=".TRUE."                           #   true: runoff interpolation using inpmat, false: nearest point interpolation
+LINTERP=".TRUE."                           #   true: runoff interpolation using inpmat, false: nearest point interpolation
 #
 #CINPMAT=${FMAP}/inpmat-1deg.bin            #   runoff input matrix (1deg, 0E->360E, 90N-90S)     !! for sample bonary input
-# CINPMAT=${FMAP}/inpmat-30min.bin           #   runoff input matrix (30min, 0E->360E, 90S->90N) !! for sample netCDF input
+ CINPMAT=${FMAP}/inpmat-30min.bin           #   runoff input matrix (30min, for PCR-GLOBWB)
                                              #   generate a new matrix in map dir if needed
 
-#LINPCDF=".FALSE."                          #   true: netCDF input file
+LINPCDF=".FALSE."                          #   true: netCDF input file
 #CROFDIR="${BASE}/inp/ELSE_GPCC/Roff/"      #   runoff directory
+#CROFDIR="../../sample_runoff/ELSE_GPCC/Roff/"      #   runoff directory
 #CROFPRE="Roff____"                         #   runoff prefix/suffix  ( $(PREFIX)yyyymmdd$(SUFFIX) )
 #CROFSUF=".one"
 
+### Now the input runoff is updated in BMI ############
 # LINPCDF=".TRUE."
 # CROFDIR="${BASE}/inp/ELSE_GPCC/runoff_nc/" #   runoff directory
 # CROFCDF="set-by-shell"                     #   netCDF runoff filename
@@ -98,8 +100,8 @@ LBOUNDSL=".FALSE."                     # true for variable boundary sea level
 ##### Output Settings #################
 #TODO:THE OUTPUT DIRECTORY NAME SHOULD BE MODIFIED
 LOUTCDF=".FALSE."                     # true for netCDF output, false for plain binary output
-COUTDIR="./"                          # output directory 
-
+COUTDIR="./out/"                          # output directory 
+mkdir $COUTDIR
 # output variables set "NONE" for no output
 CRIVOUTDIR="NONE"                     #   river discharge         [m3/s]
 CRIVSTODIR="NONE"                     #   river storage           [m3]
@@ -108,12 +110,12 @@ CRIVDPHDIR="NONE"                 #   river water depth       [m]
 
 CFLDOUTDIR="NONE"                     #   floodplain discharge    [m3/s]
 CFLDSTODIR="NONE"                     #   floodplain storage      [m]
-CFLDDPHDIR="$COUTDIR"                 #   floodplain water depth  [m]
+CFLDDPHDIR="NONE"                 #   floodplain water depth  [m]
 CFLDAREDIR="NONE"                 #   flooded area            [m]
 CFLDFRCDIR="NONE"                 #   flooded area fraction   [m2/m2]
 
 CSFCELVDIR="NONE"                 #   water surface elevation [m]
-COUTFLWDIR="NONE"                 #   total discharge (rivout+fldout)   [m3/s]
+COUTFLWDIR="$COUTDIR"                 #   total discharge (rivout+fldout)   [m3/s]
 CSTORGEDIR="NONE"                 #   total storage (rivsto+fldsto)     [m3]
 
 CPTHOUTDIR="NONE"                 #   net bifurcation flow (grid-based) [m3/s]

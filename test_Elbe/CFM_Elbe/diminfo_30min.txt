@@ -1,8 +1,8 @@
         40     !! nXX
         28     !! nYY
         10     !! floodplain layer
-       720     !! input nXX 
-       360     !! input nYY 
+        20     !! input nXX 
+        14     !! input nYY 
          7     !! input num
 inpmat-tmp.bin
        7.000     !! west  edge
