@@ -31,13 +31,13 @@ module demo_model
   USE MOD_DIAG   ,ONLY: D2RIVINF, D2RIVDPH, D2RIVVEL, D2FLDINF, D2FLDDPH, D2FLDFRC, D2FLDARE,&
        D2PTHOUT, D2PTHINF, D2SFCELV, D2OUTFLW, D2STORGE
   USE MOD_DIAG   ,ONLY: D2OUTFLW_AVG, D2RIVOUT_AVG, D2FLDOUT_AVG, D2RIVVEL_AVG, D2PTHOUT_AVG, D1PTHFLW_AVG, D2OUTINS, NADD
-  USE MOD_PROG   ,ONLY: D2RIVSTO_IN, D2RIVSTO_OUT
+  USE MOD_PROG   ,ONLY: D2RIVSTO_IN, D2RIVSTO_OUT, R2ROFFIN
   USE LIB_DATES  ,ONLY: MIN2DATE, SPLITDATE
 
   ! USE MOD_PROG   ,ONLY: D2RIVSTO_OUT, D2FLDSTO_OUT, D2RIVOUT_OUT, D2FLDOUT_OUT, D1PTHFLW_OUT
   ! USE MOD_PROG   ,ONLY: D2RIVSTO_IN, D2FLDSTO_IN, D2RIVOUT_IN , D2FLDOUT_IN, D1PTHFLW_IN
 
-  USE CONTROL_INP_MOD
+  USE CONTROL_INP_BMI_MOD
   USE CONTROL_BOUND_MOD
   USE CONTROL_PHY_MOD
   USE CONTROL_OUT_MOD
@@ -149,7 +149,7 @@ contains
 
 #ifdef UseCDF
     KMINP=KMIN
-    CALL CONTROL_INP(IYYYY,IMM,IDD)
+!    CALL CONTROL_INP(IYYYY,IMM,IDD)
 #endif
 
     write(LOGNAM,*) '[main] calculation start'
@@ -197,7 +197,8 @@ contains
     ! ==========================================
     !  3. UPDATE RUNOFF AT 00H
     IF ( KHHMMP==0 ) THEN
-       CALL CONTROL_INP(IYYYYP,IMMP,IDDP)
+!       CALL CONTROL_INP(IYYYYP,IMMP,IDDP)
+       CALL CONTROL_INP_BMI
     ENDIF
 
     ! ==========================================
@@ -237,10 +238,6 @@ contains
   subroutine get_var_type(c_var_name, c_type_name)  bind(C, name="get_var_type")
     !DEC$ ATTRIBUTES DLLEXPORT :: get_var_type
 
-    USE MOD_DIAG   ,ONLY: D2RIVINF, D2RIVDPH, D2RIVVEL, D2FLDINF, D2FLDDPH, D2FLDFRC, D2FLDARE,&
-         D2PTHOUT, D2PTHINF, D2SFCELV, D2OUTFLW, D2STORGE
-
-
     character(kind=c_char), intent(in) :: c_var_name(*)
     character(kind=c_char), intent(out) :: c_type_name(MAXSTRINGLEN)
 
@@ -251,7 +248,7 @@ contains
 
     select case(var_name)
     case('runoff')
-       type_name = 'double'
+       type_name = 'float'
     case('rivinf')
        type_name = 'double'
     case('rivdph')
@@ -508,8 +505,8 @@ contains
 
     select case(var_name)
     case("runoff")
-       call c_f_pointer(xptr, x_2d_double_ptr, shape(R2ROFFIN))
-       R2ROFFIN(:, :) = x_2d_double_ptr
+       call c_f_pointer(xptr, x_2d_float_ptr, shape(R2ROFFIN))
+       R2ROFFIN(:, :) = x_2d_float_ptr
     case("rivinf")
        call c_f_pointer(xptr, x_2d_double_ptr, shape(D2RIVINF))
        D2RIVINF(:, :) = x_2d_double_ptr
