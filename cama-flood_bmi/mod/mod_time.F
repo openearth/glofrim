@@ -1,0 +1,20 @@
+MODULE MOD_TIME
+USE PARKIND1 ,ONLY: JPIM, JPRB, JPRM
+IMPLICIT NONE
+
+SAVE
+
+!! time related
+
+INTEGER(KIND=JPIM)                 :: KSTEP       !! CURRENT TIME STEP
+INTEGER(KIND=JPIM)                 :: NSTEPS      !! NUMBER OF TIME STEPS TO RUN
+INTEGER(KIND=JPIM)                 :: KYYYYMMDD   !! CURRENT DATE YYYYMMDD
+INTEGER(KIND=JPIM)                 :: KHHMM       !! CURRENT TIME HHMM
+INTEGER(KIND=JPIM)                 :: KMIN        !! CURRENT MINUTE (SINCE A BASE TIME, SEE MOD_DATES)
+INTEGER(KIND=JPIM)                 :: KMINSTART   !! MINUTE START OF THE RUN!
+!
+INTEGER(KIND=JPIM)                 :: KYYYYMMDDP  !! Previous DATE YYYYMMDD
+INTEGER(KIND=JPIM)                 :: KHHMMP      !! Previous TIME HHMM
+INTEGER(KIND=JPIM)                 :: KMINP       !! Previous Minute
+
+END MODULE MOD_TIME

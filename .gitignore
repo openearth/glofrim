@@ -95,3 +95,19 @@ test_Elbe/CFM_Elbe/input_flood.nam
 test_Elbe/CFM_Elbe/out
 test_Elbe/CFM_Elbe/restart*
 
+# Mkinclude
+cama-flood_bmi/adm/Mkinclude
+
+# Fortran object and modulefiles
+*.o
+*.mod
+*.f90
+
+# Copiled static library
+*.a
+
+# Executable
+MAIN_day
+*.dSYM
+
+*.swp
