@@ -1,0 +1,7 @@
+code    1
+area    reg
+west           6.000
+north         50.000
+nx               200
+ny               200
+csize     0.00500000

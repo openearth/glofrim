@@ -1,0 +1,1 @@
+       0       5   npath, npathlev, (ix,iy), (jx,jy), length, (elevtn1, width1), (elevtn2, width2), ... , (lon,lat)
