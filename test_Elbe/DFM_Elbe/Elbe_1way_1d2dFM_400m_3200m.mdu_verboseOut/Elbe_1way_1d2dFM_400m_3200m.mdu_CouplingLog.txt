@@ -1,6 +1,6 @@
 
 model_file chosen: Elbe_1way_1d2dFM_400m_3200m.mdu
-model start-time: 2017-11-15 14:03:30.708382
+model start-time: 2017-11-21 15:13:00.989989
 lat-lon activated: 1
 forcing by fluxes activated: 1
 river-floodplain-scheme activated: 1
