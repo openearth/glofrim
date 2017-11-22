@@ -96,7 +96,7 @@ test_Elbe/CFM_Elbe/out
 test_Elbe/CFM_Elbe/restart*
 
 # Mkinclude
-cama-flood_bmi/adm/Mkinclude
+Mkinclude
 
 # Fortran object and modulefiles
 *.o
