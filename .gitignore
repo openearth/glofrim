@@ -88,9 +88,6 @@ ENV/
 # Rope project settings
 .ropeproject
 
-# Ignore CaMa-Flood nam-files
-test_Elbe/CFM_Elbe/input_flood.nam
-
 # Ignore CaMa-Flood output files
 test_Elbe/CFM_Elbe/out
 test_Elbe/CFM_Elbe/restart*
