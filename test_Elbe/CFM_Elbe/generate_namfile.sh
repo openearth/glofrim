@@ -39,7 +39,7 @@ NSP=1                                 #   spinup years
 
 ##### Map & Topography ################
 #FMAP="${BASE}/map/elbe_15min" 
-FMAP=`pwd`
+FMAP="."
 
 CDIMINFO="${FMAP}/diminfo_1deg.txt"   #   dimention info (1deg, 0E->360E, 90N-90S)
 #CDIMINFO="${FMAP}/diminfo_30min.txt"   #   dimention info (30min, 0E->360E, 90S->90N), generate a new matrix in map dir if needed
