@@ -29,8 +29,8 @@ Literature and sources:
 Running the script:
 -------------------
 To run the script, an ini-file containing the required specifications and paths is necessary.
-Using python, run this file along with the ini-file as follows:
-	python couplingFramework_v1.1.py default.set
+Using python, run this file along with the ini/set-file and the env-file as follows:
+	python couplingFramework_v1.1.py default.set paths.env
 
 Disclaimer:
 -----------
@@ -80,13 +80,19 @@ from pcrglobwb_bmi_v203 import disclaimer
 from coupling_PCR_FM import coupling_functions
 from coupling_PCR_FM import model_functions
 from coupling_PCR_FM import configuration
+from coupling_PCR_FM import utils as utils
 
 # -------------------------------------------------------------------------------------------------
 # IMPORT MODEL SETTINGS FROM INI-FILE
 # -------------------------------------------------------------------------------------------------
 
+# parse set/ini-file with central/general settings for coupling framework
 config = configuration.Configuration()
 config.parse_configuration_file(sys.argv[1])
+
+# parse env-file for user-specific paths and environmental variables
+envs = configuration.Configuration()
+envs.parse_configuration_file(sys.argv[2])
 
 # -------------------------------------------------------------------------------------------------
 # SPECIFY MODEL SETTINGS
@@ -124,6 +130,13 @@ missing_value_landmask                = 255
 missing_value_pcr                     = -999
 
 # -------------------------------------------------------------------------------------------------
+# GET ENVIRONMENT SETTINGS
+# -------------------------------------------------------------------------------------------------
+
+inputDIR_env = envs.PCRpaths['inputDirectoryPCR']
+outputDIR_env = envs.PCRpaths['outputDirectoryPCR']
+
+# -------------------------------------------------------------------------------------------------
 # SET PATHS TO MODELS
 # -------------------------------------------------------------------------------------------------
 
@@ -139,11 +152,21 @@ routingModel_dir           		= os.path.join(os.getcwd(), routingModel_dir)
 routingModel_file      			= config.routing_model['model_file']                            
 
 # hydrologic model
-hydrologicModel_config       	= config.hydrologic_model['config_file']
-hydrologicModel_config          = os.path.join(os.getcwd(), hydrologicModel_config)
-#TODO: add some code to overwrite input and output files in the PCR ini-file
+hydrologicModel_dir				= config.hydrologic_model['config_dir']
+hydrologicModel_file       		= config.hydrologic_model['config_file']
+hydrologicModel_file_tmp		= str('tmp_'+hydrologicModel_file)
+hydrologicModel_config	        = os.path.join(os.getcwd(), os.path.join(hydrologicModel_dir, hydrologicModel_file))	
+hydrologicModel_config_tmp 		= os.path.join(os.getcwd(), os.path.join(hydrologicModel_dir, hydrologicModel_file_tmp))
+
+# overwriting inputDIR and outputDIR in PCR-GLOBWB ini-file with respect to personal environment
+**kwargs = dict(inputDIR = inputDIR_env, outputDIR = outputDIR_env)
+utils.write_ini(hydrologicModel_config_tmp, hydrologicModel_config, **kwargs)
+
+# parsing the overwritten PCR-GLOBWB ini-file
 configPCR 						= configuration.Configuration()
-configPCR.parse_configuration_file(hydrologicModel_config)
+configPCR.parse_configuration_file(hydrologicModel_config_tmp)
+
+# retrieving informatino directly from PCR-GLOBWB ini-file
 inputDIR 						= configPCR.globalOptions['inputDir'] 
 clone_pcr 						= os.path.join(inputDIR, configPCR.globalOptions['cloneMap']) 
 landmask_pcr 					= os.path.join(inputDIR, configPCR.globalOptions['landmask'])

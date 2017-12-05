@@ -11,8 +11,10 @@ verbose 	= False
 [hydrologic_model]
 # PCR for PCRGLOB-WB or (not yet implemented) WFW for WFLOW
 model_name = PCR
+#path to where ini-file is located
+config_dir = test_Elbe/PCR_Elbe/
 # hydrological model ini-file
-config_file = test_Elbe/PCR_Elbe/setup_coupling_30min_Elbe_run2000s_industrial.ini
+config_file = setup_coupling_30min_Elbe_run2000s_industrial.ini
 
 [routing_model]
 # CMF for CaMa-Flood
