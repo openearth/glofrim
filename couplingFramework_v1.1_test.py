@@ -15,7 +15,10 @@ For Delft3D FM, any compiled version (>1.1.201.48898) has already implemented a 
 required variables accessible to the user.
 For LISFLOOD-FP, however, a specifically designed version needs to be compiled which is currently only available for
 version 5.9 as the model is not originally BMI-compatible.
-Also for PCR-GLOBWB, a BMI-compatible version needs to be used.
+Also for PCR-GLOBWB, a BMI-compatible version needs to be used which is provided in the downloaded zip-file.
+
+Before running the framework, the two python code packages "pcrglobwb_bmi_v203" and "coupling_PCR_FM" need to be installed
+by executing "python setup.py develop" in the respective folders.
 
 Literature and sources:
 -----------------------
@@ -125,21 +128,25 @@ missing_value_pcr                     = -999
 # -------------------------------------------------------------------------------------------------
 
 # hydrodynamic model
-hydrodynamicModel_dir       	= config.hydrodynamic_model['model_dir'] 
+hydrodynamicModel_dir       	= config.hydrodynamic_model['model_dir']
+hydrodynamicModel_dir           = os.path.join(os.getcwd(), hydrodynamicModel_dir) 
 hydrodynamicModel_file      	= config.hydrodynamic_model['model_file']
-hydrodynamicModel_proj		= config.hydrodynamic_model['model_projection']  
+hydrodynamicModel_proj		    = config.hydrodynamic_model['model_projection']  
 
 # routing model      
-routingModel_dir       		= config.routing_model['model_dir'] 
-routingModel_file      		= config.routing_model['model_file']                            
+routingModel_dir       			= config.routing_model['model_dir'] 
+routingModel_dir           		= os.path.join(os.getcwd(), routingModel_dir)
+routingModel_file      			= config.routing_model['model_file']                            
 
 # hydrologic model
-hydrologicModel_config       	=  config.hydrologic_model['config_file']
-configPCR 				= configuration.Configuration()
+hydrologicModel_config       	= config.hydrologic_model['config_file']
+hydrologicModel_config          = os.path.join(os.getcwd(), hydrologicModel_config)
+#TODO: add some code to overwrite input and output files in the PCR ini-file
+configPCR 						= configuration.Configuration()
 configPCR.parse_configuration_file(hydrologicModel_config)
-inputDIR 				= configPCR.globalOptions['inputDir'] 
-clone_pcr 				= os.path.join(inputDIR, configPCR.globalOptions['cloneMap']) 
-landmask_pcr 				= os.path.join(inputDIR, configPCR.globalOptions['landmask'])
+inputDIR 						= configPCR.globalOptions['inputDir'] 
+clone_pcr 						= os.path.join(inputDIR, configPCR.globalOptions['cloneMap']) 
+landmask_pcr 					= os.path.join(inputDIR, configPCR.globalOptions['landmask'])
 
 # -------------------------------------------------------------------------------------------------
 # SET PATHS TO .SO / .DLL FILES
@@ -154,13 +161,13 @@ if type_hydrodynamicModel == 'DFM':
 
 elif type_hydrodynamicModel == 'LFP':
     if platform.system() == 'Linux':
-        path_to_routingModel = '/home/jannis/Programmes/LISFLOODFP/lisflood-bmi-v5.9/liblisflood.so'  # for Linux
+        path_to_routingModel = './lisflood-bmi-v5.9/liblisflood.so'  # for Linux
     elif platform.system() == 'Windows':
         sys.exit('\nLFP v5.9 with BMI currently not supported on Windows!\n')
 		
 if type_routingModel == 'CMF':
 	if platform.system() == 'Linux':
-		path_to_routingModel = '/home/jannis/PhD/code/GLOFRIMplusCAMA/glofrim/cama-flood_bmi/src/libcama.so'
+		path_to_routingModel = './cama-flood_bmi/src/libcama.so'
 	elif platform.system() == 'Windows':
 		sys.exit('\nCaMa-Flood with BMI currently not supported on Windows!\n')
 		
