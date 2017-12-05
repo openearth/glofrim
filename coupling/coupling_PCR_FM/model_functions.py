@@ -46,32 +46,32 @@ def write2log(model_dir, model_file, latlon, useFluxes, use_RFS, t_start, t_end 
     Also verbose-output (if verbose == True) is stored in the created directory.
     """
     
-    #- creating folder to store verbose and log output in    
+#    #- creating folder to store verbose and log output in    
     folder_name = model_dir + model_file + '_verboseOut'
-    
-    #- check whether folder has already been created in a previous run
-    if os.path.exists(folder_name):
-        pass
-    else:
-        #- create folder if not yet existing
-        os.mkdir(folder_name)
-        
-    #- create log-file    
-    fo_name = model_file + '_CouplingLog.txt'    
-    fo = open((os.path.join(folder_name, fo_name)),'w') 
-    
-    #- write info to log-file    
-    fo.write('\nmodel_file chosen: ')
-    fo.write(model_file + os.linesep)
-    fo.write('model start-time: ')
-    fo.write(str(t_start) + os.linesep)
-    fo.write('lat-lon activated: ')
-    fo.write(str(latlon) + os.linesep)
-    fo.write('forcing by fluxes activated: ') 
-    fo.write(str(useFluxes) + os.linesep)
-    fo.write('river-floodplain-scheme activated: ')
-    fo.write(str(use_RFS) + os.linesep)
-    fo.write('model end-time:')
+#    
+#    #- check whether folder has already been created in a previous run
+#    if os.path.exists(folder_name):
+#        pass
+#    else:
+#        #- create folder if not yet existing
+#        os.mkdir(folder_name)
+#        
+#    #- create log-file    
+#    fo_name = model_file + '_CouplingLog.txt'    
+#   fo = open((os.path.join(folder_name, fo_name)),'w') 
+#   
+#    #- write info to log-file    
+#    fo.write('\nmodel_file chosen: ')
+#    fo.write(model_file + os.linesep)
+#    fo.write('model start-time: ')
+#    fo.write(str(t_start) + os.linesep)
+#    fo.write('lat-lon activated: ')
+#    fo.write(str(latlon) + os.linesep)
+#    fo.write('forcing by fluxes activated: ') 
+#    fo.write(str(useFluxes) + os.linesep)
+#    fo.write('river-floodplain-scheme activated: ')
+#    fo.write(str(use_RFS) + os.linesep)
+#    fo.write('model end-time:')
     
     #-write end time of simulation finished when finished    
     if t_end == 0.:
@@ -84,13 +84,13 @@ def write2log(model_dir, model_file, latlon, useFluxes, use_RFS, t_start, t_end 
         print 'fluxes on: ', useFluxes
         print 'RFS on: ', use_RFS
         print '\nModel Start-Time: ', t_start
-        print '\nVerbose Output and Log-File saved in: ', folder_name + os.linesep
-        fo.write('... model still running ...')
+#        print '\nVerbose Output and Log-File saved in: ', folder_name + os.linesep
+#        fo.write('... model still running ...')
     else:
-        fo.write(str(t_end) + os.linesep)
+#        fo.write(str(t_end) + os.linesep)
         print 'model end-time: ', str(t_end)
-		#- close log-file    
-        fo.close()
+#		#- close log-file    
+#        fo.close()
     
     return folder_name
 

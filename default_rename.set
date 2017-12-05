@@ -1,27 +1,3 @@
-[hydrologic_model]
-# PCR for PCRGLOB-WB or (not yet implemented) WFW for WFLOW
-model_name = PCR
-# hydrological model ini-file
-config_file = /path/to/pcrglobwb/iniFile/filename.ini
-
-[routing_model]
-# CMF for CaMa-Flood
-model_name = CMF
-# path to where model settings file and MAIN_day file(link) are located
-model_dir       = /path/to/nam/file
-# nam-file
-model_file      = someFile.mdu/par
-
-[hydrodynamic_model]
-# either "DFM" for Delft3D Flexible Mesh or "LFP" for Lisflood-FP v5.9
-model_name = DFM
-# path where either mdu- or par-file is located
-model_dir       = /path/to/mdu/or/par/file/
-# either mdu- or par-file
-model_file      = someFile.mdu/par
-# needs only to be specified if model is not in spherical coordinates
-model_projection = epsg:32720
-
 [general_settings]
 # specify whether hydrodynamic model is in lat/lon system
 latlon 		= True
@@ -31,6 +7,30 @@ use_Fluxes 	= True
 use_RFS 	= True
 # specify verbosemode
 verbose 	= False
+
+[hydrologic_model]
+# PCR for PCRGLOB-WB or (not yet implemented) WFW for WFLOW
+model_name = PCR
+# hydrological model ini-file
+config_file = test_Elbe/PCR_Elbe/setup_coupling_30min_Elbe_run2000s_industrial.ini
+
+[routing_model]
+# CMF for CaMa-Flood
+model_name = CMF
+# path to where model settings file and MAIN_day file(link) are located
+model_dir       = test/Elbe/CFM_Elbe/
+# nam-file
+model_file      = input_flood.nam
+
+[hydrodynamic_model]
+# either "DFM" for Delft3D Flexible Mesh or "LFP" for Lisflood-FP v5.9
+model_name = DFM
+# path where either mdu- or par-file is located
+model_dir       = test_Elbe/DFM_Elbe/
+# either mdu- or par-file
+model_file      = Elbe_1way_1d2dFM_400m_3200m.mdu
+# needs only to be specified if model is not in spherical coordinates
+model_projection = epsg:32720
 
 [numerical_settings]
 # model starting time YYYY-MM-DD
