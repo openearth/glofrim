@@ -14,7 +14,7 @@ model_name = PCR
 #path to where ini-file is located
 config_dir = test_Elbe/PCR_Elbe/
 # hydrological model ini-file
-config_file = setup_coupling_30min_Elbe_run2000s_industrial.ini
+config_file = setup_PCR_30min_Elbe.ini
 
 [routing_model]
 # CMF for CaMa-Flood
@@ -37,7 +37,7 @@ model_projection = epsg:32720
 [numerical_settings]
 # model starting time YYYY-MM-DD
 # TODO: write start and end time / duration to each model settings file
-starting_date = 1980-01-01
+starting_date = 2000-01-01
 # specify model timesteps [days]
 number_of_timesteps = 10
 # [seconds], only active when using s1-forcing in Delft3D FM

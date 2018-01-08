@@ -191,10 +191,10 @@
 ** INFO   : Finding crossed flowlinks...
 ** INFO   : done
 ** INFO   : Delete kdtree...
-** INFO   : Modelinit finished   at: 18:25:26, 21-11-2017
+** INFO   : Modelinit finished   at: 14:11:57, 08-01-2018
 ** INFO   : ** Model initialization was successful **
 ** INFO   : * Active Model definition:
-# Generated on 18:25:26, 21-11-2017
+# Generated on 14:11:57, 08-01-2018
 # Deltares, D-Flow FM Version 1.1.201.48898, Jun 15 2017, 14:39:08
 
 [model]
@@ -472,3 +472,52 @@ TimeStep                          = 0.                  # time step (>0) or ever
 ** DEBUG  : Opened NetCDF file 'DFM_OUTPUT_Elbe_1way_1d2dFM_400m_3200m/Elbe_1way_1d2dFM_400m_3200m_his.nc' as #65536.
 ** DEBUG  : Opened NetCDF file 'DFM_OUTPUT_Elbe_1way_1d2dFM_400m_3200m/Elbe_1way_1d2dFM_400m_3200m_map.nc' as #131072.
 ** INFO   : Done writing initial output to file(s).
+** INFO   : 
+** INFO   : 
+** INFO   : 
+** INFO   : nr of netnodes        ( )  :                    55428
+** INFO   : nr of netlinks        ( )  :                    99636
+** INFO   : nr of flownodes       ( )  :                    53638
+** INFO   : nr of openbnd cells   ( )  :                       76
+** INFO   : nr of 1D-flownodes    ( )  :                     9349
+** INFO   : model area            (m2) :         0.4222632690E+11
+** INFO   : model volume          (m3) :         0.5680075521E+10
+** INFO   : 
+** INFO   : 
+** INFO   : 
+** INFO   : simulation period     (s)  :     347155200.0000000000
+** INFO   : nr of timesteps       ( )  :          8142.0000000000
+** INFO   : average timestep      (s)  :         42637.5829034635
+** INFO   : time inistep          (s)  :           111.2060000004
+** INFO   : time setumod          (s)  :            38.3590000003
+** INFO   : time furu             (s)  :             3.8749999996
+** INFO   : time solve            (s)  :            64.1669999996
+** INFO   : time setexternalforc. (s)  :             0.0130000000
+** INFO   : time setexternalfbnd. (s)  :             0.1300000000
+** INFO   : time steps            (s)  :           210.7700000000
+** INFO   : time steps + plots    (s)  :             0.0000000000
+** INFO   : fraction solve/steps  ( )  :             0.3044408597
+** INFO   : total/(dnt*ndx)       (s)  :             0.0000000000
+** INFO   : av nr of cont. it s1it( )  :             0.0000000000
+** INFO   : time transport [s]         :             0.7559999999
+** INFO   : time debug     [s]         :             0.0000000000
+** INFO   : 
+** INFO   : 
+** INFO   : 
+** INFO   : Computation started  at: 14:11:57, 08-01-2018
+** INFO   : Computation finished at: 14:15:39, 08-01-2018
+** INFO   : 
+** INFO   : MPI    : no.
+** INFO   : OpenMP : yes.         #threads max : 8
+** INFO   : 
+** INFO   : 
+** INFO   : 
+** INFO   : 
+** INFO   : crosssection discharges (m3/s) :
+** INFO   :         -0.247
+** INFO   :         -0.263
+** INFO   :       -125.720
+** INFO   : crosssection areas (m2) :
+** INFO   :          6.566
+** INFO   :        456.643
+** INFO   :        172.184
