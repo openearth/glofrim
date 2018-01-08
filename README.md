@@ -42,46 +42,51 @@ In the mdu/par-file, the output folder for DFM/LFP output needs to be different 
 
 # Getting started
 Before you can apply GLOFRIM, a few preparatory steps are necessary.
+
 First, the packages "coupling" and "pcrglobwb-bmi_v203" need to be converted to python libraries by executing "python setup.py develop" in the respective folders.
 You can check whether they are compiled correctly by importing "coupling_PCR_DFM" and "pcrglobwb_bmi_v203", respectively, into your python environment.
+
 Besides, a python-compatible BMI-wrapper needs to be downloaded (see link below) and also converted to a python library.
 Again, you can test the correct installation by importing "bmi.wrapper" into your python environment.
-In case PCR shall be coupled to DFM, a DFM version has to be installed first. Currently please contact Deltares (see link below) to receive one. Please specify which environment you are
-working it (Linux or Windows) and also state your purpose.
+
+In case PCR shall be coupled to DFM, a DFM version has to be installed first. Currently please contact Deltares (see link below) to receive one. Please specify which environment you are working it (Linux or Windows) and also state your purpose.
 After having received the model, please set the path to the dflowfm.dll-file (Windows) or the libdflowfm.so-file (Linux) in couplingFramework_v1.py.
+
 In case PCR shall be coupled to LFP, please cd to the folder lisflood-bmi-v5.9 and compile the programm my executing "make".
 In case you encounter any issues, please consider adjusting the makefile according to your Linux environment.
 Then set the path to liblisflood.so (Linux) in couplingFramework_v1.py.
+
 Ideally, the paths to the models remain unaltred which allows for using the couplingFramework_v1.py for all GLOFRIM runs.
+Before being able to run GLOFRIM, model paths and settings have to be defined in the set-file.
 
 For questions, lessons learnt, experiences made or if any problems are encountered, please don't hesitate to contact me (j.m.hoch@uu.nl)
-
-# Literature and sources:
-BMI
-Conceptual description: https://csdms.colorado.edu/wiki/BMI_Description
-Peckham et al, 2013: http://www.sciencedirect.com/science/article/pii/S0098300412001252
-Download page BMI-wrapper: https://github.com/openearth/bmi-python
-
-PCR-GLOBWB
-Technical details: http://vanbeek.geo.uu.nl/suppinfo/vanbeekbierkens2009.pdf
-Sutanudjaja et al, 2017: https://www.geosci-model-dev-discuss.net/gmd-2017-288/
-
-Delft3D Flexible Mesh
-Technical description: https://link.springer.com/article/10.1007%2Fs10236-011-0423-6
-Contact page: https://www.deltares.nl/en/software/delft3d-flexible-mesh-suite/#7
-
-LISFLOOD-FP
-Bates et al, 2010: http://www.sciencedirect.com/science/article/pii/S002216940000278X
-Bates et al, 2010: http://www.sciencedirect.com/science/article/pii/S0022169410001538
-
-APPLICATIONS OF GLOFRIM
-Hoch et al, 2017: https://www.hydrol-earth-syst-sci.net/21/117/2017/hess-21-117-2017.html
-Hoch et al, 2017: https://www.geosci-model-dev.net/10/3913/2017/
 
 # Running GLOFRIM:
 To run the script, an set-file containing the required specifications and paths is necessary.
 Using python, run this file along with the set-file as follows:
 	python couplingFramework_v1.py default.set
+
+# Literature and sources:
+### BMI ###
+- Conceptual description: https://csdms.colorado.edu/wiki/BMI_Description
+- Peckham et al, 2013: http://www.sciencedirect.com/science/article/pii/S0098300412001252
+- Download page BMI-wrapper: https://github.com/openearth/bmi-python
+
+### PCR-GLOBWB ###
+- Technical details: http://vanbeek.geo.uu.nl/suppinfo/vanbeekbierkens2009.pdf
+- Sutanudjaja et al, 2017: https://www.geosci-model-dev-discuss.net/gmd-2017-288/
+
+### Delft3D Flexible Mesh ###
+- Technical description: https://link.springer.com/article/10.1007%2Fs10236-011-0423-6
+- Contact page: https://www.deltares.nl/en/software/delft3d-flexible-mesh-suite/#7
+
+### LISFLOOD-FP ###
+- Bates et al, 2010: http://www.sciencedirect.com/science/article/pii/S002216940000278X
+- Bates et al, 2010: http://www.sciencedirect.com/science/article/pii/S0022169410001538
+
+### APPLICATIONS OF GLOFRIM ###
+- Hoch et al, 2017: https://www.hydrol-earth-syst-sci.net/21/117/2017/hess-21-117-2017.html
+- Hoch et al, 2017: https://www.geosci-model-dev.net/10/3913/2017/
 
 # Disclaimer:
 This program is free software: you can redistribute it and/or modify
