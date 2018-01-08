@@ -20,7 +20,7 @@ config_file = setup_coupling_30min_Elbe_run2000s_industrial.ini
 # CMF for CaMa-Flood
 model_name = CMF
 # path to where model settings file and MAIN_day file(link) are located
-model_dir       = test/Elbe/CFM_Elbe/
+model_dir       = test_Elbe/CMF_Elbe/
 # nam-file
 model_file      = input_flood.nam
 

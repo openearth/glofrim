@@ -108,3 +108,6 @@ MAIN_day
 *.dSYM
 
 *.swp
+
+# personal envs
+*.env

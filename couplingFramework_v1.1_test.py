@@ -51,10 +51,10 @@ In addition to this disclaimer, the disclaimers of ALL models and code involved 
 No warranty/responsibility for any outcome of using this coupling script.
 Please ensure to cite the models involved when using this coupling script.
 
-Copyright (C) 2017 Jannis Hoch
+Copyright (C) 2018 Jannis Hoch
 
 @author: Jannis Hoch, Department of Physical Geography, Faculty of Geosciences, Utrecht University (j.m.hoch@uu.nl)
-@date: 08-11-2017
+@date: 08-01-2018
 """
 
 # -------------------------------------------------------------------------------------------------
@@ -98,9 +98,9 @@ envs.parse_configuration_file(sys.argv[2])
 # SPECIFY MODEL SETTINGS
 # -------------------------------------------------------------------------------------------------
 
-type_hydrodynamicModel = config.hydrodynamic_model['model_name']  
-type_routingModel          = config.routing_model['model_name']  
-type_hydrologicModel      = config.hydrologic_model['model_name']                                            
+type_hydrodynamicModel = config.hydrodynamic_model['model_name']
+type_routingModel          = config.routing_model['model_name']
+type_hydrologicModel      = config.hydrologic_model['model_name']
 
 latlon = strtobool(config.general_settings['latlon'])
 if latlon == False:
@@ -114,16 +114,16 @@ verbose = strtobool(config.general_settings['verbose'])
 # SPECIFY NUMERICAL SETTINGS
 # -------------------------------------------------------------------------------------------------
 
-nr_timesteps                      = int(config.numerical_settings['number_of_timesteps'])                      
-update_step                           = int(config.numerical_settings['update_step'])  
-                      
+nr_timesteps                      = int(config.numerical_settings['number_of_timesteps'])
+update_step                           = int(config.numerical_settings['update_step'])
+
 secPerDay                             = 86400.
 end_time 							  = nr_timesteps * secPerDay
 fraction_timestep 					  = secPerDay / update_step
 
-threshold_inundated_depth             = float(config.numerical_settings['threshold_inundated_depth'])                         
-threshold_inundated_depth_rivers      = float(config.numerical_settings['threshold_inundated_depth_rivers'])                         
-threshold_inundated_depth_floodplains = float(config.numerical_settings['threshold_inundated_depth_floodplains'])                          
+threshold_inundated_depth             = float(config.numerical_settings['threshold_inundated_depth'])
+threshold_inundated_depth_rivers      = float(config.numerical_settings['threshold_inundated_depth_rivers'])
+threshold_inundated_depth_floodplains = float(config.numerical_settings['threshold_inundated_depth_floodplains'])
 
 # other
 missing_value_landmask                = 255
@@ -133,8 +133,10 @@ missing_value_pcr                     = -999
 # GET ENVIRONMENT SETTINGS
 # -------------------------------------------------------------------------------------------------
 
-inputDIR_env = envs.PCRpaths['inputDirectoryPCR']
-outputDIR_env = envs.PCRpaths['outputDirectoryPCR']
+inputDIR_env 	= envs.PCRpaths['inputDirectoryPCR']
+outputDIR_env 	= envs.PCRpaths['outputDirectoryPCR']
+DFM_path		= envs.DFM_engine['DFM_path'] #absolute
+CMF_path		= envs.CMF_engine['CMF_path'] #relative
 
 # -------------------------------------------------------------------------------------------------
 # SET PATHS TO MODELS
@@ -142,20 +144,20 @@ outputDIR_env = envs.PCRpaths['outputDirectoryPCR']
 
 # hydrodynamic model
 hydrodynamicModel_dir       	= config.hydrodynamic_model['model_dir']
-hydrodynamicModel_dir           = os.path.join(os.getcwd(), hydrodynamicModel_dir) 
+hydrodynamicModel_dir           = os.path.join(os.getcwd(), hydrodynamicModel_dir)
 hydrodynamicModel_file      	= config.hydrodynamic_model['model_file']
-hydrodynamicModel_proj		    = config.hydrodynamic_model['model_projection']  
+hydrodynamicModel_proj		    = config.hydrodynamic_model['model_projection']
 
-# routing model      
-routingModel_dir       			= config.routing_model['model_dir'] 
+# routing model
+routingModel_dir       			= config.routing_model['model_dir']
 routingModel_dir           		= os.path.join(os.getcwd(), routingModel_dir)
-routingModel_file      			= config.routing_model['model_file']                            
+routingModel_file      			= config.routing_model['model_file']
 
 # hydrologic model
 hydrologicModel_dir				= config.hydrologic_model['config_dir']
 hydrologicModel_file       		= config.hydrologic_model['config_file']
 hydrologicModel_file_tmp		= str('tmp_'+hydrologicModel_file)
-hydrologicModel_config	        = os.path.join(os.getcwd(), os.path.join(hydrologicModel_dir, hydrologicModel_file))	
+hydrologicModel_config	        = os.path.join(os.getcwd(), os.path.join(hydrologicModel_dir, hydrologicModel_file))
 hydrologicModel_config_tmp 		= os.path.join(os.getcwd(), os.path.join(hydrologicModel_dir, hydrologicModel_file_tmp))
 
 # overwriting inputDIR and outputDIR in PCR-GLOBWB ini-file with respect to personal environment
@@ -167,18 +169,17 @@ configPCR 						= configuration.Configuration()
 configPCR.parse_configuration_file(hydrologicModel_config_tmp)
 
 # retrieving informatino directly from PCR-GLOBWB ini-file
-inputDIR 						= configPCR.globalOptions['inputDir'] 
-clone_pcr 						= os.path.join(inputDIR, configPCR.globalOptions['cloneMap']) 
+inputDIR 						= configPCR.globalOptions['inputDir']
+clone_pcr 						= os.path.join(inputDIR, configPCR.globalOptions['cloneMap']) #why getting this from tmp-version of ini-file? Could already be done above
 landmask_pcr 					= os.path.join(inputDIR, configPCR.globalOptions['landmask'])
 
 # -------------------------------------------------------------------------------------------------
 # SET PATHS TO .SO / .DLL FILES
 # -------------------------------------------------------------------------------------------------
 
-# these may be changed according to personal file and folder structure
 if type_hydrodynamicModel == 'DFM':
     if platform.system() == 'Linux':
-        path_to_hydrodynamicModel = '/home/jannis/Programmes/DFLOWFM/lib/libdflowfm.so'  # for Linux
+        path_to_hydrodynamicModel = DFM_path  # for Linux
     elif platform.system() == 'Windows':
          path_to_hydrodynamicModel = '/path/to/DFLOWFM/lib/libdflowfm.dll'  # for Windows
 
@@ -187,22 +188,22 @@ elif type_hydrodynamicModel == 'LFP':
         path_to_routingModel = './lisflood-bmi-v5.9/liblisflood.so'  # for Linux
     elif platform.system() == 'Windows':
         sys.exit('\nLFP v5.9 with BMI currently not supported on Windows!\n')
-		
+
 if type_routingModel == 'CMF':
 	if platform.system() == 'Linux':
-		path_to_routingModel = './cama-flood_bmi/src/libcama.so'
+		path_to_routingModel = os.path.join(os.getcwd(), CMF_engine)
 	elif platform.system() == 'Windows':
 		sys.exit('\nCaMa-Flood with BMI currently not supported on Windows!\n')
-		
-#TODO: somewhere in the model functions I have a similar exit-statement; once
-# CMF functions are written, add such statement there instead of here
 elif type_routingModel != 'CMF':
 	sys.exit('\nNo supported routing model chosen in ini/set-file!')
-	
+#TODO: somewhere in the model functions (think where geometry is extracted) I have a similar exit-statement; once
+# CMF functions are written, add such statement there instead of here
+
+
 # -------------------------------------------------------------------------------------------------
 # INITIALIZE AND SPIN-UP HYDROLOGIC MODEL
 # -------------------------------------------------------------------------------------------------
-                                  
+
 # get start time of simulation
 t_start = datetime.datetime.now()
 # initiate logging and define folder for verbose-output
@@ -210,14 +211,14 @@ t_start = datetime.datetime.now()
 verbose_folder = model_functions.write2log(hydrodynamicModel_dir, hydrodynamicModel_file, latlon, use_Fluxes, use_RFS, t_start)
 
 # print disclaimer
-print '\n>>> Please consider reading the PCR-GLOBWB Disclaimer <<<\n' 
+print '\n>>> Please consider reading the PCR-GLOBWB Disclaimer <<<\n'
 disclaimer.print_disclaimer()
 time.sleep(5)
 
 # initiate PCR-GLOBWB
 hydrologicModel = pcrglobwb_bmi_v203.pcrglobwb_bmi.pcrglobwbBMI()
 hydrologicModel.initialize(hydrologicModel_config)
-print '\n>>> Hydrologic Model Initialized <<<\n' 
+print '\n>>> Hydrologic Model Initialized <<<\n'
 
 # spin-up PCR-GLOBWB
 hydrologicModel.spinup()
@@ -228,7 +229,7 @@ hydrologicModel.spinup()
 
 routingModel = bmi.wrapper.BMIWrapper(engine = path_to_routingModel, configfile = (os.path.join(routingModel_dir, routingModel_file)))
 routingModel.initialize()
-print '\n>>> Routing Model Initialized <<<\n' 
+print '\n>>> Routing Model Initialized <<<\n'
 
 # -------------------------------------------------------------------------------------------------
 # INITIALIZING HYDRODYNAMIC MODEL
@@ -236,7 +237,7 @@ print '\n>>> Routing Model Initialized <<<\n'
 
 hydrodynamicModel = bmi.wrapper.BMIWrapper(engine = path_to_hydrodynamicModel, configfile = (os.path.join(hydrodynamicModel_dir, hydrodynamicModel_file)))
 hydrodynamicModel.initialize()
-print '\n>>> Hydrodynamic Model Initialized <<<\n' 
+print '\n>>> Hydrodynamic Model Initialized <<<\n'
 
 # -------------------------------------------------------------------------------------------------
 # EXCTRACTING RELEVANT DATA FROM MODELS
@@ -244,13 +245,13 @@ print '\n>>> Hydrodynamic Model Initialized <<<\n'
 
 if type_hydrodynamicModel == 'DFM':
 
-    #- retrieving data from Delft3D FM    
+    #- retrieving data from Delft3D FM
     x_coords, y_coords, z_coords, bottom_lvl, cell_points_fm, separator_1D, cellAreaSpherical, xz_coords, yz_coords, modelCoords, \
                 cellarea_data_pcr, landmask_data_pcr, clone_data_pcr = model_functions.extractModelData_FM(hydrodynamicModel, hydrologicModel, landmask_pcr, clone_pcr, use_RFS)
     print '\n>>> DFM data retrieved <<<\n'
-         
+
 elif type_hydrodynamicModel == 'LFP':
-    
+
     #- retrieving data from LISFLOOD-FP
     dx, dy, DEM, bottom_lvl, H, waterDepth, rows, cols, \
                 list_x_coords, list_y_coords, coupledFPindices, grid_dA, cellAreaSpherical, SGCQin, \
@@ -258,13 +259,13 @@ elif type_hydrodynamicModel == 'LFP':
 
     separator_1D = 0. # setting separator between 1-D and 2-D to 0 as only used for DFM
 
-    #- computing FP-coordinates    
+    #- computing FP-coordinates
     modelCoords = coupling_functions.getVerticesFromMidPoints(list_x_coords, list_y_coords, dx, dy, verbose)
     print '\n>>> LFP data retrieved <<<\n'
 
 #- computing PCR-coordinates
 PCRcoords = coupling_functions.getPCRcoords(landmask_data_pcr)
-		
+
 # -------------------------------------------------------------------------------------------------
 # COUPLING THE GRIDS
 # -------------------------------------------------------------------------------------------------
@@ -277,16 +278,16 @@ CoupleModel2PCR, CouplePCR2model, CoupledPCRcellIndices = coupling_functions.ass
 
 # saving plots of coupled cells to verbose-folder
 # currently doesn't work with FM and use_RFS on, due to data structure required (? check this ?)
-if verbose == True: 
+if verbose == True:
     coupling_functions.plotGridfromCoords(PCRcoords, modelCoords)
     plt.savefig(os.path.join(verbose_folder , 'AllCells.png'))
     coupling_functions.plotGridfromCoords(CoupledCellsInfoAll[1],CoupledCellsInfoAll[0])
-    plt.savefig(os.path.join(verbose_folder , 'CoupledCells.png'))   
+    plt.savefig(os.path.join(verbose_folder , 'CoupledCells.png'))
     plt.close('all')
 
 # -------------------------------------------------------------------------------------------------
 # TURNING OFF CHANNELSTORAGE, WATERBODYSTORAGE, WATERBODIES AND RUNOFF TO CHANNELS
-# -------------------------------------------------------------------------------------------------  
+# -------------------------------------------------------------------------------------------------
 
 model_functions.noStorage(hydrologicModel, missing_value_pcr, CoupledPCRcellIndices, CouplePCR2model)
 
@@ -299,8 +300,8 @@ model_functions.noLDD(hydrologicModel, CoupledPCRcellIndices, verbose_folder, ve
 # -------------------------------------------------------------------------------------------------
 # CALCULATE DELTA VOLUMES (DAY 1)
 # first day outside loop, to make sure PCR time is at start time (timestep 1) and not at end of spin-up (timestep 365)
-# ------------------------------------------------------------------------------------------------- 
- 
+# -------------------------------------------------------------------------------------------------
+
 # retrieving PCR-GLOBWB and converting it to m3/d
 delta_volume_PCR_coupled = model_functions.calculateDeltaVolumes(hydrologicModel, missing_value_pcr, secPerDay, CoupledPCRcellIndices, cellarea_data_pcr)
 
@@ -332,7 +333,7 @@ else:
 # reshaping data for LISFLOOD-FP from list to arrays
 if type_hydrodynamicModel == 'LFP':
     delta_water_fm = model_functions.fillLFPgrid(hydrodynamicModel, coupledFPindices, delta_water_fm, DEM, verbose_folder, verbose)
-  
+
 # -------------------------------------------------------------------------------------------------
 # FIRST UPDATE (DAY 1)
 # -------------------------------------------------------------------------------------------------
@@ -344,11 +345,11 @@ if (type_hydrodynamicModel == 'LFP'):
     model_functions.updateModel(hydrodynamicModel, delta_water_fm, update_step, separator_1D, use_Fluxes, use_RFS, type_hydrodynamicModel, verbose)
 
 while hydrodynamicModel.get_current_time() < (hydrologicModel.get_time_step() * secPerDay):
-    
+
     # updating FM on user-specified time step
     if (type_hydrodynamicModel == 'DFM'):
         model_functions.updateModel(hydrodynamicModel, delta_water_fm, update_step, separator_1D, use_Fluxes, use_RFS, type_hydrodynamicModel, verbose)
-    
+
     # updating FM or FP on daily time step
     if (type_hydrodynamicModel == 'LFP'):
         hydrodynamicModel.update()
@@ -358,10 +359,10 @@ while hydrodynamicModel.get_current_time() < (hydrologicModel.get_time_step() * 
 # ----------------------------------------------------------------------------------------------------
 
 while hydrologicModel.get_time_step() < nr_timesteps:
-    
+
     # retrieving PCR-GLOBWB and converting it to m3/d
-    delta_volume_PCR_coupled = model_functions.calculateDeltaVolumes(hydrologicModel, missing_value_pcr, secPerDay, CoupledPCRcellIndices, cellarea_data_pcr)                                                                                                  
-        
+    delta_volume_PCR_coupled = model_functions.calculateDeltaVolumes(hydrologicModel, missing_value_pcr, secPerDay, CoupledPCRcellIndices, cellarea_data_pcr)
+
     # dividing delta volume from PCR-GLOBWB over hydraulic cells, depending on model specifications
     delta_water_fm, verbose_volume = model_functions.calculateDeltaWater(CouplePCR2model, CoupleModel2PCR, delta_volume_PCR_coupled, cellAreaSpherical, fraction_timestep, type_hydrodynamicModel, use_Fluxes)
 
@@ -373,34 +374,34 @@ while hydrologicModel.get_time_step() < nr_timesteps:
         # write daily totals to file
         fo_PCR_V_tot.write(str(delta_volume_PCR_total_aggr) + os.linesep)
         fo_verbose_volume.write(str(verbose_volume_aggr) + os.linesep)
-    
+
     # reshaping data for LISFLOOD-FP from list to arrays
     if type_hydrodynamicModel == 'LFP':
-        delta_water_fm = model_functions.fillLFPgrid(hydrodynamicModel, coupledFPindices, delta_water_fm, DEM, verbose_folder, verbose)  
-    
+        delta_water_fm = model_functions.fillLFPgrid(hydrodynamicModel, coupledFPindices, delta_water_fm, DEM, verbose_folder, verbose)
+
     # updating arrays with computed additional volumes; array used depends on model specifications
     if (type_hydrodynamicModel == 'LFP'):
-        model_functions.updateModel(hydrodynamicModel, delta_water_fm, update_step, separator_1D, use_Fluxes, use_RFS, type_hydrodynamicModel, verbose)      
+        model_functions.updateModel(hydrodynamicModel, delta_water_fm, update_step, separator_1D, use_Fluxes, use_RFS, type_hydrodynamicModel, verbose)
 
     # update FM unless it has has reached the same time as PCR
     while hydrodynamicModel.get_current_time() < (hydrologicModel.get_time_step() * secPerDay):
-        
+
         # updating FM on user-specified time step
         if (type_hydrodynamicModel == 'DFM'):
-            model_functions.updateModel(hydrodynamicModel, delta_water_fm, update_step, separator_1D, use_Fluxes, use_RFS, type_hydrodynamicModel, verbose)      
-        
+            model_functions.updateModel(hydrodynamicModel, delta_water_fm, update_step, separator_1D, use_Fluxes, use_RFS, type_hydrodynamicModel, verbose)
+
         # updating FM or FP on daily time step
         if (type_hydrodynamicModel == 'LFP'):
-            hydrodynamicModel.update()   
-        
+            hydrodynamicModel.update()
+
 # ----------------------------------------------------------------------------------------------------
 # END OF MODEL PERIOD REACHED
 # ----------------------------------------------------------------------------------------------------
-    
+
 # get end time of simulation
 t_end = datetime.datetime.now()
 # update and finalize logging
-model_functions.write2log(hydrodynamicModel_dir, hydrodynamicModel_file, latlon, use_Fluxes, use_RFS, t_start, t_end) 
+model_functions.write2log(hydrodynamicModel_dir, hydrodynamicModel_file, latlon, use_Fluxes, use_RFS, t_start, t_end)
 # close files
 if verbose == True:
     fo_PCR_V_tot.close()
