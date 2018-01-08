@@ -142,26 +142,29 @@ CMF_path		= envs.CMF_engine['CMF_path'] #relative
 # SET PATHS TO MODELS
 # -------------------------------------------------------------------------------------------------
 
+# get main folder (i.e. GitHub folder)
+mainFolder = os.getcwd()
+
 # hydrodynamic model
 hydrodynamicModel_dir       	= config.hydrodynamic_model['model_dir']
-hydrodynamicModel_dir           = os.path.join(os.getcwd(), hydrodynamicModel_dir)
+hydrodynamicModel_dir           = os.path.join(mainFolder, hydrodynamicModel_dir)
 hydrodynamicModel_file      	= config.hydrodynamic_model['model_file']
 hydrodynamicModel_proj		    = config.hydrodynamic_model['model_projection']
 
 # routing model
 routingModel_dir       			= config.routing_model['model_dir']
-routingModel_dir           		= os.path.join(os.getcwd(), routingModel_dir)
+routingModel_dir           		= os.path.join(mainFolder, routingModel_dir)
 routingModel_file      			= config.routing_model['model_file']
 
 # hydrologic model
 hydrologicModel_dir				= config.hydrologic_model['config_dir']
 hydrologicModel_file       		= config.hydrologic_model['config_file']
 hydrologicModel_file_tmp		= str('tmp_'+hydrologicModel_file)
-hydrologicModel_config	        = os.path.join(os.getcwd(), os.path.join(hydrologicModel_dir, hydrologicModel_file))
-hydrologicModel_config_tmp 		= os.path.join(os.getcwd(), os.path.join(hydrologicModel_dir, hydrologicModel_file_tmp))
+hydrologicModel_config	        = os.path.join(mainFolder, os.path.join(hydrologicModel_dir, hydrologicModel_file))
+hydrologicModel_config_tmp 		= os.path.join(mainFolder, os.path.join(hydrologicModel_dir, hydrologicModel_file_tmp))
 
 # overwriting inputDIR and outputDIR in PCR-GLOBWB ini-file with respect to personal environment
-**kwargs = dict(inputDIR = inputDIR_env, outputDIR = outputDIR_env)
+kwargs = dict(inputDir = inputDIR_env, outputDir = outputDIR_env)
 utils.write_ini(hydrologicModel_config_tmp, hydrologicModel_config, **kwargs)
 
 # parsing the overwritten PCR-GLOBWB ini-file
@@ -170,7 +173,7 @@ configPCR.parse_configuration_file(hydrologicModel_config_tmp)
 
 # retrieving informatino directly from PCR-GLOBWB ini-file
 inputDIR 						= configPCR.globalOptions['inputDir']
-clone_pcr 						= os.path.join(inputDIR, configPCR.globalOptions['cloneMap']) #why getting this from tmp-version of ini-file? Could already be done above
+clone_pcr 						= os.path.join(inputDIR, configPCR.globalOptions['cloneMap'])
 landmask_pcr 					= os.path.join(inputDIR, configPCR.globalOptions['landmask'])
 
 # -------------------------------------------------------------------------------------------------
@@ -191,7 +194,7 @@ elif type_hydrodynamicModel == 'LFP':
 
 if type_routingModel == 'CMF':
 	if platform.system() == 'Linux':
-		path_to_routingModel = os.path.join(os.getcwd(), CMF_engine)
+		path_to_routingModel = os.path.join(mainFolder, CMF_path)
 	elif platform.system() == 'Windows':
 		sys.exit('\nCaMa-Flood with BMI currently not supported on Windows!\n')
 elif type_routingModel != 'CMF':
@@ -213,11 +216,11 @@ verbose_folder = model_functions.write2log(hydrodynamicModel_dir, hydrodynamicMo
 # print disclaimer
 print '\n>>> Please consider reading the PCR-GLOBWB Disclaimer <<<\n'
 disclaimer.print_disclaimer()
-time.sleep(5)
+time.sleep(2)
 
 # initiate PCR-GLOBWB
 hydrologicModel = pcrglobwb_bmi_v203.pcrglobwb_bmi.pcrglobwbBMI()
-hydrologicModel.initialize(hydrologicModel_config)
+hydrologicModel.initialize(hydrologicModel_config_tmp)
 print '\n>>> Hydrologic Model Initialized <<<\n'
 
 # spin-up PCR-GLOBWB
