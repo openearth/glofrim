@@ -2,15 +2,18 @@
 Globally Applicable Framework for Integrated Hydrological-Hydrodynamic Modelling (GLOFRIM)
 
 # NESTING
-This branch will be used for developed of a coupled hydrology -> routing -> 1d/2d hydrodynamics model framework. 
+This branch will be used for developed of a coupled hydrology -> routing -> 1d/2d hydrodynamics model framework.
 
 # Content of package
-	couplingFramework_v1.py: script to execute the coupling process
+	couplingFramework_v1.1.py: script to execute the coupling process
 	default.set: example of the coupling settings-file
 	PCRGLOBWB_30min_GLOFRIM_iniFile.ini: example file to be used with GLOFRIM for PCR-GLOBWB settings
 	coupling: python library containing functions to perform coupling
 	lisflood-bmi-v5.9: BMI-compatible LISFLOOD-FP model at version 5.9
 	pcrglobwb-bmi_v203: BMI-compatible PCR-GLOBWB model supporting application at 30 arcmin resolution
+	cama-flood_bmi: BMI-compatible CaMa-Flood model (CMF)
+	sample_runoff: runoff to force CMF (optional)
+	test_Elbe: test case to test coupling of PCR -> CMF -> DFM
 
 # Manual
 The script provided can be used to couple PCR-GLOBWB with two hydrodynamic models: Delft3D Flexible Mesh (DFM) and LISFLOOD-FP (LFP).
@@ -61,7 +64,7 @@ For questions, lessons learnt, experiences made or if any problems are encounter
 # Running the script:
 To run the script, an set-file containing the required specifications and paths is necessary.
 Using python, run this file along with the set-file as follows:
-	python couplingFramework_v1.py default.set
+	python couplingFramework_v1.1.py default_rename.set paths.env
 
 # Disclaimer:
 This program is free software: you can redistribute it and/or modify
