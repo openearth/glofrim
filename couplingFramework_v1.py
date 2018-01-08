@@ -2,22 +2,11 @@
 """
 Introduction:
 -------------
-This is the key script to couple PCR-GLOBWB with either Delft3D Flexible Mesh ("DFM") by Deltares or
-LISFLOOD-FP ("LFP") by University of Bristol.
+This is the main script to couple PCR-GLOBWB ("PCR") with either Delft3D Flexible Mesh ("DFM") developed by Deltares or
+LISFLOOD-FP ("LFP") developed by University of Bristol.
 The coupling is achieved by making use of the Basic Model Interface (BMI) which allows for initializing,
-updating, data manipulation, and finalization of models from a shell-like environment.
-For couple Delft3D FM or LISFLOOD-FP, the python-module "bmi.wrapper" has to be loaded.
-For Delft3D FM, any compiled version (>1.1.201.48898) has already implemented a BMI-compatible structure, and the
-required variables accessible to the user.
-For LISFLOOD-FP, however, a specifically designed version needs to be compiled which is currently only available for
-version 5.9 as the model is not originally BMI-compatible.
-Also for PCR-GLOBWB, a BMI-compatible version needs to be used.
-
-Literature and sources:
------------------------
-	BMI         -> https://csdms.colorado.edu/wiki/BMI_Description
-				-> http://www.sciencedirect.com/science/article/pii/S0098300412001252
-	bmi.wrapper -> https://github.com/openearth/bmi-python
+data retrieval as well as insertion, and finalization of models.
+Please read the manual for an introduction to GLOFRIM and a detailed explanation of how to set up and run GLOFRIM.
 
 Running the script:
 -------------------
@@ -45,10 +34,10 @@ remain valid.
 No warranty/responsibility for any outcome of using this coupling script.
 Please ensure to cite the models involved when using this coupling script.
 
-Copyright (C) 2017 Jannis Hoch
+Copyright (C) 2018 Jannis Hoch
 
 @author: Jannis Hoch, Department of Physical Geography, Faculty of Geosciences, Utrecht University (j.m.hoch@uu.nl)
-@date: 22-05-2017
+@date: 08-01-2018
 """
 
 # -------------------------------------------------------------------------------------------------
@@ -76,7 +65,7 @@ from coupling_PCR_FM import model_functions
 from coupling_PCR_FM import configuration
 
 # -------------------------------------------------------------------------------------------------
-# IMPORT MODEL SETTINGS FROM INI-FILE
+# IMPORT MODEL SETTINGS FROM SET-FILE
 # -------------------------------------------------------------------------------------------------
 
 config = configuration.Configuration()
@@ -86,7 +75,7 @@ config.parse_configuration_file(sys.argv[1])
 # SPECIFY MODEL SETTINGS
 # -------------------------------------------------------------------------------------------------
 
-model_type = config.model_type['model_type']                                                   
+model_type = config.model_type['model_type']
 
 latlon = strtobool(config.general_settings['latlon'])
 if latlon == False:
@@ -99,16 +88,16 @@ verbose = strtobool(config.general_settings['verbose'])
 # SPECIFY NUMERICAL SETTINGS
 # -------------------------------------------------------------------------------------------------
 
-nr_pcr_timesteps                      = int(config.numerical_settings['number_of_timesteps'])                      
-update_step                           = int(config.numerical_settings['update_step'])  
-                      
+nr_pcr_timesteps                      = int(config.numerical_settings['number_of_timesteps'])
+update_step                           = int(config.numerical_settings['update_step'])
+
 secPerDay                             = 86400.
 end_time 							  = nr_pcr_timesteps * secPerDay
 fraction_timestep 					  = secPerDay / update_step
 
-threshold_inundated_depth             = float(config.numerical_settings['threshold_inundated_depth'])                         
-threshold_inundated_depth_rivers      = float(config.numerical_settings['threshold_inundated_depth_rivers'])                         
-threshold_inundated_depth_floodplains = float(config.numerical_settings['threshold_inundated_depth_floodplains'])                          
+threshold_inundated_depth             = float(config.numerical_settings['threshold_inundated_depth'])
+threshold_inundated_depth_rivers      = float(config.numerical_settings['threshold_inundated_depth_rivers'])
+threshold_inundated_depth_floodplains = float(config.numerical_settings['threshold_inundated_depth_floodplains'])
 
 # other
 missing_value_landmask                = 255
@@ -129,9 +118,9 @@ my_cmap.set_bad('seagreen')
 # SET PATHS TO MODELS
 # -------------------------------------------------------------------------------------------------
 
-model_dir       	= config.model_settings['model_dir'] 
+model_dir       	= config.model_settings['model_dir']
 model_file      	= config.model_settings['model_file']
-model_proj			= config.model_settings['model_projection']                                    
+model_proj			= config.model_settings['model_projection']
 
 config_pcr       	=  config.PCR_settings['config_pcr']
 landmask_pcr     	=  config.PCR_settings['landmask_pcr']
@@ -152,26 +141,26 @@ elif model_type == 'LFP':
     if platform.system() == 'Linux':
         model_path = '/path/to/lisflood-bmi-v5.9/liblisflood.so'  # for Linux
     elif platform.system() == 'Windows':
-        sys.exit('\nLFP v5.9 with BMI currently not supported on Windows!\n')
+        sys.exit('\nLFP v5.9 with BMI currently not supported on Windows, only on Linux!\n')
 
 # -------------------------------------------------------------------------------------------------
 # INITIALIZE AND SPIN-UP PCR-GLOBWB
 # -------------------------------------------------------------------------------------------------
-                                  
+
 # get start time of simulation
 t_start = datetime.datetime.now()
 # initiate logging and define folder for verbose-output
 verbose_folder = model_functions.write2log(model_dir, model_file, latlon, use_Fluxes, use_RFS, t_start)
 
 # print disclaimer
-print '\n>>> Please consider reading the PCR-GLOBWB Disclaimer <<<\n' 
+print '\n>>> Please consider reading the PCR-GLOBWB Disclaimer <<<\n'
 disclaimer.print_disclaimer()
-time.sleep(5)
+time.sleep(2)
 
 # initiate PCR-GLOBWB
 model_pcr = pcrglobwb_bmi_v203.pcrglobwb_bmi.pcrglobwbBMI()
 model_pcr.initialize(config_pcr)
-print '\n>>> PCR-GLOBWB Initialized <<<\n' 
+print '\n>>> PCR-GLOBWB Initialized <<<\n'
 
 # spin-up PCR-GLOBWB
 model_pcr.spinup()
@@ -183,7 +172,7 @@ model_pcr.spinup()
 # initiate hydraulic model
 model_hydr = bmi.wrapper.BMIWrapper(engine = model_path, configfile = (os.path.join(model_dir, model_file)))
 model_hydr.initialize()
-print '\n>>> Hydrodynamic Model Initialized <<<\n' 
+print '\n>>> Hydrodynamic Model Initialized <<<\n'
 
 # -------------------------------------------------------------------------------------------------
 # EXCTRACTING RELEVANT DATA FROM MODELS
@@ -191,13 +180,13 @@ print '\n>>> Hydrodynamic Model Initialized <<<\n'
 
 if model_type == 'DFM':
 
-    #- retrieving data from Delft3D FM    
+    #- retrieving data from Delft3D FM
     x_coords, y_coords, z_coords, bottom_lvl, cell_points_fm, separator_1D, cellAreaSpherical, xz_coords, yz_coords, modelCoords, \
                 cellarea_data_pcr, landmask_data_pcr, clone_data_pcr = model_functions.extractModelData_FM(model_hydr, model_pcr, landmask_pcr, clone_pcr, use_RFS)
     print '\n>>> DFM data retrieved <<<\n'
-         
+
 elif model_type == 'LFP':
-    
+
     #- retrieving data from LISFLOOD-FP
     dx, dy, DEM, bottom_lvl, H, waterDepth, rows, cols, \
                 list_x_coords, list_y_coords, coupledFPindices, grid_dA, cellAreaSpherical, SGCQin, \
@@ -205,13 +194,13 @@ elif model_type == 'LFP':
 
     separator_1D = 0. # setting separator between 1-D and 2-D to 0 as only used for DFM
 
-    #- computing FP-coordinates    
+    #- computing FP-coordinates
     modelCoords = coupling_functions.getVerticesFromMidPoints(list_x_coords, list_y_coords, dx, dy, verbose)
     print '\n>>> LFP data retrieved <<<\n'
-	
+
 #- computing PCR-coordinates
 PCRcoords = coupling_functions.getPCRcoords(landmask_data_pcr)
-		
+
 # -------------------------------------------------------------------------------------------------
 # COUPLING THE GRIDS
 # -------------------------------------------------------------------------------------------------
@@ -224,16 +213,16 @@ CoupleModel2PCR, CouplePCR2model, CoupledPCRcellIndices = coupling_functions.ass
 
 # saving plots of coupled cells to verbose-folder
 # currently doesn't work with FM and use_RFS on, due to data structure required (? check this ?)
-if verbose == True: 
+if verbose == True:
     coupling_functions.plotGridfromCoords(PCRcoords, modelCoords)
     plt.savefig(os.path.join(verbose_folder , 'AllCells.png'))
     coupling_functions.plotGridfromCoords(CoupledCellsInfoAll[1],CoupledCellsInfoAll[0])
-    plt.savefig(os.path.join(verbose_folder , 'CoupledCells.png'))   
+    plt.savefig(os.path.join(verbose_folder , 'CoupledCells.png'))
     plt.close('all')
 
 # -------------------------------------------------------------------------------------------------
 # TURNING OFF CHANNELSTORAGE, WATERBODYSTORAGE, WATERBODIES AND RUNOFF TO CHANNELS
-# -------------------------------------------------------------------------------------------------  
+# -------------------------------------------------------------------------------------------------
 
 model_functions.noStorage(model_pcr, missing_value_pcr, CoupledPCRcellIndices, CouplePCR2model)
 
@@ -246,8 +235,8 @@ model_functions.noLDD(model_pcr, CoupledPCRcellIndices, verbose_folder, verbose)
 # -------------------------------------------------------------------------------------------------
 # CALCULATE DELTA VOLUMES (DAY 1)
 # first day outside loop, to make sure PCR time is at start time (timestep 1) and not at end of spin-up (timestep 365)
-# ------------------------------------------------------------------------------------------------- 
- 
+# -------------------------------------------------------------------------------------------------
+
 # retrieving PCR-GLOBWB and converting it to m3/d
 delta_volume_PCR_coupled = model_functions.calculateDeltaVolumes(model_pcr, missing_value_pcr, secPerDay, CoupledPCRcellIndices, cellarea_data_pcr)
 
@@ -279,7 +268,7 @@ else:
 # reshaping data for LISFLOOD-FP from list to arrays
 if model_type == 'LFP':
     delta_water_fm = model_functions.fillLFPgrid(model_hydr, coupledFPindices, delta_water_fm, DEM, verbose_folder, verbose)
-  
+
 # -------------------------------------------------------------------------------------------------
 # FIRST UPDATE (DAY 1)
 # -------------------------------------------------------------------------------------------------
@@ -291,11 +280,11 @@ if (model_type == 'LFP'):
     model_functions.updateModel(model_hydr, delta_water_fm, update_step, separator_1D, use_Fluxes, use_RFS, model_type, verbose)
 
 while model_hydr.get_current_time() < (model_pcr.get_time_step() * secPerDay):
-    
+
     # updating FM on user-specified time step
     if (model_type == 'DFM'):
         model_functions.updateModel(model_hydr, delta_water_fm, update_step, separator_1D, use_Fluxes, use_RFS, model_type, verbose)
-    
+
     # updating FM or FP on daily time step
     if (model_type == 'LFP'):
         model_hydr.update()
@@ -305,10 +294,10 @@ while model_hydr.get_current_time() < (model_pcr.get_time_step() * secPerDay):
 # ----------------------------------------------------------------------------------------------------
 
 while model_pcr.get_time_step() < nr_pcr_timesteps:
-    
+
     # retrieving PCR-GLOBWB and converting it to m3/d
-    delta_volume_PCR_coupled = model_functions.calculateDeltaVolumes(model_pcr, missing_value_pcr, secPerDay, CoupledPCRcellIndices, cellarea_data_pcr)                                                                                                  
-        
+    delta_volume_PCR_coupled = model_functions.calculateDeltaVolumes(model_pcr, missing_value_pcr, secPerDay, CoupledPCRcellIndices, cellarea_data_pcr)
+
     # dividing delta volume from PCR-GLOBWB over hydraulic cells, depending on model specifications
     delta_water_fm, verbose_volume = model_functions.calculateDeltaWater(CouplePCR2model, CoupleModel2PCR, delta_volume_PCR_coupled, cellAreaSpherical, fraction_timestep, model_type, use_Fluxes)
 
@@ -320,34 +309,34 @@ while model_pcr.get_time_step() < nr_pcr_timesteps:
         # write daily totals to file
         fo_PCR_V_tot.write(str(delta_volume_PCR_total_aggr) + os.linesep)
         fo_verbose_volume.write(str(verbose_volume_aggr) + os.linesep)
-    
+
     # reshaping data for LISFLOOD-FP from list to arrays
     if model_type == 'LFP':
-        delta_water_fm = model_functions.fillLFPgrid(model_hydr, coupledFPindices, delta_water_fm, DEM, verbose_folder, verbose)  
-    
+        delta_water_fm = model_functions.fillLFPgrid(model_hydr, coupledFPindices, delta_water_fm, DEM, verbose_folder, verbose)
+
     # updating arrays with computed additional volumes; array used depends on model specifications
     if (model_type == 'LFP'):
-        model_functions.updateModel(model_hydr, delta_water_fm, update_step, separator_1D, use_Fluxes, use_RFS, model_type, verbose)      
+        model_functions.updateModel(model_hydr, delta_water_fm, update_step, separator_1D, use_Fluxes, use_RFS, model_type, verbose)
 
     # update FM unless it has has reached the same time as PCR
     while model_hydr.get_current_time() < (model_pcr.get_time_step() * secPerDay):
-        
+
         # updating FM on user-specified time step
         if (model_type == 'DFM'):
-            model_functions.updateModel(model_hydr, delta_water_fm, update_step, separator_1D, use_Fluxes, use_RFS, model_type, verbose)      
-        
+            model_functions.updateModel(model_hydr, delta_water_fm, update_step, separator_1D, use_Fluxes, use_RFS, model_type, verbose)
+
         # updating FM or FP on daily time step
         if (model_type == 'LFP'):
-            model_hydr.update()   
-        
+            model_hydr.update()
+
 # ----------------------------------------------------------------------------------------------------
 # END OF MODEL PERIOD REACHED
 # ----------------------------------------------------------------------------------------------------
-    
+
 # get end time of simulation
 t_end = datetime.datetime.now()
 # update and finalize logging
-model_functions.write2log(model_dir, model_file, latlon, use_Fluxes, use_RFS, t_start, t_end) 
+model_functions.write2log(model_dir, model_file, latlon, use_Fluxes, use_RFS, t_start, t_end)
 # close files
 if verbose == True:
     fo_PCR_V_tot.close()

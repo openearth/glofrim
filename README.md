@@ -34,6 +34,12 @@ The framework has successfully been tested on Linux platforms. Please note that 
 Since the ini-file of PCR to be used with GLOFRIM differs from the default, a GLOFRIM-compatible template is provided as well.
 All PCR related settings can be defined here. Further information can be found in the file itself.
 
+Please note:
+While it's the purpose that the couplingFramework_v1.py file is generic, a separate set-file, ini-file, and mdu/par-file are required for each GLOFRIM set-up and run.
+In the set-file, particularly the paths to the ini-file and the mdu/par-file need to be set depending on model schematizations chosen.
+In the ini-file, the output folder for PCR output needs to be different per run, at least if multiple runs are ought to be executed simultaneously.
+In the mdu/par-file, the output folder for DFM/LFP output needs to be different per run, at least if multiple runs are ought to be executed simultaneously.
+
 # Getting started
 Before you can apply GLOFRIM, a few preparatory steps are necessary.
 First, the packages "coupling" and "pcrglobwb-bmi_v203" need to be converted to python libraries by executing "python setup.py develop" in the respective folders.
@@ -51,26 +57,26 @@ Ideally, the paths to the models remain unaltred which allows for using the coup
 For questions, lessons learnt, experiences made or if any problems are encountered, please don't hesitate to contact me (j.m.hoch@uu.nl)
 
 # Literature and sources:
-	BMI
-	Conceptual description: https://csdms.colorado.edu/wiki/BMI_Description
-	Peckham et al, 2013: http://www.sciencedirect.com/science/article/pii/S0098300412001252
-	Download page BMI-wrapper: https://github.com/openearth/bmi-python
+BMI
+Conceptual description: https://csdms.colorado.edu/wiki/BMI_Description
+Peckham et al, 2013: http://www.sciencedirect.com/science/article/pii/S0098300412001252
+Download page BMI-wrapper: https://github.com/openearth/bmi-python
 
-	PCR-GLOBWB
-	Technical details: http://vanbeek.geo.uu.nl/suppinfo/vanbeekbierkens2009.pdf
-	Sutanudjaja et al, 2017: https://www.geosci-model-dev-discuss.net/gmd-2017-288/
+PCR-GLOBWB
+Technical details: http://vanbeek.geo.uu.nl/suppinfo/vanbeekbierkens2009.pdf
+Sutanudjaja et al, 2017: https://www.geosci-model-dev-discuss.net/gmd-2017-288/
 
-	Delft3D Flexible Mesh
-	Technical description: https://link.springer.com/article/10.1007%2Fs10236-011-0423-6
-	Contact page: https://www.deltares.nl/en/software/delft3d-flexible-mesh-suite/#7
+Delft3D Flexible Mesh
+Technical description: https://link.springer.com/article/10.1007%2Fs10236-011-0423-6
+Contact page: https://www.deltares.nl/en/software/delft3d-flexible-mesh-suite/#7
 
-	LISFLOOD-FP
-	Bates et al, 2010: http://www.sciencedirect.com/science/article/pii/S002216940000278X
-	Bates et al, 2010: http://www.sciencedirect.com/science/article/pii/S0022169410001538
+LISFLOOD-FP
+Bates et al, 2010: http://www.sciencedirect.com/science/article/pii/S002216940000278X
+Bates et al, 2010: http://www.sciencedirect.com/science/article/pii/S0022169410001538
 
-	APPLICATIONS OF GLOFRIM
-	Hoch et al, 2017: https://www.hydrol-earth-syst-sci.net/21/117/2017/hess-21-117-2017.html
-	Hoch et al, 2017: https://www.geosci-model-dev.net/10/3913/2017/
+APPLICATIONS OF GLOFRIM
+Hoch et al, 2017: https://www.hydrol-earth-syst-sci.net/21/117/2017/hess-21-117-2017.html
+Hoch et al, 2017: https://www.geosci-model-dev.net/10/3913/2017/
 
 # Running GLOFRIM:
 To run the script, an set-file containing the required specifications and paths is necessary.
