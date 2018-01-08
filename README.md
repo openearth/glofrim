@@ -1,7 +1,7 @@
 # GLOFRIM
 Globally Applicable Framework for Integrated Hydrological-Hydrodynamic Modelling (GLOFRIM)
 
-# NESTING
+## NESTING
 This branch will be used for developed of a coupled hydrology -> routing -> 1d/2d hydrodynamics model framework.
 
 # Content of package
