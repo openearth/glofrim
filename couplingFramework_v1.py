@@ -122,9 +122,12 @@ model_dir       	= config.model_settings['model_dir']
 model_file      	= config.model_settings['model_file']
 model_proj			= config.model_settings['model_projection']
 
-config_pcr       	=  config.PCR_settings['config_pcr']
-landmask_pcr     	=  config.PCR_settings['landmask_pcr']
-clone_pcr        	=  config.PCR_settings['clone_pcr']
+configFile_pcr       	= config.PCR_settings['config_pcr']
+configPCR 		= configuration.Configuration()
+configPCR.parse_configuration_file(configFile_pcr)
+inputDIR 		= configPCR.globalOptions['inputDir']
+clone_pcr 		= os.path.join(inputDIR, configPCR.globalOptions['cloneMap'])
+landmask_pcr 		= os.path.join(inputDIR, configPCR.globalOptions['landmask'])
 
 # -------------------------------------------------------------------------------------------------
 # SET PATHS TO .SO / .DLL FILES
