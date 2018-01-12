@@ -13,8 +13,6 @@ model_projection = epsg:32720
 [PCR_settings]
 # PCR-GLOBWB ini-file
 config_pcr = /path/to/pcrglobwb/iniFile/filename.ini
-landmask_pcr = /path/to/landmask/of/domain/landmask.map
-clone_pcr = /path/to/clonemap/of/domain/clone.map
 
 [general_settings]
 # specify whether hydrodynamic model is in lat/lon system
