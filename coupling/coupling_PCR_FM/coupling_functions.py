@@ -572,7 +572,7 @@ def getPCRIndices(index_hydro, lat_hydro, lon_hydro, pcrLandMask, mapAttributes,
 	selectedLonPCR= selectedLonPCR[npLandMask == 1]
 	#-create arrays to hold information derived from landmask
 	minimumDistance= np.zeros((index_hydro.size))-1.0
-	rowIndexPCR= np.zeros((index_hydro.size))-1
+	rowIndexPCR= np.zeros((index_hydro.size), dtype=int)-1
 	colIndexPCR= np.zeros((index_hydro.size), dtype= int)-1
 	cellIndexPCR= np.zeros((index_hydro.size), dtype= int)-1
 	#-iterate over all DFM indices and find minimum distance and corresponding
