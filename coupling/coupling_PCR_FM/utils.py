@@ -1,6 +1,5 @@
 import os
 from os.path import join
-import re
 from datetime import datetime
 
 # utils
@@ -34,10 +33,9 @@ def write_ini(fn_ini_out, fn_ini_template, **kwargs):
     if os.path.isfile(fn_ini_out):
         os.unlink(fn_ini_out)
     # compile pattern: 1st group is "<key>" 2nd group is "= <old_value>"
-    # matches cases with and without comments recognized "#"
-    pattern = re.compile(r'(\w+)\s+(=.+)\s?')
-#    pattern = re.compile(r'(\w+)\s+(=.+)\s#?\s')
-
+    # matches cases with and without comments recognized "#", !"
+    # match independent of capital letters
+    kwargs = {kw.lower(): kwargs[kw] for kw in kwargs}
     # open files
     with open(fn_ini_template, 'r') as src, open(fn_ini_out, 'w') as dst:
         # loop through lines
@@ -45,14 +43,14 @@ def write_ini(fn_ini_out, fn_ini_template, **kwargs):
             # if the line does not match the pattern or any key, it is not changed
             line_out = line
             # replace default from template with kwarg value if found
-            if pattern.match(line) is not None:
-                kw, old_val = pattern.match(line).groups()[:2]
+            if '=' in line:
+                kw, old_val = line.split('=')
+                kw = kw.strip().lower()
                 if kw in kwargs:
-                    if not isinstance(kwargs[kw], str):
-                        msg = "kwargs should only contain values of type string"
-                        raise ValueError(msg)
-                    new_val = r'= {:s}\t'.format(kwargs[kw])
-                    line_out = re.sub(old_val, new_val, line)
+                    # keep comments behind ! and #
+                    old_val = old_val.split('!')[0].split('#')[0].strip()
+                    # replace old value
+                    line_out = line.replace(old_val, kwargs[kw])
             # write line
             dst.write(line_out)
 
