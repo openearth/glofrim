@@ -150,8 +150,7 @@ def extractModelData_FM(model, useRFS):
     elif useRFS == False:
 		modelCoords = coupling_functions.getFMcoords(cell_points_fm, x_coords, y_coords)
 
-    return bottom_lvl, cell_points_fm, separator, cellAreaSpherical, xz_coords, yz_coords, modelCoords, \
-                cellarea_data_pcr, landmask_data_pcr, clone_data_pcr
+    return bottom_lvl, cell_points_fm, separator, cellAreaSpherical, xz_coords, yz_coords, modelCoords
 
 # =============================================================================
 

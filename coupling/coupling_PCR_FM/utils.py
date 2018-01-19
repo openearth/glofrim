@@ -4,6 +4,16 @@ import re
 from datetime import datetime
 
 # utils
+
+def determineSteps(d1, d2):
+    """
+    Computes numer of update steps based on start and endtime defined in PCR ini-file
+    """
+    d1 = datetime.strptime(d1, "%Y-%m-%d")
+    d2 = datetime.strptime(d2, "%Y-%m-%d")
+    return abs((d2 - d1).days)
+    
+    
 def write_ini(fn_ini_out, fn_ini_template, **kwargs):
     """Function to fills ini-like template for all keys <kw> in kwargs.
     Note that the values in kwargs should be formatted strings and the
@@ -25,7 +35,8 @@ def write_ini(fn_ini_out, fn_ini_template, **kwargs):
         os.unlink(fn_ini_out)
     # compile pattern: 1st group is "<key>" 2nd group is "= <old_value>"
     # matches cases with and without comments recognized "#"
-    pattern = re.compile(r'(\w+)\s+(=.+)\s#?')
+    pattern = re.compile(r'(\w+)\s+(=.+)\s?')
+#    pattern = re.compile(r'(\w+)\s+(=.+)\s#?\s')
 
     # open files
     with open(fn_ini_template, 'r') as src, open(fn_ini_out, 'w') as dst:
@@ -45,10 +56,3 @@ def write_ini(fn_ini_out, fn_ini_template, **kwargs):
             # write line
             dst.write(line_out)
 
-def determineSteps(d1, d2):
-    """
-    Computes numer of update steps based on start and endtime defined in PCR ini-file
-    """
-    d1 = datetime.strptime(d1, "%Y-%m-%d")
-    d2 = datetime.strptime(d2, "%Y-%m-%d")
-    return abs((d2 - d1).days)
