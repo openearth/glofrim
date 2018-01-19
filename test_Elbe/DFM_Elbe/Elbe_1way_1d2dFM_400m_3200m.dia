@@ -191,10 +191,10 @@
 ** INFO   : Finding crossed flowlinks...
 ** INFO   : done
 ** INFO   : Delete kdtree...
-** INFO   : Modelinit finished   at: 18:37:25, 16-01-2018
+** INFO   : Modelinit finished   at: 16:26:36, 19-01-2018
 ** INFO   : ** Model initialization was successful **
 ** INFO   : * Active Model definition:
-# Generated on 18:37:25, 16-01-2018
+# Generated on 16:26:36, 19-01-2018
 # Deltares, D-Flow FM Version 1.1.201.48898, Jun 15 2017, 14:39:08
 
 [model]
@@ -392,7 +392,7 @@ DtInit                            = 1.d-2               # Initial computation ti
 Timestepanalysis                  = 0                   # 0=no, 1=see file *.steps
 Tunit                             = S                   # Time unit for start/stop times (D, H, M or S)
 TStart                            = 0.                  # Start time w.r.t. RefDate (in TUnit)
-TStop                             = 347155200.          # Stop  time w.r.t. RefDate (in TUnit)
+TStop                             = 1000000000.         # Stop  time w.r.t. RefDate (in TUnit)
 
 [restart]
 RestartFile                       =                     # Restart netcdf-file, either *_rst.nc or *_map.nc
@@ -417,12 +417,12 @@ CrsFile                           = NeuDarchauSMALL_crs.pli# Polyline file *_crs
 FouFile                           =                     # Fourier analysis input file *.fou
 HisFile                           =                     # HisFile name *_his.nc
 MapFile                           =                     # MapFile name *_map.nc
-HisInterval                       = 86400. 0. 347155200.# History output times, given as "interval" "start period" "end period" (s)
+HisInterval                       = 86400. 0. 1000000000.# History output times, given as "interval" "start period" "end period" (s)
 XLSInterval                       = 0.                  # Interval (s) between XLS history
-MapInterval                       = 864000. 0. 347155200.# Map file output, given as "interval" "start period" "end period" (s)
-RstInterval                       = 0. 0. 347155200.    # Restart file output times, given as "interval" "start period" "end period" (s)
+MapInterval                       = 864000. 0. 1000000000.# Map file output, given as "interval" "start period" "end period" (s)
+RstInterval                       = 0. 0. 1000000000.   # Restart file output times, given as "interval" "start period" "end period" (s)
 S1incinterval                     = 0.                  # Interval (m) in incremental file for water levels S1
-WaqInterval                       = 0. 0. 347155200.    # DELWAQ output times, given as "interval" "start period" "end period" (s)
+WaqInterval                       = 0. 0. 1000000000.   # DELWAQ output times, given as "interval" "start period" "end period" (s)
 StatsInterval                     = 0.                  # Interval (in s) between simulation statistics output.
 WriteBalancefile                  = 0                   # Write balance file (1: yes, 0: no)
 TimingsInterval                   = 0.                  # Timings statistics output interval
@@ -472,3 +472,52 @@ TimeStep                          = 0.                  # time step (>0) or ever
 ** DEBUG  : Opened NetCDF file 'DFM_OUTPUT_Elbe_1way_1d2dFM_400m_3200m/Elbe_1way_1d2dFM_400m_3200m_his.nc' as #65536.
 ** DEBUG  : Opened NetCDF file 'DFM_OUTPUT_Elbe_1way_1d2dFM_400m_3200m/Elbe_1way_1d2dFM_400m_3200m_map.nc' as #131072.
 ** INFO   : Done writing initial output to file(s).
+** INFO   : 
+** INFO   : 
+** INFO   : 
+** INFO   : nr of netnodes        ( )  :                    55428
+** INFO   : nr of netlinks        ( )  :                    99636
+** INFO   : nr of flownodes       ( )  :                    53638
+** INFO   : nr of openbnd cells   ( )  :                       76
+** INFO   : nr of 1D-flownodes    ( )  :                     9349
+** INFO   : model area            (m2) :         0.4222632690E+11
+** INFO   : model volume          (m3) :         0.5580594609E+10
+** INFO   : 
+** INFO   : 
+** INFO   : 
+** INFO   : simulation period     (s)  :    1000000000.0000000000
+** INFO   : nr of timesteps       ( )  :          7158.0000000000
+** INFO   : average timestep      (s)  :        139703.8278848841
+** INFO   : time inistep          (s)  :           100.3100000005
+** INFO   : time setumod          (s)  :            35.0310000007
+** INFO   : time furu             (s)  :             3.5039999999
+** INFO   : time solve            (s)  :            59.9330000000
+** INFO   : time setexternalforc. (s)  :             0.0190000000
+** INFO   : time setexternalfbnd. (s)  :             0.1120000000
+** INFO   : time steps            (s)  :           193.1779999999
+** INFO   : time steps + plots    (s)  :             0.0000000000
+** INFO   : fraction solve/steps  ( )  :             0.3102475437
+** INFO   : total/(dnt*ndx)       (s)  :             0.0000000000
+** INFO   : av nr of cont. it s1it( )  :             0.0000000000
+** INFO   : time transport [s]         :             0.7259999999
+** INFO   : time debug     [s]         :             0.0000000000
+** INFO   : 
+** INFO   : 
+** INFO   : 
+** INFO   : Computation started  at: 16:26:36, 19-01-2018
+** INFO   : Computation finished at: 16:30:00, 19-01-2018
+** INFO   : 
+** INFO   : MPI    : no.
+** INFO   : OpenMP : yes.         #threads max : 8
+** INFO   : 
+** INFO   : 
+** INFO   : 
+** INFO   : 
+** INFO   : crosssection discharges (m3/s) :
+** INFO   :         -0.233
+** INFO   :         -0.260
+** INFO   :       -108.580
+** INFO   : crosssection areas (m2) :
+** INFO   :          5.949
+** INFO   :        433.948
+** INFO   :        151.240

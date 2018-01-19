@@ -144,7 +144,8 @@ CMF_path		= envs.CMF_engine['CMF_path'] #relative
 # get main folder (i.e. GitHub folder)
 mainFolder = os.getcwd()
 
-# hydrodynamic model
+### HYDRODYNAMIC MODEL ###
+
 hydrodynamicModel_dir       	= config.hydrodynamic_model['model_dir']
 hydrodynamicModel_dir           = os.path.join(mainFolder, hydrodynamicModel_dir)
 hydrodynamicModel_file      	= config.hydrodynamic_model['model_file']
@@ -153,12 +154,30 @@ hydrodynamicModel_config	   	= os.path.join(mainFolder, os.path.join(hydrodynami
 hydrodynamicModel_config_tmp 	= os.path.join(mainFolder, os.path.join(hydrodynamicModel_dir, hydrodynamicModel_file_tmp))
 hydrodynamicModel_proj		    = config.hydrodynamic_model['model_projection']
 
-# routing model
+# overwriting mdu-file to set start date and end time from settings-file
+# doesn't work yet!!!
+tempDate = startTime_env.split('-')
+tempDate = tempDate[0] + tempDate[1] + tempDate[2]
+kwargs = dict(RefDate = str(tempDate), TStop = str(int(end_time)), OutputDir = '')
+utils.write_ini(hydrodynamicModel_config_tmp, hydrodynamicModel_config, **kwargs)
+# as long as it is not yet working:
+hydrodynamicModel_config_tmp = hydrodynamicModel_config
+
+### ROUTING MODEL ###
+
 routingModel_dir       			= config.routing_model['model_dir']
 routingModel_dir           		= os.path.join(mainFolder, routingModel_dir)
 routingModel_file      			= config.routing_model['model_file']
+routingModel_file_tmp			= str('tmp_'+routingModel_file )
+routingModel_config	   			= os.path.join(mainFolder, os.path.join(routingModel_dir, routingModel_file))
+routingModel_config_tmp 		= os.path.join(mainFolder, os.path.join(routingModel_dir, routingModel_file_tmp))
 
-# hydrologic model
+# overwriting nam-file
+kwargs = dict(CINPMAT = '')
+utils.write_ini(routingModel_config_tmp, routingModel_config, **kwargs)
+
+### HYDROLOGIC MODEL ###
+
 hydrologicModel_dir				= config.hydrologic_model['config_dir']
 hydrologicModel_file       		= config.hydrologic_model['config_file']
 hydrologicModel_file_tmp		= str('tmp_'+hydrologicModel_file)
@@ -168,9 +187,6 @@ hydrologicModel_config_tmp 		= os.path.join(mainFolder, os.path.join(hydrologicM
 # overwriting inputDIR and outputDIR in PCR-GLOBWB ini-file with respect to personal environment
 kwargs = dict(inputDir = inputDIR_env, outputDir = outputDIR_env, startTime = startTime_env, endTime = endTime_env)
 utils.write_ini(hydrologicModel_config_tmp, hydrologicModel_config, **kwargs)
-
-kwargs = dict(RefDate = startTime_env, TStop = end_time, OutputDir = '')
-utils.write_ini(hydrodynamicModel_config_tmp, hydrodynamicModel_config, **kwargs)
 
 # parsing the overwritten PCR-GLOBWB ini-file
 configPCR 						= configuration.Configuration()
@@ -234,7 +250,7 @@ hydrologicModel.spinup()
 # INITIALIZING ROUTING MODEL
 # -------------------------------------------------------------------------------------------------
 
-routingModel = bmi.wrapper.BMIWrapper(engine = path_to_routingModel, configfile = (os.path.join(routingModel_dir, routingModel_file)))
+routingModel = bmi.wrapper.BMIWrapper(engine = path_to_routingModel, configfile = routingModel_config_tmp)
 routingModel.initialize()
 print '\n>>> Routing Model Initialized <<<\n'
 

@@ -149,7 +149,7 @@ Rouwav                            =                     # Friction model for wav
 Gammax                            = 1.                  # Maximum wave height/water depth ratio
 
 [time]
-RefDate                           = 20000101            # Reference date (yyyymmdd)
+RefDate                           = 20000101	              # Reference date (yyyymmdd)
 Tzone                             = 0.                  # Time zone assigned to input time series
 DtUser                            = 86400.              # Time interval (s) for external forcing update
 DtNodal                           = 0.                  # Time interval (s) for updating nodal factors in astronomical boundary conditions
@@ -157,7 +157,7 @@ DtMax                             = 1200.                # Maximal computation t
 DtInit                            = 1.d-2               # Initial computation timestep (s)
 Tunit                             = S                   # Time unit for start/stop times (H, M or S)
 TStart                            = 0.                  # Start time w.r.t. RefDate (in TUnit)
-TStop                             = 347155200.          # Stop  time w.r.t. RefDate (in TUnit)
+TStop                             = 1000000000.          # Stop  time w.r.t. RefDate (in TUnit)
 
 [restart]
 RestartFile                       =                     # Restart netcdf-file, either *_rst.nc or *_map.nc
