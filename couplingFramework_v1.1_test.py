@@ -95,6 +95,24 @@ envs = configuration.Configuration()
 envs.parse_configuration_file(sys.argv[2])
 
 # -------------------------------------------------------------------------------------------------
+# SPECIFY NUMERICAL SETTINGS
+# -------------------------------------------------------------------------------------------------
+startTime_env						= config.numerical_settings['startTime']
+endTime_env							= config.numerical_settings['endTime']
+nr_timesteps 						  = utils.determineSteps(startTime_env, endTime_env)
+update_step                           = int(config.numerical_settings['update_step'])
+
+secPerDay                             = 86400.
+end_time 							  = nr_timesteps * secPerDay
+fraction_timestep 					  = secPerDay / update_step
+
+threshold_inundated_depth             = float(config.numerical_settings['threshold_inundated_depth'])
+
+# other
+missing_value_landmask                = 255
+missing_value_pcr                     = -999
+
+# -------------------------------------------------------------------------------------------------
 # SPECIFY MODEL SETTINGS
 # -------------------------------------------------------------------------------------------------
 
@@ -109,25 +127,6 @@ if latlon == False:
 use_Fluxes = strtobool(config.general_settings['use_Fluxes'])
 use_RFS = strtobool(config.general_settings['use_RFS'])
 verbose = strtobool(config.general_settings['verbose'])
-
-# -------------------------------------------------------------------------------------------------
-# SPECIFY NUMERICAL SETTINGS
-# -------------------------------------------------------------------------------------------------
-
-nr_timesteps                      = int(config.numerical_settings['number_of_timesteps'])
-update_step                           = int(config.numerical_settings['update_step'])
-
-secPerDay                             = 86400.
-end_time 							  = nr_timesteps * secPerDay
-fraction_timestep 					  = secPerDay / update_step
-
-threshold_inundated_depth             = float(config.numerical_settings['threshold_inundated_depth'])
-threshold_inundated_depth_rivers      = float(config.numerical_settings['threshold_inundated_depth_rivers'])
-threshold_inundated_depth_floodplains = float(config.numerical_settings['threshold_inundated_depth_floodplains'])
-
-# other
-missing_value_landmask                = 255
-missing_value_pcr                     = -999
 
 # -------------------------------------------------------------------------------------------------
 # GET ENVIRONMENT SETTINGS
@@ -149,6 +148,9 @@ mainFolder = os.getcwd()
 hydrodynamicModel_dir       	= config.hydrodynamic_model['model_dir']
 hydrodynamicModel_dir           = os.path.join(mainFolder, hydrodynamicModel_dir)
 hydrodynamicModel_file      	= config.hydrodynamic_model['model_file']
+hydrodynamicModel_file_tmp		= str('tmp_'+hydrodynamicModel_file)
+hydrodynamicModel_config	   	= os.path.join(mainFolder, os.path.join(hydrodynamicModel_dir, hydrodynamicModel_file))
+hydrodynamicModel_config_tmp 	= os.path.join(mainFolder, os.path.join(hydrodynamicModel_dir, hydrodynamicModel_file_tmp))
 hydrodynamicModel_proj		    = config.hydrodynamic_model['model_projection']
 
 # routing model
@@ -164,8 +166,11 @@ hydrologicModel_config	        = os.path.join(mainFolder, os.path.join(hydrologi
 hydrologicModel_config_tmp 		= os.path.join(mainFolder, os.path.join(hydrologicModel_dir, hydrologicModel_file_tmp))
 
 # overwriting inputDIR and outputDIR in PCR-GLOBWB ini-file with respect to personal environment
-kwargs = dict(inputDir = inputDIR_env, outputDir = outputDIR_env)
+kwargs = dict(inputDir = inputDIR_env, outputDir = outputDIR_env, startTime = startTime_env, endTime = endTime_env)
 utils.write_ini(hydrologicModel_config_tmp, hydrologicModel_config, **kwargs)
+
+kwargs = dict(RefDate = startTime_env, TStop = end_time, OutputDir = '')
+utils.write_ini(hydrodynamicModel_config_tmp, hydrodynamicModel_config, **kwargs)
 
 # parsing the overwritten PCR-GLOBWB ini-file
 configPCR 						= configuration.Configuration()
@@ -202,7 +207,6 @@ elif type_routingModel != 'CMF':
 #TODO: somewhere in the model functions (think where geometry is extracted) I have a similar exit-statement; once
 # CMF functions are written, add such statement there instead of here
 
-
 # -------------------------------------------------------------------------------------------------
 # INITIALIZE AND SPIN-UP HYDROLOGIC MODEL
 # -------------------------------------------------------------------------------------------------
@@ -238,7 +242,7 @@ print '\n>>> Routing Model Initialized <<<\n'
 # INITIALIZING HYDRODYNAMIC MODEL
 # -------------------------------------------------------------------------------------------------
 
-hydrodynamicModel = bmi.wrapper.BMIWrapper(engine = path_to_hydrodynamicModel, configfile = (os.path.join(hydrodynamicModel_dir, hydrodynamicModel_file)))
+hydrodynamicModel = bmi.wrapper.BMIWrapper(engine = path_to_hydrodynamicModel, configfile = hydrodynamicModel_config_tmp)
 hydrodynamicModel.initialize()
 print '\n>>> Hydrodynamic Model Initialized <<<\n'
 
@@ -249,8 +253,7 @@ print '\n>>> Hydrodynamic Model Initialized <<<\n'
 if type_hydrodynamicModel == 'DFM':
 
     #- retrieving data from Delft3D FM
-    x_coords, y_coords, z_coords, bottom_lvl, cell_points_fm, separator_1D, cellAreaSpherical, xz_coords, yz_coords, modelCoords, \
-                cellarea_data_pcr, landmask_data_pcr, clone_data_pcr = model_functions.extractModelData_FM(hydrodynamicModel, hydrologicModel, landmask_pcr, clone_pcr, use_RFS)
+    bottom_lvl, cell_points_fm, separator_1D, cellAreaSpherical, xz_coords, yz_coords, modelCoords = model_functions.extractModelData_FM(hydrodynamicModel, use_RFS)
     print '\n>>> DFM data retrieved <<<\n'
 
 elif type_hydrodynamicModel == 'LFP':
@@ -267,26 +270,15 @@ elif type_hydrodynamicModel == 'LFP':
     print '\n>>> LFP data retrieved <<<\n'
 
 #- computing PCR-coordinates
+cellarea_data_pcr, landmask_data_pcr, clone_data_pcr = model_functions.extractModelData_PCR(hydrologicModel, landmask_pcr, clone_pcr)
 PCRcoords = coupling_functions.getPCRcoords(landmask_data_pcr)
 
 # -------------------------------------------------------------------------------------------------
 # COUPLING THE GRIDS
 # -------------------------------------------------------------------------------------------------
 
-# this is only required for plotting later, not for actual coupling process
-CoupledCellsInfoAll = coupling_functions.coupleAllCells(modelCoords,PCRcoords)
-
 # converting single indices of coupled PCR cells to double (array,column) indices
 CoupleModel2PCR, CouplePCR2model, CoupledPCRcellIndices = coupling_functions.assignPCR2cells(landmask_pcr, modelCoords, verbose)
-
-# saving plots of coupled cells to verbose-folder
-# currently doesn't work with FM and use_RFS on, due to data structure required (? check this ?)
-if verbose == True:
-    coupling_functions.plotGridfromCoords(PCRcoords, modelCoords)
-    plt.savefig(os.path.join(verbose_folder , 'AllCells.png'))
-    coupling_functions.plotGridfromCoords(CoupledCellsInfoAll[1],CoupledCellsInfoAll[0])
-    plt.savefig(os.path.join(verbose_folder , 'CoupledCells.png'))
-    plt.close('all')
 
 # -------------------------------------------------------------------------------------------------
 # TURNING OFF CHANNELSTORAGE, WATERBODYSTORAGE, WATERBODIES AND RUNOFF TO CHANNELS

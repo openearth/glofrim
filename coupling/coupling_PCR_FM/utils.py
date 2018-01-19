@@ -1,17 +1,18 @@
 import os
 from os.path import join
 import re
+from datetime import datetime
 
 # utils
 def write_ini(fn_ini_out, fn_ini_template, **kwargs):
     """Function to fills ini-like template for all keys <kw> in kwargs.
     Note that the values in kwargs should be formatted strings and the
     keys are CASE sensitive.
-    
+
     Input:
     fn_ini_out: 		new updated filename, i.e. needs to be created/defined before running the function
     fn_ini_template: 	ld filename which will serve as template for new one
-    **kwarge:			whole list of 
+    **kwarge:			whole list of
 
     The following lines:
     <kw> = <value> # <comment>
@@ -43,3 +44,11 @@ def write_ini(fn_ini_out, fn_ini_template, **kwargs):
                     line_out = re.sub(old_val, new_val, line)
             # write line
             dst.write(line_out)
+
+def determineSteps(d1, d2):
+    """
+    Computes numer of update steps based on start and endtime defined in PCR ini-file
+    """
+    d1 = datetime.strptime(d1, "%Y-%m-%d")
+    d2 = datetime.strptime(d2, "%Y-%m-%d")
+    return abs((d2 - d1).days)

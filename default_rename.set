@@ -35,17 +35,12 @@ model_file      = Elbe_1way_1d2dFM_400m_3200m.mdu
 model_projection = epsg:32720
 
 [numerical_settings]
-# model starting time YYYY-MM-DD
-# TODO: write start and end time / duration to each model settings file
-starting_date = 2000-01-01
-# specify model timesteps [days]
-number_of_timesteps = 10
+# defining start/endtime of coupled run
+# Format: YYYY-MM-DD
+startTime = 2000-01-01
+endTime = 2000-01-10
 # [seconds], only active when using s1-forcing in Delft3D FM
 update_step = 1800
 # set threshold above which a cell is considered 'inundated'
 # [m] (for when river/floodplain scheme is not used)
 threshold_inundated_depth = 0.05
-# [m] (for river cells only)
-threshold_inundated_depth_rivers = 0.0
-# [m] (for floodplain cells only)
-threshold_inundated_depth_floodplains = 0.05
