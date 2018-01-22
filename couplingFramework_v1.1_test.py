@@ -159,9 +159,8 @@ hydrodynamicModel_proj		    = config.hydrodynamic_model['model_projection']
 tempDate = startTime_env.split('-')
 tempDate = tempDate[0] + tempDate[1] + tempDate[2]
 kwargs = dict(RefDate = str(tempDate), TStop = str(int(end_time)), OutputDir = '')
-utils.write_ini(hydrodynamicModel_config_tmp, hydrodynamicModel_config, **kwargs)
-# as long as it is not yet working:
-hydrodynamicModel_config_tmp = hydrodynamicModel_config
+#utils.write_ini(hydrodynamicModel_config_tmp, hydrodynamicModel_config, **kwargs)
+#pdb.set_trace()
 
 ### ROUTING MODEL ###
 
@@ -173,8 +172,9 @@ routingModel_config	   			= os.path.join(mainFolder, os.path.join(routingModel_d
 routingModel_config_tmp 		= os.path.join(mainFolder, os.path.join(routingModel_dir, routingModel_file_tmp))
 
 # overwriting nam-file
-kwargs = dict(CINPMAT = '')
+kwargs = dict(CINPMAT = 'bla')
 utils.write_ini(routingModel_config_tmp, routingModel_config, **kwargs)
+pdb.set_trace()
 
 ### HYDROLOGIC MODEL ###
 
