@@ -33,7 +33,6 @@ def write_ini(fn_ini_out, fn_ini_template, **kwargs):
     """
     if os.path.isfile(fn_ini_out):
         os.unlink(fn_ini_out)
-    pdb.set_trace()
     # compile pattern: 1st group is "<key>" 2nd group is "= <old_value>"
     # matches cases with and without comments recognized "#", !"
     # match independent of capital letters
@@ -49,6 +48,7 @@ def write_ini(fn_ini_out, fn_ini_template, **kwargs):
                 kw, old_val = line.split('=')
                 kw = kw.strip().lower()
                 if kw in kwargs:
+                    pdb.set_trace()
                     # keep comments behind ! and #
                     old_val = old_val.split('!')[0].split('#')[0].strip()
                     # replace old value
