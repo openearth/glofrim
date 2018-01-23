@@ -5,8 +5,8 @@ IMPLICIT NONE
 SAVE
 !! Exposed variables for BMI
 REAL(KIND=JPRM),ALLOCATABLE, TARGET   ::  R2ROFFIN(:,:)        !! input runoff       [m3/s]
-REAL(KIND=JPRB),ALLOCATABLE, TARGET   ::  R2RIVSTO_OUT(:,:)    !! river      storage [m3]
-REAL(KIND=JPRB),ALLOCATABLE, TARGET   ::  R2FLDSTO_OUT(:,:)    !! river      storage [m3]
+REAL(KIND=JPRM),ALLOCATABLE, TARGET   ::  R2RIVSTO_OUT(:,:)    !! river      storage [m3]
+REAL(KIND=JPRM),ALLOCATABLE, TARGET   ::  R2FLDSTO_OUT(:,:)    !! river      storage [m3]
 
 !! prognostics / state variables initial conditions
 

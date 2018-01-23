@@ -5,28 +5,28 @@ IMPLICIT NONE
 SAVE
 
 !! Exposed variables for BMI
-REAL(KIND=JPRB),ALLOCATABLE, TARGET  ::  R2RIVINF(:,:)         !! river      inflow   [m3/s] (from upstream)
-REAL(KIND=JPRB),ALLOCATABLE, TARGET  ::  R2RIVDPH(:,:)         !! river      depth    [m]
-REAL(KIND=JPRB),ALLOCATABLE, TARGET  ::  R2RIVVEL(:,:)         !! flow velocity       [m/s]
+REAL(KIND=JPRM),ALLOCATABLE, TARGET  ::  R2RIVINF(:,:)         !! river      inflow   [m3/s] (from upstream)
+REAL(KIND=JPRM),ALLOCATABLE, TARGET  ::  R2RIVDPH(:,:)         !! river      depth    [m]
+REAL(KIND=JPRM),ALLOCATABLE, TARGET  ::  R2RIVVEL(:,:)         !! flow velocity       [m/s]
 
-REAL(KIND=JPRB),ALLOCATABLE, TARGET  ::  R2FLDINF(:,:)         !! floodplain inflow   [m3/s]
-REAL(KIND=JPRB),ALLOCATABLE, TARGET  ::  R2FLDDPH(:,:)         !! floodplain depth    [m]
-REAL(KIND=JPRB),ALLOCATABLE, TARGET  ::  R2FLDFRC(:,:)         !! flooded    fractipn [m2/m2]
-REAL(KIND=JPRB),ALLOCATABLE, TARGET  ::  R2FLDARE(:,:)         !! flooded    area     [m2]
+REAL(KIND=JPRM),ALLOCATABLE, TARGET  ::  R2FLDINF(:,:)         !! floodplain inflow   [m3/s]
+REAL(KIND=JPRM),ALLOCATABLE, TARGET  ::  R2FLDDPH(:,:)         !! floodplain depth    [m]
+REAL(KIND=JPRM),ALLOCATABLE, TARGET  ::  R2FLDFRC(:,:)         !! flooded    fractipn [m2/m2]
+REAL(KIND=JPRM),ALLOCATABLE, TARGET  ::  R2FLDARE(:,:)         !! flooded    area     [m2]
 
-REAL(KIND=JPRB),ALLOCATABLE, TARGET  ::  R2PTHOUT(:,:)         !! flood path outflow   [m3/s]
-REAL(KIND=JPRB),ALLOCATABLE, TARGET  ::  R2PTHINF(:,:)         !! flood path inflow   [m3/s]
+REAL(KIND=JPRM),ALLOCATABLE, TARGET  ::  R2PTHOUT(:,:)         !! flood path outflow   [m3/s]
+REAL(KIND=JPRM),ALLOCATABLE, TARGET  ::  R2PTHINF(:,:)         !! flood path inflow   [m3/s]
 
-REAL(KIND=JPRB),ALLOCATABLE, TARGET  ::  R2SFCELV(:,:)         !! water surface elev  [m]    (elevtn - rivhgt + rivdph)
-REAL(KIND=JPRB),ALLOCATABLE, TARGET  ::  R2OUTFLW(:,:)         !! total outflow       [m3/s] (rivout + fldout)
-REAL(KIND=JPRB),ALLOCATABLE, TARGET  ::  R2STORGE(:,:)         !! total storage       [m3]   (rivsto + fldsto)
+REAL(KIND=JPRM),ALLOCATABLE, TARGET  ::  R2SFCELV(:,:)         !! water surface elev  [m]    (elevtn - rivhgt + rivdph)
+REAL(KIND=JPRM),ALLOCATABLE, TARGET  ::  R2OUTFLW(:,:)         !! total outflow       [m3/s] (rivout + fldout)
+REAL(KIND=JPRM),ALLOCATABLE, TARGET  ::  R2STORGE(:,:)         !! total storage       [m3]   (rivsto + fldsto)
 
-REAL(KIND=JPRB),ALLOCATABLE, TARGET  ::  R2RIVOUT_AVG(:,:)      !! average river       discharge
-REAL(KIND=JPRB),ALLOCATABLE, TARGET  ::  R2OUTFLW_AVG(:,:)      !! average total outflow       [m3/s] (rivout + fldout)  !! bugfix v362
-REAL(KIND=JPRB),ALLOCATABLE, TARGET  ::  R2FLDOUT_AVG(:,:)      !! average floodplain  discharge
-REAL(KIND=JPRB),ALLOCATABLE, TARGET  ::  R2RIVVEL_AVG(:,:)      !! average flow velocity
-REAL(KIND=JPRB),ALLOCATABLE, TARGET  ::  R2PTHOUT_AVG(:,:)      !! flood pathway net outflow (2D)
-REAL(KIND=JPRB),ALLOCATABLE, TARGET  ::  R1PTHFLW_AVG(:,:) !! flood pathway flow (1D)
+REAL(KIND=JPRM),ALLOCATABLE, TARGET  ::  R2RIVOUT_AVG(:,:)      !! average river       discharge
+REAL(KIND=JPRM),ALLOCATABLE, TARGET  ::  R2OUTFLW_AVG(:,:)      !! average total outflow       [m3/s] (rivout + fldout)  !! bugfix v362
+REAL(KIND=JPRM),ALLOCATABLE, TARGET  ::  R2FLDOUT_AVG(:,:)      !! average floodplain  discharge
+REAL(KIND=JPRM),ALLOCATABLE, TARGET  ::  R2RIVVEL_AVG(:,:)      !! average flow velocity
+REAL(KIND=JPRM),ALLOCATABLE, TARGET  ::  R2PTHOUT_AVG(:,:)      !! flood pathway net outflow (2D)
+REAL(KIND=JPRM),ALLOCATABLE, TARGET  ::  R1PTHFLW_AVG(:,:) !! flood pathway flow (1D)
 
 !! diagnostics / state variables initial conditions
 
