@@ -31,12 +31,17 @@ module demo_model
   USE MOD_DIAG   ,ONLY: D2RIVINF, D2RIVDPH, D2RIVVEL, D2FLDINF, D2FLDDPH, D2FLDFRC, D2FLDARE,&
        D2PTHOUT, D2PTHINF, D2SFCELV, D2OUTFLW, D2STORGE
   USE MOD_DIAG   ,ONLY: D2OUTFLW_AVG, D2RIVOUT_AVG, D2FLDOUT_AVG, D2RIVVEL_AVG, D2PTHOUT_AVG, D1PTHFLW_AVG, D2OUTINS, NADD
-  USE MOD_PROG   ,ONLY: D2RIVSTO_IN, D2RIVSTO_OUT, R2ROFFIN
+  USE MOD_DIAG   ,ONLY: R2RIVINF, R2RIVDPH, R2RIVVEL, R2FLDINF, R2FLDDPH, R2FLDFRC, R2FLDARE,&
+       R2PTHOUT, R2PTHINF, R2SFCELV, R2OUTFLW, R2STORGE
+  USE MOD_DIAG   ,ONLY: R2OUTFLW_AVG, R2RIVOUT_AVG, R2FLDOUT_AVG, R2RIVVEL_AVG, R2PTHOUT_AVG, R1PTHFLW_AVG
+  USE MOD_PROG   ,ONLY: D2RIVSTO_IN, D2RIVSTO_OUT
+  USE MOD_PROG   ,ONLY: R2ROFFIN, R2RIVSTO_OUT, R2FLDSTO_OUT
   USE LIB_DATES  ,ONLY: MIN2DATE, SPLITDATE
 
   ! USE MOD_PROG   ,ONLY: D2RIVSTO_OUT, D2FLDSTO_OUT, D2RIVOUT_OUT, D2FLDOUT_OUT, D1PTHFLW_OUT
   ! USE MOD_PROG   ,ONLY: D2RIVSTO_IN, D2FLDSTO_IN, D2RIVOUT_IN , D2FLDOUT_IN, D1PTHFLW_IN
 
+  USE CONTROL_INP_MOD
   USE CONTROL_INP_BMI_MOD
   USE CONTROL_BOUND_MOD
   USE CONTROL_PHY_MOD
@@ -172,7 +177,6 @@ contains
     real(c_double), value, intent(in) :: dt
     INTEGER(KIND=JPIM)    ::    IYYYYP,IMMP,IDDP                   !! date (start of time step)
 
-
     ierr = 0
 
     !!========
@@ -197,8 +201,8 @@ contains
     ! ==========================================
     !  3. UPDATE RUNOFF AT 00H
     IF ( KHHMMP==0 ) THEN
-!       CALL CONTROL_INP(IYYYYP,IMMP,IDDP)
-       CALL CONTROL_INP_BMI
+       CALL CONTROL_INP(IYYYYP,IMMP,IDDP)
+!       CALL CONTROL_INP_BMI
     ENDIF
 
     ! ==========================================
@@ -228,7 +232,7 @@ contains
        WRITE(LOGNAM,'(A6,I5,I3,I3,I5,I10,F7.2,F7.2,A4)') 'TIME: ',IYYYY,IMM,IDD,KHHMM,KSTEP,100.*REAL(KSTEP)/REAL(NSTEPS),TSEC,'sec'
     ENDIF
 
-    istep = istep + 1
+    ISTEP = ISTEP + 1
 
 
   end function update
@@ -250,45 +254,45 @@ contains
     case('runoff')
        type_name = 'float'
     case('rivinf')
-       type_name = 'double'
+       type_name = 'float'
     case('rivdph')
-       type_name = 'double'
+       type_name = 'float'
     case('rivvel')
-       type_name = 'double'
+       type_name = 'float'
     case('fldinf')
-       type_name = 'double'
+       type_name = 'float'
     case('flddph')
-       type_name = 'double'
+       type_name = 'float'
     case('fldfrc')
-       type_name = 'double'
+       type_name = 'float'
     case('fldare')
-       type_name = 'double'
+       type_name = 'float'
     case('pthout')
-       type_name = 'double'
+       type_name = 'float'
     case('pthinf')
-       type_name = 'double'
+       type_name = 'float'
     case('sfcelv')
-       type_name = 'double'
+       type_name = 'float'
     case('outflw')
-       type_name = 'double'
+       type_name = 'float'
     case('storge')
-       type_name = 'double'
+       type_name = 'float'
     case('rivout_avg')
-       type_name = 'double'
+       type_name = 'float'
     case('outflw_avg')
-       type_name = 'double'
+       type_name = 'float'
     case('fldout_avg')
-       type_name = 'double'
+       type_name = 'float'
     case('rivvel_avg')
-       type_name = 'double'
+      type_name = 'float'
     case('pthout_avg')
-       type_name = 'double'
+       type_name = 'float'
     case('pthflw_avg')
-       type_name = 'double'
-    case('rivsto_in')
-       type_name = 'double'
+       type_name = 'float'
     case('rivsto_out')
-       type_name = 'double'
+       type_name = 'float'
+    case('fldsto_out')
+       type_name = 'float'
     case default
        type_name = 'unknown'
     end select
@@ -312,45 +316,45 @@ contains
     case("runoff")
        rank = size(shape(R2ROFFIN))
     case("rivinf")
-       rank = size(shape(D2RIVINF))
+       rank = size(shape(R2RIVINF))
     case("rivdph")
-       rank = size(shape(D2RIVDPH))
+       rank = size(shape(R2RIVDPH))
     case("rivvel")
-       rank = size(shape(D2RIVVEL))
+       rank = size(shape(R2RIVVEL))
     case("fldinf")
-       rank = size(shape(D2FLDINF))
+       rank = size(shape(R2FLDINF))
     case("flddph")
-       rank = size(shape(D2FLDDPH))
+       rank = size(shape(R2FLDDPH))
     case("fldfrc")
-       rank = size(shape(D2FLDFRC))
+       rank = size(shape(R2FLDFRC))
     case("fldare")
-       rank = size(shape(D2FLDARE))
+       rank = size(shape(R2FLDARE))
     case("pthout")
-       rank = size(shape(D2PTHOUT))
+       rank = size(shape(R2PTHOUT))
     case("pthinf")
-       rank = size(shape(D2PTHINF))
+       rank = size(shape(R2PTHINF))
     case("sfcelv")
-       rank = size(shape(D2SFCELV))
+       rank = size(shape(R2SFCELV))
     case("outflw")
-       rank = size(shape(D2OUTFLW))
+       rank = size(shape(R2OUTFLW))
     case("storge")
-       rank = size(shape(D2STORGE))
+       rank = size(shape(R2STORGE))
     case("rivout_avg")
-       rank = size(shape(D2RIVOUT_AVG))
+       rank = size(shape(R2RIVOUT_AVG))
     case("outflw_avg")
-       rank = size(shape(D2OUTFLW_AVG))
+       rank = size(shape(R2OUTFLW_AVG))
     case("fldout_avg")
-       rank = size(shape(D2FLDOUT_AVG))
+       rank = size(shape(R2FLDOUT_AVG))
     case("rivvel_avg")
-       rank = size(shape(D2RIVVEL_AVG))
+       rank = size(shape(R2RIVVEL_AVG))
     case("pthout_avg")
-       rank = size(shape(D2PTHOUT_AVG))
+       rank = size(shape(R2PTHOUT_AVG))
     case("pthflw_avg")
-       rank = size(shape(D1PTHFLW_AVG))
-    case("rivsto_in")
-       rank = size(shape(D2RIVSTO_IN))
+       rank = size(shape(R1PTHFLW_AVG))
     case("rivsto_out")
-       rank = size(shape(D2RIVSTO_OUT))
+       rank = size(shape(R2RIVSTO_OUT))
+    case("fldsto_out")
+       rank = size(shape(R2FLDSTO_OUT))
     case default
        rank = 0
     end select
@@ -369,47 +373,47 @@ contains
 
     select case(var_name)
     case("runoff")
-       the_shape(1:size(shape(R2ROFFIN))) = shape(R2ROFFIN)
+       the_shape(1:size(shape(R2ROFFIN)))     = shape(R2ROFFIN)
     case("rivinf")
-       the_shape(1:size(shape(D2RIVINF))) = shape(D2RIVINF)
+       the_shape(1:size(shape(R2RIVINF)))     = shape(R2RIVINF)
     case("rivdph")
-       the_shape(1:size(shape(D2RIVDPH))) = shape(D2RIVDPH)
+       the_shape(1:size(shape(R2RIVDPH)))     = shape(R2RIVDPH)
     case("rivvel")
-       the_shape(1:size(shape(D2RIVVEL))) = shape(D2RIVVEL)
+       the_shape(1:size(shape(R2RIVVEL)))     = shape(R2RIVVEL)
     case("fldinf")
-       the_shape(1:size(shape(D2FLDINF))) = shape(D2FLDINF)
+       the_shape(1:size(shape(R2FLDINF)))     = shape(R2FLDINF)
     case("flddph")
-       the_shape(1:size(shape(D2FLDDPH))) = shape(D2FLDDPH)
+       the_shape(1:size(shape(R2FLDDPH)))     = shape(R2FLDDPH)
     case("fldfrc")
-       the_shape(1:size(shape(D2FLDFRC))) = shape(D2FLDFRC)
+       the_shape(1:size(shape(R2FLDFRC)))     = shape(R2FLDFRC)
     case("fldare")
-       the_shape(1:size(shape(D2FLDARE))) = shape(D2FLDARE)
+       the_shape(1:size(shape(R2FLDARE)))     = shape(R2FLDARE)
     case("pthout")
-       the_shape(1:size(shape(D2PTHOUT))) = shape(D2PTHOUT)
+       the_shape(1:size(shape(R2PTHOUT)))     = shape(R2PTHOUT)
     case("pthinf")
-       the_shape(1:size(shape(D2PTHINF))) = shape(D2PTHINF)
+       the_shape(1:size(shape(R2PTHINF)))     = shape(R2PTHINF)
     case("sfcelv")
-       the_shape(1:size(shape(D2SFCELV))) = shape(D2SFCELV)
+       the_shape(1:size(shape(R2SFCELV)))     = shape(R2SFCELV)
     case("outflw")
-       the_shape(1:size(shape(D2OUTFLW))) = shape(D2OUTFLW)
+       the_shape(1:size(shape(R2OUTFLW)))     = shape(R2OUTFLW)
     case("storge")
-       the_shape(1:size(shape(D2STORGE))) = shape(D2STORGE)
+       the_shape(1:size(shape(R2STORGE)))     = shape(R2STORGE)
     case("rivout_avg")
-       the_shape(1:size(shape(D2RIVOUT_AVG))) = shape(D2RIVOUT_AVG)
+       the_shape(1:size(shape(R2RIVOUT_AVG))) = shape(R2RIVOUT_AVG)
     case("outflw_avg")
-       the_shape(1:size(shape(D2OUTFLW_AVG))) = shape(D2OUTFLW_AVG)
+       the_shape(1:size(shape(R2OUTFLW_AVG))) = shape(R2OUTFLW_AVG)
     case("fldout_avg")
-       the_shape(1:size(shape(D2FLDOUT_AVG))) = shape(D2FLDOUT_AVG)
+       the_shape(1:size(shape(R2FLDOUT_AVG))) = shape(R2FLDOUT_AVG)
     case("rivvel_avg")
-       the_shape(1:size(shape(D2RIVVEL_AVG))) = shape(D2RIVVEL_AVG)
+       the_shape(1:size(shape(R2RIVVEL_AVG))) = shape(R2RIVVEL_AVG)
     case("pthout_avg")
-       the_shape(1:size(shape(D2PTHOUT_AVG))) = shape(D2PTHOUT_AVG)
+       the_shape(1:size(shape(R2PTHOUT_AVG))) = shape(R2PTHOUT_AVG)
     case("pthflw_avg")
-       the_shape(1:size(shape(D1PTHFLW_AVG))) = shape(D1PTHFLW_AVG)
-    case("rivsto_in")
-       the_shape(1:size(shape(D2RIVSTO_IN))) = shape(D2RIVSTO_IN)
+       the_shape(1:size(shape(R1PTHFLW_AVG))) = shape(R1PTHFLW_AVG)
     case("rivsto_out")
-       the_shape(1:size(shape(D2RIVSTO_OUT))) = shape(D2RIVSTO_OUT)
+       the_shape(1:size(shape(R2RIVSTO_OUT))) = shape(R2RIVSTO_OUT)
+    case("fldsto_out")
+       the_shape(1:size(shape(R2FLDSTO_OUT))) = shape(R2FLDSTO_OUT)
     end select
   end subroutine get_var_shape
 
@@ -431,45 +435,45 @@ contains
     case("runoff")
        x = c_loc(R2ROFFIN)
     case("rivinf")
-       x = c_loc(D2RIVINF)
+       x = c_loc(R2RIVINF)
     case("rivdph")
-       x = c_loc(D2RIVDPH)
+       x = c_loc(R2RIVDPH)
     case("rivvel")
-       x = c_loc(D2RIVVEL)
+       x = c_loc(R2RIVVEL)
     case("fldinf")
-       x = c_loc(D2FLDINF)
+       x = c_loc(R2FLDINF)
     case("flddph")
-       x = c_loc(D2FLDDPH)
+       x = c_loc(R2FLDDPH)
     case("fldfrc")
-       x = c_loc(D2FLDFRC)
+       x = c_loc(R2FLDFRC)
     case("fldare")
-       x = c_loc(D2FLDARE)
+       x = c_loc(R2FLDARE)
     case("pthout")
-       x = c_loc(D2PTHOUT)
+       x = c_loc(R2PTHOUT)
     case("pthinf")
-       x = c_loc(D2PTHINF)
+       x = c_loc(R2PTHINF)
     case("sfcelv")
-       x = c_loc(D2SFCELV)
+       x = c_loc(R2SFCELV)
     case("outflw")
-       x = c_loc(D2OUTFLW)
+       x = c_loc(R2OUTFLW)
     case("storge")
-       x = c_loc(D2STORGE)
+       x = c_loc(R2STORGE)
     case("rivout_avg")
-       x = c_loc(D2RIVOUT_AVG)
+       x = c_loc(R2RIVOUT_AVG)
     case("outflw_avg")
-       x = c_loc(D2OUTFLW_AVG)
+       x = c_loc(R2OUTFLW_AVG)
     case("fldout_avg")
-       x = c_loc(D2FLDOUT_AVG)
+       x = c_loc(R2FLDOUT_AVG)
     case("rivvel_avg")
-       x = c_loc(D2RIVVEL_AVG)
+       x = c_loc(R2RIVVEL_AVG)
     case("pthout_avg")
-       x = c_loc(D2PTHOUT_AVG)
+       x = c_loc(R2PTHOUT_AVG)
     case("pthflw_avg")
-       x = c_loc(D1PTHFLW_AVG)
-    case("rivsto_in")
-       x = c_loc(D2RIVSTO_IN)
+       x = c_loc(R1PTHFLW_AVG)
     case("rivsto_out")
-       x = c_loc(D2RIVSTO_OUT)
+       x = c_loc(R2RIVSTO_OUT)
+    case("fldsto_out")
+       x = c_loc(R2FLDSTO_OUT)
     case default
        x = c_null_ptr
     end select
@@ -508,65 +512,65 @@ contains
        call c_f_pointer(xptr, x_2d_float_ptr, shape(R2ROFFIN))
        R2ROFFIN(:, :) = x_2d_float_ptr
     case("rivinf")
-       call c_f_pointer(xptr, x_2d_double_ptr, shape(D2RIVINF))
-       D2RIVINF(:, :) = x_2d_double_ptr
+       call c_f_pointer(xptr, x_2d_float_ptr, shape(R2RIVINF))
+       R2RIVINF(:, :) = x_2d_float_ptr
     case("rivdph")
-       call c_f_pointer(xptr, x_2d_double_ptr, shape(D2RIVDPH))
-       D2RIVDPH(:, :) = x_2d_double_ptr
+       call c_f_pointer(xptr, x_2d_float_ptr, shape(R2RIVDPH))
+       R2RIVDPH(:, :) = x_2d_float_ptr
     case("rivvel")
-       call c_f_pointer(xptr, x_2d_double_ptr, shape(D2RIVVEL))
-       D2RIVVEL(:, :) = x_2d_double_ptr
+       call c_f_pointer(xptr, x_2d_float_ptr, shape(R2RIVVEL))
+       R2RIVVEL(:, :) = x_2d_float_ptr
     case("fldinf")
-       call c_f_pointer(xptr, x_2d_double_ptr, shape(D2FLDINF))
-       D2FLDINF(:, :) = x_2d_double_ptr
+       call c_f_pointer(xptr, x_2d_float_ptr, shape(R2FLDINF))
+       R2FLDINF(:, :) = x_2d_float_ptr
     case("flddph")
-       call c_f_pointer(xptr, x_2d_double_ptr, shape(D2FLDDPH))
-       D2FLDDPH(:, :) = x_2d_double_ptr
+       call c_f_pointer(xptr, x_2d_float_ptr, shape(R2FLDDPH))
+       R2FLDDPH(:, :) = x_2d_float_ptr
     case("fldfrc")
-       call c_f_pointer(xptr, x_2d_double_ptr, shape(D2FLDFRC))
-       D2FLDFRC(:, :) = x_2d_double_ptr
+       call c_f_pointer(xptr, x_2d_float_ptr, shape(R2FLDFRC))
+       R2FLDFRC(:, :) = x_2d_float_ptr
     case("fldare")
-       call c_f_pointer(xptr, x_2d_double_ptr, shape(D2FLDARE))
-       D2FLDARE(:, :) = x_2d_double_ptr
+       call c_f_pointer(xptr, x_2d_float_ptr, shape(R2FLDARE))
+       R2FLDARE(:, :) = x_2d_float_ptr
     case("pthout")
-       call c_f_pointer(xptr, x_2d_double_ptr, shape(D2PTHOUT))
-       D2PTHOUT(:, :) = x_2d_double_ptr
+       call c_f_pointer(xptr, x_2d_float_ptr, shape(R2PTHOUT))
+       R2PTHOUT(:, :) = x_2d_float_ptr
     case("pthinf")
-       call c_f_pointer(xptr, x_2d_double_ptr, shape(D2PTHINF))
-       D2PTHINF(:, :) = x_2d_double_ptr
+       call c_f_pointer(xptr, x_2d_float_ptr, shape(R2PTHINF))
+       R2PTHINF(:, :) = x_2d_float_ptr
     case("sfcelv")
-       call c_f_pointer(xptr, x_2d_double_ptr, shape(D2SFCELV))
-       D2SFCELV(:, :) = x_2d_double_ptr
+       call c_f_pointer(xptr, x_2d_float_ptr, shape(R2SFCELV))
+       R2SFCELV(:, :) = x_2d_float_ptr
     case("outflw")
-       call c_f_pointer(xptr, x_2d_double_ptr, shape(D2OUTFLW))
-       D2OUTFLW(:, :) = x_2d_double_ptr
+       call c_f_pointer(xptr, x_2d_float_ptr, shape(R2OUTFLW))
+       R2OUTFLW(:, :) = x_2d_float_ptr
     case("storge")
-       call c_f_pointer(xptr, x_2d_double_ptr, shape(D2STORGE))
-       D2STORGE(:, :) = x_2d_double_ptr
+       call c_f_pointer(xptr, x_2d_float_ptr, shape(R2STORGE))
+       R2STORGE(:, :) = x_2d_float_ptr
     case("rivout_avg")
-       call c_f_pointer(xptr, x_2d_double_ptr, shape(D2RIVOUT_AVG))
-       D2RIVOUT_AVG(:, :) = x_2d_double_ptr
+       call c_f_pointer(xptr, x_2d_float_ptr, shape(R2RIVOUT_AVG))
+       R2RIVOUT_AVG(:, :) = x_2d_float_ptr
     case("outflw_avg")
-       call c_f_pointer(xptr, x_2d_double_ptr, shape(D2OUTFLW_AVG))
-       D2OUTFLW_AVG(:, :) = x_2d_double_ptr
+       call c_f_pointer(xptr, x_2d_float_ptr, shape(R2OUTFLW_AVG))
+       R2OUTFLW_AVG(:, :) = x_2d_float_ptr
     case("fldout_avg")
-       call c_f_pointer(xptr, x_2d_double_ptr, shape(D2FLDOUT_AVG))
-       D2FLDOUT_AVG(:, :) = x_2d_double_ptr
+       call c_f_pointer(xptr, x_2d_float_ptr, shape(R2FLDOUT_AVG))
+       R2FLDOUT_AVG(:, :) = x_2d_float_ptr
     case("rivvel_avg")
-       call c_f_pointer(xptr, x_2d_double_ptr, shape(D2RIVVEL_AVG))
-       D2RIVVEL_AVG(:, :) = x_2d_double_ptr
+       call c_f_pointer(xptr, x_2d_float_ptr, shape(R2RIVVEL_AVG))
+       R2RIVVEL_AVG(:, :) = x_2d_float_ptr
     case("pthout_avg")
-       call c_f_pointer(xptr, x_2d_double_ptr, shape(D2PTHOUT_AVG))
-       D2PTHOUT_AVG(:, :) = x_2d_double_ptr
+       call c_f_pointer(xptr, x_2d_float_ptr, shape(R2PTHOUT_AVG))
+       R2PTHOUT_AVG(:, :) = x_2d_float_ptr
     case("pthflw_avg")
-       call c_f_pointer(xptr, x_2d_double_ptr, shape(D1PTHFLW_AVG))
-       D1PTHFLW_AVG(:, :) = x_2d_double_ptr
-    case("rivsto_in")
-       call c_f_pointer(xptr, x_2d_double_ptr, shape(D2RIVSTO_IN))
-       D2RIVSTO_IN(:, :) = x_2d_double_ptr
+       call c_f_pointer(xptr, x_2d_float_ptr, shape(R1PTHFLW_AVG))
+       R1PTHFLW_AVG(:, :) = x_2d_float_ptr
     case("rivsto_out")
-       call c_f_pointer(xptr, x_2d_double_ptr, shape(D2RIVSTO_OUT))
-       D2RIVSTO_OUT(:, :) = x_2d_double_ptr
+       call c_f_pointer(xptr, x_2d_float_ptr, shape(R2RIVSTO_OUT))
+       R2RIVSTO_OUT(:, :) = x_2d_float_ptr
+    case("fldsto_out")
+       call c_f_pointer(xptr, x_2d_float_ptr, shape(R2FLDSTO_OUT))
+       R2FLDSTO_OUT(:, :) = x_2d_float_ptr
     case default
        ! do nothing
     end select
@@ -699,6 +703,48 @@ contains
     NADD=0
 
     D2OUTINS(:,:)=0.D0
+
+    ALLOCATE(R2RIVINF(NX,NY))
+    ALLOCATE(R2RIVDPH(NX,NY))
+    ALLOCATE(R2RIVVEL(NX,NY))
+    ALLOCATE(R2FLDINF(NX,NY))
+    ALLOCATE(R2FLDDPH(NX,NY))
+    ALLOCATE(R2FLDFRC(NX,NY))
+    ALLOCATE(R2FLDARE(NX,NY))
+    ALLOCATE(R2PTHOUT(NX,NY))
+    ALLOCATE(R2PTHINF(NX,NY))
+    ALLOCATE(R2SFCELV(NX,NY))
+    ALLOCATE(R2OUTFLW(NX,NY))
+    ALLOCATE(R2STORGE(NX,NY))
+    ALLOCATE(R2RIVOUT_AVG(NX,NY))
+    ALLOCATE(R2OUTFLW_AVG(NX,NY))
+    ALLOCATE(R2FLDOUT_AVG(NX,NY))
+    ALLOCATE(R2RIVVEL_AVG(NX,NY))
+    ALLOCATE(R2PTHOUT_AVG(NX,NY))
+    ALLOCATE(R1PTHFLW_AVG(NX,NY))
+    ALLOCATE(R2RIVSTO_OUT(NX,NY))
+    ALLOCATE(R2FLDSTO_OUT(NX,NY))
+  
+    R2RIVINF(:,:)    =0.D0
+    R2RIVDPH(:,:)    =0.D0
+    R2RIVVEL(:,:)    =0.D0
+    R2FLDINF(:,:)    =0.D0
+    R2FLDDPH(:,:)    =0.D0
+    R2FLDFRC(:,:)    =0.D0
+    R2FLDARE(:,:)    =0.D0
+    R2PTHOUT(:,:)    =0.D0
+    R2PTHINF(:,:)    =0.D0
+    R2SFCELV(:,:)    =0.D0
+    R2OUTFLW(:,:)    =0.D0
+    R2STORGE(:,:)    =0.D0
+    R2RIVOUT_AVG(:,:)=0.D0
+    R2OUTFLW_AVG(:,:)=0.D0
+    R2FLDOUT_AVG(:,:)=0.D0
+    R2RIVVEL_AVG(:,:)=0.D0
+    R2PTHOUT_AVG(:,:)=0.D0
+    R1PTHFLW_AVG(:,:)=0.D0
+    R2RIVSTO_OUT(:,:)=0.D0
+    R2FLDSTO_OUT(:,:)=0.D0
 
   END SUBROUTINE INIT_DIAG
 end module demo_model
