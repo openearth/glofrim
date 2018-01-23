@@ -3,10 +3,17 @@ USE PARKIND1 ,ONLY: JPIM, JPRB, JPRM
 IMPLICIT NONE
 
 SAVE
+!! Exposed variables for BMI
+REAL(KIND=JPRM),ALLOCATABLE, TARGET   ::  R2ROFFIN(:,:)        !! input runoff       [m3/s]
+REAL(KIND=JPRB),ALLOCATABLE, TARGET   ::  R2RIVSTO_IN(:,:)     !! river      storage [m3]
+REAL(KIND=JPRB),ALLOCATABLE, TARGET   ::  R2RIVSTO_OUT(:,:)    !! river      storage [m3]
+REAL(KIND=JPRB),ALLOCATABLE, TARGET   ::  R2FLDSTO_IN(:,:)     !! river      storage [m3]
+REAL(KIND=JPRB),ALLOCATABLE, TARGET   ::  R2FLDSTO_OUT(:,:)    !! river      storage [m3]
+
 !! prognostics / state variables initial conditions
 
                                                        !! for use in ECMWF
-REAL(KIND=JPRB),ALLOCATABLE, TARGET   ::  D2RIVSTO_IN(:,:)     !! river      storage [m3]
+REAL(KIND=JPRB),ALLOCATABLE   ::  D2RIVSTO_IN(:,:)     !! river      storage [m3]
 REAL(KIND=JPRB),ALLOCATABLE   ::  D2FLDSTO_IN(:,:)     !! floodplain storage [m3]
 
 REAL(KIND=JPRB),ALLOCATABLE   ::  D2RIVOUT_IN(:,:)     !! river      outflow [m3/s]
@@ -14,10 +21,9 @@ REAL(KIND=JPRB),ALLOCATABLE   ::  D2FLDOUT_IN(:,:)     !! floodplain outflow [m3
 
 
 REAL(KIND=JPRB),ALLOCATABLE   ::  D2RUNOFF(:,:)        !! input runoff       [m3/s]
-REAL(KIND=JPRM),ALLOCATABLE, TARGET   ::  R2ROFFIN(:,:)        !! input runoff       [m3/s]
 REAL(KIND=JPRB),ALLOCATABLE   ::  D2BOUND(:,:)         !! boundary condition [m]
 
-REAL(KIND=JPRB),ALLOCATABLE, TARGET   ::  D2RIVSTO_OUT(:,:)    !! river      storage [m3]
+REAL(KIND=JPRB),ALLOCATABLE   ::  D2RIVSTO_OUT(:,:)    !! river      storage [m3]
 REAL(KIND=JPRB),ALLOCATABLE   ::  D2FLDSTO_OUT(:,:)    !! floodplain storage [m3]
 
 REAL(KIND=JPRB),ALLOCATABLE   ::  D2RIVOUT_OUT(:,:)    !! river      outflow [m3/s]
