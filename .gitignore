@@ -1,3 +1,6 @@
+# cama symbolic link
+cama-flood_bmi/lib
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
