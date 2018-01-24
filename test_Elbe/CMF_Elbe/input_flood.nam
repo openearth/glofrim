@@ -34,11 +34,11 @@ CRIVPARNC="NONE"                    ! * netCDF river width & depth
 &NINPUT 
 LINTERP=.TRUE.                  ! true for runoff interpolation using input matrix
 LINPCDF=.FALSE.                  ! true for netCDF input
-CINPMAT="./inpmat-30min.bin"                ! input matrix file name
-CRUNOFFDIR=""             ! runoff input directory
-CRUNOFFPRE=""             ! runoff input prefix
-CRUNOFFSUF=""             ! runoff input suffix
-CRUNOFFCDF="/runoff1990.nc"             ! * netCDF input runoff file name
+CINPMAT="./inpmat-1deg.bin"                ! input matrix file name
+CRUNOFFDIR="../../sample_runoff/ELSE_GPCC/Roff/"             ! runoff input directory
+CRUNOFFPRE="Roff____"             ! runoff input prefix
+CRUNOFFSUF=".one"             ! runoff input suffix
+CRUNOFFCDF="../../sample_runoff/ELSE_GPCC/Roff//runoff1990.nc"             ! * netCDF input runoff file name
 CROFCDFVAR=""             ! * netCDF input runoff variable name
 SYEARIN=1989                    ! * for netCDF input start date (start of the initial time step)
 SMONIN=12
@@ -74,7 +74,7 @@ LOUTVEC=.FALSE.                     ! for 1-D land-only output (small data size,
 &NCONF                              ! * NX, NY, NFLP, NXIN, NYIN, INPN, WEST, EAST, NORTH, SOUTH set by diminfo.txt
 DT=86400                              ! time step [sec]
 DTIN=86400                          ! input runoff time step [sec]
-DROFUNIT=                  ! runoff unit conversion (1.D-3 when input [mm] is converted to [m3/m2]
+DROFUNIT=1.D-3                  ! runoff unit conversion (1.D-3 when input [mm] is converted to [m3/m2]
 LADPSTP=.TRUE.                    ! true for adaptive time step
 LFLDOUT=.TRUE.                    ! true to activate floodplain discharge
 LPTHOUT=.FALSE.                    ! true to activate bifurcation channel flow
