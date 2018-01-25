@@ -27,6 +27,8 @@ DO ISEQ=1, NSEQALL
 ENDDO
 !$OMP END PARALLEL DO
 
+WRITE(LOGNAM, *) "READ_RUNOFF VIA BMI"
+
 ! Interpolation & unit conversion (input runoff unit -> m3/sec)
 IF( LINTERP )THEN
   CALL ROFF_INTERP(R2ROFFIN,D2RUNOFF)
