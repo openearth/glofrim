@@ -62,18 +62,19 @@ LDIKHGT=".FALSE."                     #    true: input dike data
 #CDIKHGT=${FMAP}/dikhgt.bin            #    dike height [m]
 
 ##### Input Runoff Forcing ################# input runoff resolution should be consistent with "inpmat.bin"
-#TODO: INPUT VARIABLES SHOULD BE EXPOSED, WHICH SHOULD BE THE OUTPUT FROM PCR
 LINTERP=".TRUE."                           #   true: runoff interpolation using inpmat, false: nearest point interpolation
 #
 CINPMAT=${FMAP}/inpmat-1deg.bin            #   runoff input matrix (1deg, 0E->360E, 90N-90S)     !! for sample bonary input
 #CINPMAT=${FMAP}/inpmat-30min.bin           #   runoff input matrix (30min, for PCR-GLOBWB)
                                              #   generate a new matrix in map dir if needed
 
+LBMIROF=".TRUE."                           #   true: read runoff via BMI
+
 LINPCDF=".FALSE."                          #   true: netCDF input file
 #CROFDIR="${BASE}/inp/ELSE_GPCC/Roff/"      #   runoff directory
-CROFDIR="../../sample_runoff/ELSE_GPCC/Roff/"      #   runoff directory
-CROFPRE="Roff____"                         #   runoff prefix/suffix  ( $(PREFIX)yyyymmdd$(SUFFIX) )
-CROFSUF=".one"
+#CROFDIR="../../sample_runoff/ELSE_GPCC/Roff/"      #   runoff directory
+#CROFPRE="Roff____"                         #   runoff prefix/suffix  ( $(PREFIX)yyyymmdd$(SUFFIX) )
+#CROFSUF=".one"
 
 ### Now the input runoff is updated in BMI ############
 # LINPCDF=".TRUE."
@@ -225,6 +226,7 @@ CRIVPARNC="NONE"                    ! * netCDF river width & depth
 /
 &NINPUT 
 LINTERP=${LINTERP}                  ! true for runoff interpolation using input matrix
+LBMIROF=${LBMIROF}                  ! true for reading runoff via BMI
 LINPCDF=${LINPCDF}                  ! true for netCDF input
 CINPMAT="${CINPMAT}"                ! input matrix file name
 CRUNOFFDIR="${CROFDIR}"             ! runoff input directory
