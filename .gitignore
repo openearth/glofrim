@@ -92,8 +92,8 @@ ENV/
 .ropeproject
 
 # Ignore CaMa-Flood output files
-test_Elbe/CFM_Elbe/out
-test_Elbe/CFM_Elbe/restart*
+test_Elbe/CMF_Elbe/out
+test_Elbe/CMF_Elbe/restart*
 
 # Mkinclude
 Mkinclude
