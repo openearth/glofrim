@@ -15,7 +15,7 @@ IEMON=1                             ! end
 IEDAY=1                             ! end        (assumed at 00UTC)
 /
 &NMAP
-LMAPCDF=.false.                     ! true for netCDF map input
+LMAPCDF=.FALSE.                     ! true for netCDF map input
 CDIMINFO="./diminfo_30min.txt"              ! dimention info
 CNEXTXY="./nextxy.bin"                ! downstream xy (river network map)
 CGRAREA="./grarea.bin"                ! unit-catchment area [m2]
@@ -33,6 +33,7 @@ CRIVPARNC="NONE"                    ! * netCDF river width & depth
 /
 &NINPUT
 LINTERP=.TRUE.                  ! true for runoff interpolation using input matrix
+LBMIROF=.TRUE.                 ! true for reading runoff via BMI
 LINPCDF=.FALSE.                  ! true for netCDF input
 CINPMAT="./inpmat-30min.bin"                ! input matrix file name
 CRUNOFFDIR=""             ! runoff input directory
