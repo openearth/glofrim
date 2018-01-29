@@ -25,7 +25,7 @@ module demo_model
   ! ================================================
   USE PARKIND1   ,ONLY: JPIM, JPRB, JPRM
   USE MOD_INPUT  ,ONLY: LOGNAM, NX, NY, DT, LOUTCDF
-  USE MOD_INPUT  ,ONLY: LBOUNDSL
+  USE MOD_INPUT  ,ONLY: LBMIROF, LBOUNDSL
   USE MOD_TIME   ,ONLY: KSTEP,  NSTEPS, KYYYYMMDD, KHHMM, KMIN, KMINSTART, KYYYYMMDDP, KHHMMP, KMINP
   USE MOD_MAP    ,ONLY: NSEQMAX, NPTHOUT, NPTHLEV
   USE MOD_DIAG   ,ONLY: D2RIVINF, D2RIVDPH, D2RIVVEL, D2FLDINF, D2FLDDPH, D2FLDFRC, D2FLDARE,&
@@ -201,8 +201,11 @@ contains
     ! ==========================================
     !  3. UPDATE RUNOFF AT 00H
     IF ( KHHMMP==0 ) THEN
-       CALL CONTROL_INP(IYYYYP,IMMP,IDDP)
-!       CALL CONTROL_INP_BMI
+       IF ( LBMIROF ) THEN
+         CALL CONTROL_INP_BMI
+       ELSE
+         CALL CONTROL_INP(IYYYYP,IMMP,IDDP)
+       ENDIF
     ENDIF
 
     ! ==========================================
