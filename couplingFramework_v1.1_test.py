@@ -160,7 +160,6 @@ tempDate = startTime_env.split('-')
 tempDate = tempDate[0] + tempDate[1] + tempDate[2]
 kwargs = dict(RefDate = str(tempDate), TStop = str(int(end_time)), OutputDir = '')
 utils.write_ini(hydrodynamicModel_config_tmp, hydrodynamicModel_config, **kwargs)
-pdb.set_trace()
 
 ### ROUTING MODEL ###
 
