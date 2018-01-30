@@ -22,7 +22,7 @@ model_name = CMF
 # path to where model settings file and MAIN_day file(link) are located
 model_dir       = test_Elbe/CMF_Elbe/
 # nam-file
-model_file      = input_flood.nam
+model_file      = input_flood.nam.template
 
 [hydrodynamic_model]
 # either "DFM" for Delft3D Flexible Mesh or "LFP" for Lisflood-FP v5.9
