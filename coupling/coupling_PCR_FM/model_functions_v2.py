@@ -6,8 +6,11 @@ import logging
 import warnings
 from datetime import datetime, timedelta
 import os, shutil
-from utils import write_ini
 logger = logging.getLogger(__name__)
+
+# local libraries
+from utils import write_ini, set_values_in_array
+from coupling_functions import assignPCR2cells
 
 # wrapper around BMI
 class _model(object):
@@ -19,8 +22,7 @@ class _model(object):
         self.dt=-1 # for initialization only. must be overwritten by initialize function later
 
     # model initialization
-    def initialize(self, dt=-1, *args, **kwargs):
-        self.set_options(dt=dt)
+    def initialize(self, *args, **kwargs):
         self.bmi.initialize(*args, **kwargs)
         # set start time attribute
         self.start_time = self.get_start_time()
@@ -88,11 +90,12 @@ class _model(object):
 
 
 class PCR_model(_model):
-    def __init__(self, missing_value=-999):
+    def __init__(self, missing_value=-999, landmask_mv=255):
         # BMIWrapper for PCR model model
         pcr_bmi = pcrglobwb_bmi.pcrglobwbBMI()
         super(PCR_model, self).__init__(pcr_bmi, 'PCRGLOB-WB', 'day',
                                         missing_value=missing_value)
+        self.landmask_mv = landmask_mv
 
     def initialize_offline_forcing(self, config_fn,
                                   start_date, end_date, out_dir, in_dir,
@@ -112,10 +115,61 @@ class PCR_model(_model):
         tmp_config_fn = os.path.join(out_dir, 'tmp_' + os.path.basename(config_fn))
         write_ini(tmp_config_fn, config_fn, **ini_kwargs)
         logger.info('Ini file for PCR model written to {:s}'.format(tmp_config_fn))
+        self.config_fn = tmp_config_fn
 
         # NOTE: this changes cwd and might cause errors downstream
-        super(PCR_model, self).initialize(config_file_location=tmp_config_fn, dt=dt)
+        super(PCR_model, self).initialize(config_file_location=tmp_config_fn)
         logger.info('PCR model initialized')
+        self.set_options(dt=dt)
+
+    def get_model_coords(self):
+        # TODO read transform
+        transform = None
+        self.index = index
+        #self.center_points_2d =
+
+    def get_total_water_volume(self): #model_pcr, missing_value_pcr, secPerDay, CoupledPCRcellIndices, cellarea_data_pcr):
+        """
+        Calculating the delta volumes [m3/d] for PCR-cells.
+        Delta volumes are based on discharge, surfaceRunoff, and topWaterLayer (only 2way-coupling) in PCR-GLOBWB.
+
+        Input:
+            - list with indexes pointing to coupled PCR-cells
+            - PCR landmask data
+
+        Output:
+            - if RFS active, two arrays with delta volumes for river and floodplain cells, respectively
+            - if RFS not active, one array with aggregated delta volumes
+            - all outputs are in m3/day
+        """
+        #- retrieve data from PCR-GLOBWB
+        current_discharge_pcr  = self.get_var('discharge')
+        current_runoff_pcr     = self.get_var('landSurfaceRunoff')
+        current_waterlayer_pcr = self.get_var('topWaterLayer')
+
+        # 1a. Discharge
+        # loop over current discharge and convert to m3/d; missing values are replaced with zero
+        water_volume_PCR_rivers = current_discharge_pcr * 86400. #sec/day
+        water_volume_PCR_runoff = current_runoff_pcr * self.get_var('cellArea')
+        water_volume_PCR_waterlayer = current_waterlayer_pcr * self.get_var('cellArea')
+        total_water_volume = water_volume_PCR_rivers + water_volume_PCR_runoff + water_volume_PCR_waterlayer
+
+        return total_water_volume
+
+    def deactivate_LDD(self, indices):
+        """
+        NOTE:
+        :param indices: list of (y, x) indices / 'all'
+        """
+        # retrieving current LDD map
+        LDD_PCR_new = np.copy(self.get_var(('routing', 'lddMap'), parse_missings=False))
+        if indices != 'all':
+            # replace LDD values within the hydrodynamic model domain to 5 (pit cell)
+            LDD_PCR_new = set_values_in_array(LDD_PCR_new, indices, 5)
+        else:
+            LDD_PCR_new = np.where(LDD_PCR_new != self.landmask_mv, 5, self.landmask_mv)
+        # overwriting current with new LDD information
+        self.set_var(('routing', 'lddMap'), LDD_PCR_new, self.landmask_mv)
 
 
 
@@ -164,12 +218,18 @@ class CMF_model(_model):
             config_fn = config_fn + '.template'
             logger.warning('template .nam file cannot be called input_flood.nam; file renamed {:s}'.format(config_fn))
         write_ini(tmp_config_fn, config_fn, ignore='!', **ini_kwargs)
-
+        self.config_fn = tmp_config_fn
         logger.info('tmp ini file for CMF model written to {:s}'.format(tmp_config_fn))
 
         # initialize model
-        self.initialize(configfile=model_dir, dt=dt)
+        self.initialize(configfile=model_dir)
         logger.info('CMF model initialized')
+        self.set_options(dt=dt)
+
+    def get_model_coords(self):
+        # TODO read transform
+        transform = None
+        self.transform = transform
 
     def get_var(self, var, parse_missings=True, *args, **kwargs):
         var = super(CMF_model, self).get_var(var, parse_missings=parse_missings,
@@ -199,17 +259,64 @@ class CMF_model(_model):
         return ini_kwargs
 
 
+class DFM_model(_model):
+    def __init__(self, engine):
+        dfm_bmi = BMIWrapper(engine = engine)
+        super(DFM_model, self).__init__(dfm_bmi, 'Delft3D-FM', 'sec')
+
+    def initialize_online_forcing(self, config_fn, model_dir,
+                                  start_date, end_date, out_dir,
+                                  dt=86400, ini_kwargs={}):
+
+        if not os.path.isdir(out_dir):
+            os.mkdir(out_dir)
+
+        # write ini file
+        # TODO: make required changes to .mdu file
+        ini_kwargs.update({})
+        tmp_config_fn = os.path.join(model_dir, 'tmp_' + os.path.basename(config_fn))
+        write_ini(tmp_config_fn, config_fn, **ini_kwargs)
+        self.config_fn = tmp_config_fn
+        logger.info('tmp ini file for DFM model written to {:s}'.format(tmp_config_fn))
+
+        # initialize model
+        self.initialize(configfile=tmp_config_fn)
+        logger.info('CMF model initialized')
+        self.set_options(dt=dt)
+
+        # get Model coordinates
+        self.get_model_coords()
+
+    def get_model_coords(self):
+        # define separator between 2D and 1D parts of arrays == lenght of 2d cell points
+        self.separator_1d2d = len(self.get_var('flowelemnode'))
+        x_coords = self.get_var('xz') # x-coords of each cell centre point
+        y_coords = self.get_var('yz') # y-coords of each cell centre point
+        xy_coords = [[(xy)] for xy in zip(x_coords, y_coords)]
+        self.center_points_2d = xy_coords[:self.separator_1d2d]
+        self.center_points_1d = xy_coords[self.separator_1d2d:]
+
+
+    def calculateDeltaWater(self, total_water_volume, af_list):
+        delta_water = []
+        for i in xrange(len(total_water_volume)):
+            added_water_level = total_water_volume[i] / af_list[i]
+            delta_water.extend(added_water_level)
+
+    def set_var_1d(self, var, data):
+        zeroValuesFor2D  = np.zeros(self.separator_1d2d)
+        super(DFM_model, self).set_var(var, np.stack([zeroValuesFor2D, data]))
+
+    # def get_var_1d(var, *args, **kwargs):
+    #     var = super(DFM_model, self).get_var(var, *args, **kwargs)
+    #     return var[self.separator_1d2d:]
+    #
+    # def get_var_2d(var, *args, **kwargs):
+    #     var = super(DFM_model, self).get_var(var, *args, **kwargs)
+    #     return var[:self.separator_1d2d]
+
+
 # utils
 def CMFtime_2_datetime(t):
     # internal CMF time is in minutes since 1850
     return datetime(1850, 1, 1) + timedelta(minutes = t)
-
-# class DFM_model(_model):
-#     def __init__(self, path_to_model, config_fn):
-#         cmf_bmi = BMIWrapper(engine = path_to_model, config_fn = config_fn)
-#         cmf_bmi.initialize()
-#         super(CMF_model, self).__init__(cmf_bmi, 'Delft3D-FM', 'hydrodynamic')
-#
-#     def update(self, runoff, *args, **kwargs):
-#         self.set_var('runoff', runoff)
-#         self.bmi.update(*args, **kwargs)

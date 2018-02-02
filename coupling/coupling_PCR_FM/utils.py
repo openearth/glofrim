@@ -3,6 +3,16 @@ from os.path import join
 from datetime import datetime
 
 # utils
+def set_values_in_array(vals, idx, update_vals):
+    """
+    Sets new values in an existing array at specified locations. Locations are provided by a list of (y, x) indices
+    :param vals: array (numpy) of values that will be updated
+    :param idx: list of (y, x) indices
+    :param update_vals: single value or list of values (equal size as idx) for updating
+    :return: vals: updated list
+    """
+    vals[zip(*idx)] = update_vals
+    return vals
 
 def determineSteps(d1, d2):
     """
