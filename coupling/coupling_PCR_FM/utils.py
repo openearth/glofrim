@@ -1,8 +1,23 @@
 import os
 from os.path import join
 from datetime import datetime
+import re, codecs
+from configparser import ConfigParser
+from collections import OrderedDict
+from subprocess import check_output, STDOUT, CalledProcessError
+
 
 # utils
+def set_values_in_array(vals, idx, update_vals):
+    """
+    Sets new values in an existing array at specified locations. Locations are provided by a list of (y, x) indices
+    :param vals: array (numpy) of values that will be updated
+    :param idx: list of (y, x) indices
+    :param update_vals: single value or list of values (equal size as idx) for updating
+    :return: vals: updated list
+    """
+    vals[zip(*idx)] = update_vals
+    return vals
 
 def determineSteps(d1, d2):
     """
@@ -66,3 +81,58 @@ def write_ini(fn_ini_out, fn_ini_template, ignore='#', **kwargs):
                         line_out = '{:s}{:s}{:s}'.format(line_out, ignore, comment)
             # write line
             dst.write(line_out)
+
+def subcall(msg, cwd='./'):
+    # try:
+    output = check_output(msg, stderr=STDOUT, shell=True, cwd=cwd)
+    # except CalledProcessError as exc:
+    #     logger.error(exc.output)
+
+def config_to_dict(config_fn, encoding='utf-8',
+                   cf=ConfigParser()):
+    "read config file to dictionary"
+    cf.optionxform=str # preserve capital letter
+    with codecs.open(config_fn, 'r', encoding=encoding) as fp:
+        cf.read_file(fp)
+        out_dict = OrderedDict((sec, OrderedDict((opt, cf.get(sec, opt))
+                                      for opt in cf.options(sec)))
+                                for sec in cf.sections())
+    return out_dict
+
+def dict_to_config(config, config_fn, encoding='utf-8',
+                   cf=ConfigParser(), **kwargs):
+    "read config file to dictionary"
+    if not isinstance(config, dict):
+        raise ValueError("config argument should be of type dictionary")
+    cf.read_dict(config)
+    with codecs.open(config_fn, 'w', encoding=encoding) as fp:
+        cf.write(fp)
+
+class NamConfigParser(ConfigParser):
+    def __init__(self, **kwargs):
+        defaults = dict(comment_prefixes=('!', '/'),
+                        inline_comment_prefixes=('!'),
+                        delimiters=('='))
+        defaults.update(**kwargs)
+        super(ConfigParser, self).__init__(**defaults)
+        self.SECTCRE = re.compile(r"&(?P<header>[^]]+)")
+
+    def write(self, fp, space_around_delimiters=False):
+        """Write an .ini-format representation of the configuration state.
+        If `space_around_delimiters' is True (the default), delimiters
+        between keys and values are surrounded by spaces.
+        """
+        super(ConfigParser, self).write(fp, space_around_delimiters=space_around_delimiters)
+
+    def _write_section(self, fp, section_name, section_items, delimiter):
+        """Write a single section to the specified `fp'."""
+        fp.write(u"&{}\n".format(section_name))
+        for key, value in section_items:
+            value = self._interpolation.before_write(self, section_name, key,
+                                                     value)
+            if value is not None or not self._allow_no_value:
+                value = delimiter + str(value).replace('\n', '\n\t')
+            else:
+                value = ""
+            fp.write("{}{}\n".format(key, value))
+        fp.write("/\n")
