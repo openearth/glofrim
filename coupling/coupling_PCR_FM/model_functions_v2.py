@@ -16,6 +16,7 @@ import re
 from os.path import isdir, join, basename, dirname, abspath, isfile
 import glob
 import rtree
+from rasterio.windows import Window
 
 logger = logging.getLogger(__name__)
 
@@ -492,7 +493,8 @@ class CMF_model(_model):
                 if isfile(fpath):
                     # copy all files with same name, ignore extensions
                     for src_fn in glob.glob('{}.*'.format(os.path.splitext(fpath)[0])):
-                        shutil.copy(src_fn, dst_path)
+                        shutil.copy(
+                                src_fn, dst_path)
                     self.update_config(sec, opt, '"./{}/{}"'.format(folder, fn))
 
     def set_inpmat_file(self, bounds, res, olat='NtoS'):
@@ -500,7 +502,7 @@ class CMF_model(_model):
         model"""
         if not abs(res[0]) == abs(res[1]):
             raise ValueError('lat and lon resolution should be the same in regular grid')
-        westin = bounds.left
+        westin  = bounds.left
         eastin  = bounds.right
         northin = bounds.top
         southin = bounds.bottom
@@ -520,6 +522,34 @@ class CMF_model(_model):
                         'NCONF': {'DROFUNIT': '1'} #  SI units [m]
                         }
         self.set_config(inpmatOptions)
+   
+    def get_model_grid(self):
+        fn_map = join(self.model_data_dir, 'lsmask.tif')
+        self._landmask_fn = fn_map
+        if not isfile(fn_map):
+            raise IOError('lsmask file not found')
+        with rasterio.open(fn_map, 'r') as ds:
+            self._model_index = ds.index
+            self.model_grid_res = ds.res
+            self.model_grid_bounds = ds.bounds
+            self.model_grid_shape = ds.shape
+
+    def couple_1d_2d(self, xy, indices=None):
+        """Couple external 1d coordinates to internal model unit-catchment 2d grid.
+        See documentation in couple_1d_2d function in PCR_model class"""
+        fn_catmx = join(self.model_data_dir, 'hires/reg.catmx.tif')
+        fn_catmy = join(self.model_data_dir, 'hires/reg.catmy.tif')
+        with rasterio.open(fn_catmx, 'r') as dsx, rasterio.open(fn_catmy, 'r') as dsy:
+            r = list(sample_gen(dsy, xy))
+            c = list(sample_gen(dsx, xy))
+            r = np.array(r).astype(int)
+            c = np.array(c).astype(int)
+            cellidx = zip(r, c)
+        if indices is None:
+            coupled_indices = {i: idx for i, idx in enumerate(cellidx)}
+        else:
+            coupled_indices = {i: idx for i, idx in zip(indices, cellidx)}
+        return coupled_indices, dictinvert(coupled_indices)
 
     def get_var(self, name, parse_missings=True, *args, **kwargs):
         var = super(CMF_model, self).get_var(name, parse_missings=parse_missings)
@@ -657,6 +687,19 @@ class DFM_model(_model):
 
 
 # utils
+def sample_gen(dataset, xy, indexes=None):
+    """Generator for sampled pixels"""
+    # https://mapbox.github.io/rasterio/_modules/rasterio/sample.html
+    index = dataset.index
+    read = dataset.read
+    if isinstance(indexes, int):
+        indexes = [indexes]
+    for x, y in xy:
+        row_off, col_off = index(x, y)
+        window = Window(col_off, row_off, 1, 1)
+        data = read(indexes, window=window, masked=False, boundless=True)
+        yield data[:, 0, 0][0]
+
 def dictinvert(d):
     inv = {}
     for k, v in d.iteritems():
