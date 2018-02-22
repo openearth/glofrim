@@ -306,7 +306,7 @@ class _model(object):
         its inversed dictionary (1 to n).
 
         The 2d grid is dependent of the model and therefore the internal 2d indices
-        - DMF : regular grid (row, col)
+        - PCR : regular grid (row, col)
         - CMF : irregular unit catchment grid (row, col)
         - DFM : flexible mesh (flat index)
 
@@ -422,7 +422,6 @@ class PCR_model(_model):
         index : list of tuples, str
           list with (x, y) tuples or 'all' to deactivate total grid
         """
-
         landmask_mv = self.options['landmask_mv']
         # retrieving current LDD map
         if index != 'all':
