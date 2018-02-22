@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# TODO: write get_model_grid function for CMF
 # TODO: write main docstring
 # TODO: add decorator to child functions to get docstring from parent function
 
@@ -16,8 +15,9 @@ import re
 from os.path import isdir, join, basename, dirname, abspath, isfile
 import glob
 import rtree
-from rasterio.windows import Window
 
+log_fmt = '%(asctime)s - %(levelname)s - %(message)s'
+logging.basicConfig(level=logging.INFO, format=log_fmt, filemode='w')
 logger = logging.getLogger(__name__)
 
 # local libraries
@@ -300,7 +300,33 @@ class _model(object):
     def get_var_name_all(self):
         return [self.get_var_name(i) for i in xrange(self.get_var_count())]
 
+    def couple_1d_2d(self, xy, indices=None):
+        """Couple external 1d coordinates to internal model 2d grid. A dictionary
+        with for each 1d xy coordinates, the index of the 2d grid (1 to 1) and
+        its inversed dictionary (1 to n).
 
+        The 2d grid is dependent of the model and therefore the internal 2d indices
+        - DMF : regular grid (row, col)
+        - CMF : irregular unit catchment grid (row, col)
+        - DFM : flexible mesh (flat index)
+
+        Parameters
+        ----------
+        xy : list of tuples
+          list of (x, y) coordinate tuples
+        indices : list or nd array, optional
+          if provided these indices are used to create the output dictionary
+        """
+        if not hasattr(self, 'model_2d_index'):
+            logger.info('No model_2d_index attribute found, creating index ...')
+            self.get_model_2d_index()
+
+        cellidx = self.model_2d_index(xy)
+        if indices is None:
+            coupled_indices = {i: idx for i, idx in enumerate(cellidx)}
+        else:
+            coupled_indices = {i: idx for i, idx in zip(indices, cellidx)}
+        return coupled_indices, dictinvert(coupled_indices)
 
 
 class PCR_model(_model):
@@ -332,7 +358,7 @@ class PCR_model(_model):
                         }}
         self.set_config(globalOptions)
 
-    def get_model_grid(self):
+    def get_model_2d_index(self):
         """Get PCR model bounding box, resolution and index based on the
         landmask map file.
 
@@ -357,6 +383,7 @@ class PCR_model(_model):
                 c = np.array(c).astype(int)
                 return zip(r, c)
         self.model_2d_index = model_2d_index
+
         # NOTE: for now decided to keep tuples with index instead linear index.
         # To not have to tranform between both indices all the time.
         #
@@ -367,29 +394,6 @@ class PCR_model(_model):
         #     def model_index_2_rc(indices):
         #         return np.unravel_index(indices, dims=ds.shape)
         # self.model_index_2_rc = model_index_2_rc
-
-    def couple_1d_2d(self, xy, indices=None):
-        """Couple external 1d coordinates to internal model regular 2d grid
-
-        Parameters
-        ----------
-        xy : list of tuples
-          list of (x, y) coordinate tuples
-        indices : list or nd array, optional
-          if provided these indices are used to create the output dictionary
-
-        Returns
-        -------
-        a dictionary with for each 1d index, the (row, col) index of the 2d grid
-        (1 to 1) and its inversed dictionary (1 to n).
-        """
-
-        cellidx = self.model_2d_index(xy)
-        if indices is None:
-            coupled_indices = {i: idx for i, idx in enumerate(cellidx)}
-        else:
-            coupled_indices = {i: idx for i, idx in zip(indices, cellidx)}
-        return coupled_indices, dictinvert(coupled_indices)
 
     def get_delta_water(self):
         """get total water volume (discharge, runoff and top water layer) per
@@ -438,8 +442,6 @@ class CMF_model(_model):
                  start_date, end_date, dt=86400,
                  missing_value=1e20, **kwargs):
         """initialize the CaMa-Flood (CMF) model BMI class and model configuration file"""
-        # TODO: write get_model_grid function.
-        # check if CFM variable can be exposed OR we need to access hires file
         ## initialize BMIWrapper and model
         cmf_bmi = BMIWrapper(engine = engine)
         # set config parser
@@ -522,34 +524,43 @@ class CMF_model(_model):
                         'NCONF': {'DROFUNIT': '1'} #  SI units [m]
                         }
         self.set_config(inpmatOptions)
-   
-    def get_model_grid(self):
-        fn_map = join(self.model_data_dir, 'lsmask.tif')
-        self._landmask_fn = fn_map
-        if not isfile(fn_map):
-            raise IOError('lsmask file not found')
-        with rasterio.open(fn_map, 'r') as ds:
-            self._model_index = ds.index
+
+    def get_model_2d_index(self, fn=None):
+        # get input file
+        if fn is None:
+            path = join(self.model_data_dir, 'hires', '*.catmxy.tif')
+            fns = glob.glob(path)
+            if len(fns) == 0:
+                raise IOError("catmxy.tif file not found")
+            elif len(fns) > 1:
+                raise NotImplemented("Not yet implemented for mulitple regions")
+            fn = fns[0]
+        else:
+            if not isfile(fn):
+                raise IOError("catmxy.tif file not found")
+        # set model grid paramters
+        with rasterio.open(fn, 'r') as ds:
+            ncount = ds.count
+            assert ncount == 2, "{:s} file should have two layers".format(fn)
+            self._catmxy_fn = fn
             self.model_grid_res = ds.res
             self.model_grid_bounds = ds.bounds
             self.model_grid_shape = ds.shape
 
-    def couple_1d_2d(self, xy, indices=None):
-        """Couple external 1d coordinates to internal model unit-catchment 2d grid.
-        See documentation in couple_1d_2d function in PCR_model class"""
-        fn_catmx = join(self.model_data_dir, 'hires/reg.catmx.tif')
-        fn_catmy = join(self.model_data_dir, 'hires/reg.catmy.tif')
-        with rasterio.open(fn_catmx, 'r') as dsx, rasterio.open(fn_catmy, 'r') as dsy:
-            r = list(sample_gen(dsy, xy))
-            c = list(sample_gen(dsx, xy))
-            r = np.array(r).astype(int)
-            c = np.array(c).astype(int)
-            cellidx = zip(r, c)
-        if indices is None:
-            coupled_indices = {i: idx for i, idx in enumerate(cellidx)}
-        else:
-            coupled_indices = {i: idx for i, idx in zip(indices, cellidx)}
-        return coupled_indices, dictinvert(coupled_indices)
+        # define index function.
+        # read catmxy temporary into memory when this function is called
+        def model_2d_index(xy, **kwargs):
+            with rasterio.open(fn, 'r', driver='GTiff') as ds:
+                nrows, ncols = ds.shape
+                rows, cols = ds.index(*zip(*xy))
+                rows, cols = np.atleast_1d(rows).astype(int), np.atleast_1d(cols).astype(int)
+                invalid = np.logical_and.reduce((rows<0,rows>=nrows,cols<0,cols>=ncols))
+                if np.any(invalid):
+                    raise IndexError('XY coordinates outside of CMF domain')
+                cmf_idx = ds.read()[:, rows[:, None], cols[:, None]].squeeze()
+                cmf_cols, cmf_rows = cmf_idx
+            return zip(cmf_rows, cmf_cols)
+        self.model_2d_index = model_2d_index
 
     def get_var(self, name, parse_missings=True, *args, **kwargs):
         var = super(CMF_model, self).get_var(name, parse_missings=parse_missings)
@@ -632,7 +643,8 @@ class DFM_model(_model):
     def get_model_1d_index(self):
         """Creat a spatial index for the 1d coordinates. A model_1d_index
         attribute funtion is created to find the nearest 1d coordinate tuple"""
-
+        if not hasattr(self, 'model_1d_coords'):
+            self.get_model_coords()
         # 1d coords
         n1d = len(self.model_1d_coords)
         self.model_1d_indices = np.arange(n1d, dtype=np.int32) + self._1d2d_idx
@@ -650,6 +662,8 @@ class DFM_model(_model):
         """Creat a spatial index for the 2d mesh center coordinates.
         A model_2d_index attribute funtion is created to find the nearest
         2d cell center"""
+        if not hasattr(self, 'model_2d_coords'):
+            self.get_model_coords()
 
         # 2d coords
         if not only_1d:
@@ -662,22 +676,6 @@ class DFM_model(_model):
                     xy = [xy]
                 return [list(self.model_2d_rtree.nearest(xy0, 1))[0] for xy0 in xy]
             self.model_2d_index = model_2d_index
-
-
-    def couple_1d_2d(self, xy, indices=None):
-        """couple external 1d cell_center to the nearest internal model mesh
-        cell centers"""
-        # TODO: test function. add check for index
-        if hasattr(self, 'model_2d_index'):
-            logger.info('No model_2d_index attribute found, creating index ...')
-            self.get_model_2d_index()
-
-        cellidx = self.model_2d_index(xy)
-        if indices is None:
-            coupled_indices = {i: idx for i, idx in enumerate(cellidx)}
-        else:
-            coupled_indices = {i: idx for i, idx in zip(indices, cellidx)}
-        return coupled_indices, dictinvert(coupled_indices)
 
     # def calculateDeltaWater(self, total_water_volume, af_list):
     #     delta_water = []
