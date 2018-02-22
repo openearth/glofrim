@@ -56,13 +56,13 @@ class Configuration(object):
         Initialize logging. Prints to both the console and a log file, at configurable levels
         """
 
-        #set root logger to debug level        
-        logging.getLogger().setLevel(logging.INFO)
+        #set root logger to debug level
+        logging.getLogger().setLevel(logging.DEBUG)
 
         formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s %(message)s')
 
         log_level_console = "INFO"
-        log_level_file    = "INFO"
+        log_level_file    = "DEBUG"
 
         console_level = getattr(logging, log_level_console.upper(), logging.INFO)
         if not isinstance(console_level, int):
@@ -71,12 +71,12 @@ class Configuration(object):
         #create handler, add to root logger
         console_handler = logging.StreamHandler()
         console_handler.setFormatter(formatter)
-        console_handler.setLevel(logging.INFO)
+        console_handler.setLevel(logging.DEBUG)
         logging.getLogger().addHandler(console_handler)
 
         log_filename = self.logFileDir + os.path.basename(self.iniFileName) + '_' + self._timestamp.isoformat() +'.log'
 
-        file_level = getattr(logging, log_level_file, logging.INFO)
+        file_level = getattr(logging, log_level_file, logging.DEBUG)
         if not isinstance(console_level, int):
             raise ValueError('Invalid log level: %s', log_level_file)
 
