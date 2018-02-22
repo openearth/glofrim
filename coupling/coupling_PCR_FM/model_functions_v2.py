@@ -685,19 +685,6 @@ class DFM_model(_model):
 
 
 # utils
-def sample_gen(dataset, xy, indexes=None):
-    """Generator for sampled pixels"""
-    # https://mapbox.github.io/rasterio/_modules/rasterio/sample.html
-    index = dataset.index
-    read = dataset.read
-    if isinstance(indexes, int):
-        indexes = [indexes]
-    for x, y in xy:
-        row_off, col_off = index(x, y)
-        window = Window(col_off, row_off, 1, 1)
-        data = read(indexes, window=window, masked=False, boundless=True)
-        yield data[:, 0, 0][0]
-
 def dictinvert(d):
     inv = {}
     for k, v in d.iteritems():
