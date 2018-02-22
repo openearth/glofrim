@@ -368,9 +368,9 @@ class PCR_model(_model):
 
         fn_map = join(self.model_config['globalOptions']['inputDir'],
                       self.model_config['globalOptions']['landmask'])
-        self._landmask_fn = fn_map
         if not isfile(fn_map):
             raise IOError('landmask file not found')
+        self._landmask_fn = fn_map
         with rasterio.open(fn_map, 'r') as ds:
             self._model_index = ds.index
             self.model_grid_res = ds.res
@@ -414,7 +414,7 @@ class PCR_model(_model):
 
         return total_water_volume
 
-    def deactivate_LDD(self, index):
+    def deactivate_routing(self, index):
         """Deactive LDD at indices
 
         Parameters
@@ -524,35 +524,37 @@ class CMF_model(_model):
                         }
         self.set_config(inpmatOptions)
 
-    def get_model_2d_index(self, fn=None):
+    def get_model_2d_index(self):
         # get input file
-        if fn is None:
-            path = join(self.model_data_dir, 'hires', '*.catmxy.tif')
-            fns = glob.glob(path)
-            if len(fns) == 0:
-                raise IOError("catmxy.tif file not found")
-            elif len(fns) > 1:
-                raise NotImplemented("Not yet implemented for mulitple regions")
-            fn = fns[0]
-        else:
-            if not isfile(fn):
-                raise IOError("catmxy.tif file not found")
-        # set model grid paramters
-        with rasterio.open(fn, 'r') as ds:
-            ncount = ds.count
-            assert ncount == 2, "{:s} file should have two layers".format(fn)
-            self._catmxy_fn = fn
+        fn_catmxy = join(self.model_data_dir, 'hires', 'reg.catmxy.tif')
+        if not isfile(fn_catmxy):
+            raise IOError("catmxy.tif file not found at {}".format(fn_catmxy))
+        fn_lsmask = join(self.model_data_dir, 'lsmask.tif')
+        if not isfile(fn_lsmask):
+            raise IOError("lsmask.tif file not found at {}".format(fn_lsmask))
+
+        # set model low-res grid parameters
+        with rasterio.open(fn_lsmask, 'r') as ds:
             self.model_grid_res = ds.res
             self.model_grid_bounds = ds.bounds
             self.model_grid_shape = ds.shape
+        self._landmask_fn = fn_lsmask
 
-        # define index function.
+        # check
+        with rasterio.open(fn, 'r') as ds:
+            ncount = ds.count
+            if ncount != 2:
+                raise ValueError("catmx.tif file ({:s}) should have two layers".format(fn))
+            self._catmxy_fn = fn_catmxy
+
+        # define index function based on high-res catmxy file
         # read catmxy temporary into memory when this function is called
         def model_2d_index(xy, **kwargs):
             with rasterio.open(fn, 'r', driver='GTiff') as ds:
                 nrows, ncols = ds.shape
                 rows, cols = ds.index(*zip(*xy))
-                rows, cols = np.atleast_1d(rows).astype(int), np.atleast_1d(cols).astype(int)
+                # go from fortran one-based to python zero-based indices
+                rows, cols = np.atleast_1d(rows).astype(int)-1, np.atleast_1d(cols).astype(int)-1
                 invalid = np.logical_and.reduce((rows<0,rows>=nrows,cols<0,cols>=ncols))
                 if np.any(invalid):
                     raise IndexError('XY coordinates outside of CMF domain')
@@ -560,6 +562,21 @@ class CMF_model(_model):
                 cmf_cols, cmf_rows = cmf_idx
             return zip(cmf_rows, cmf_cols)
         self.model_2d_index = model_2d_index
+
+    def deactivate_routing(self, index):
+        """Deactive nextxy at coupled indices
+
+        Parameters
+        ----------
+        index : list of tuples, str
+          list with (x, y) tuples
+        """
+        from _dd_ops.dd_ops import NextXY
+        data = np.fromfile(fn, dtype=np.int32).reshape(2, 28, 40)
+        nextxy = NextXY(src.read(), transform, nodata=src.nodata, search_radius=4)
+
+
+
 
     def get_var(self, name, parse_missings=True, *args, **kwargs):
         var = super(CMF_model, self).get_var(name, parse_missings=parse_missings)
