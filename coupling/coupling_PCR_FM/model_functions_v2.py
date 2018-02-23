@@ -97,7 +97,7 @@ class BMI_model_wrapper(object):
              setting2: value2},
         SECTION2:
             {setting3: value3}
-            }
+        }
         """
 
         if not isinstance(model_config, dict):
@@ -403,7 +403,7 @@ class BMI_model_wrapper(object):
 class PCR_model(BMI_model_wrapper):
     def __init__(self, config_fn,
                  model_data_dir, out_dir,
-                 start_date, end_date, dt=1,
+                 start_date, end_date,
                  missing_value=-999, landmask_mv=255, forcing_data_dir=None,
                  **kwargs):
         """initialize the PCR-GLOBWB (PCR) model BMI class and model configuration file"""
@@ -414,7 +414,7 @@ class PCR_model(BMI_model_wrapper):
         # model and forcing data both in model_data_dir
         if forcing_data_dir is None:
             forcing_data_dir = model_data_dir
-        options = dict(dt=dt, tscale=86400, # seconds per dt
+        options = dict(dt=1, tscale=86400, # seconds per dt
                         missing_value=missing_value, landmask_mv=landmask_mv)
         # initialize BMIWrapper for model
         super(PCR_model, self).__init__(pcr_bmi, config_fn, 'PCR', 'day',
@@ -531,7 +531,7 @@ class PCR_model(BMI_model_wrapper):
 class CMF_model(BMI_model_wrapper):
     def __init__(self, engine, config_fn,
                  model_data_dir, out_dir,
-                 start_date, end_date, dt=86400,
+                 start_date, end_date,
                  missing_value=1e20, **kwargs):
         """initialize the CaMa-Flood (CMF) model BMI class and model configuration file"""
         ## initialize BMIWrapper and model
@@ -540,7 +540,7 @@ class CMF_model(BMI_model_wrapper):
         self._configparser = NamConfigParser()
         # for offline use the forcing data dir can be set. not yet inplemented
         forcing_data_dir = ''
-        options = dict(dt=dt, tscale=1, # sec / dt
+        options = dict(dt=86400, tscale=1, # sec / dt
                         missing_value=missing_value)
         # initialize BMIWrapper for model
         super(CMF_model, self).__init__(cmf_bmi, config_fn, 'CMF', 'sec',
@@ -753,7 +753,7 @@ class CMF_model(BMI_model_wrapper):
 class DFM_model(BMI_model_wrapper):
     def __init__(self, engine, config_fn,
                  model_data_dir, out_dir,
-                 start_date, end_date, dt=86400,
+                 start_date, end_date,
                  missing_value=np.nan, **kwargs):
         """initialize the Delft3D-FM (DFM) model BMI class and model configuration file"""
         # TODO: extend this list to cover all variables
@@ -765,7 +765,7 @@ class DFM_model(BMI_model_wrapper):
         self._configparser = ConfigParser(inline_comment_prefixes=('#'))
         # for offline use the forcing data dir can be set. not yet inplemented
         forcing_data_dir = ''
-        options = dict(dt=dt, tscale=1., # sec / dt
+        options = dict(dt=86400, tscale=1., # sec / dt
                         missing_value=missing_value)
         # initialize BMIWrapper for model
         super(DFM_model, self).__init__(dfm_bmi, config_fn, 'DFM', 'sec',
