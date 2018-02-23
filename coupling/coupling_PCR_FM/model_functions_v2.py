@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from collections import OrderedDict
 import os, shutil
 import re
-from os.path import isdir, join, basename, dirname, abspath, isfile
+from os.path import isdir, join, basename, dirname, abspath, isfile, isabs
 import glob
 import rtree
 
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 from utils import subcall, config_to_dict, dict_to_config, ConfigParser, NamConfigParser
 
 # wrapper around BMI
-class _model(object):
+class BMI_model_wrapper(object):
     def __init__(self, bmi, config_fn, name, t_unit,
                  model_data_dir, forcing_data_dir, out_dir,
                  options, si_unit_conversions={}, **kwargs):
@@ -42,6 +42,8 @@ class _model(object):
             os.mkdir(self.out_dir)
         # first step of two step initialization.
         self.initialize_config()
+        # second step is not yet performed
+        self.initialized = False
         # set some class specific options and internal shortcuts
         self.options = options
         self._dt = options['dt']
@@ -59,7 +61,7 @@ class _model(object):
         is read in. This allows a user to then change settings and parameters
         before fully initializing the model
 
-        Parameters
+        Arguments
         ----------
         config_fn : str, optional
           The path to the model configuration file. If given it overwrites the
@@ -83,7 +85,7 @@ class _model(object):
         """Change multiple model config file settings with dictionary.
         This will only have affect before the model is Initialized.
 
-        Parameters
+        Arguments
         ----------
         model_config : dictionary
           A nested dictionary with section, setting and value to be replaced.
@@ -95,7 +97,7 @@ class _model(object):
              setting2: value2},
         SECTION2:
             {setting3: value3}
-            }
+        }
         """
 
         if not isinstance(model_config, dict):
@@ -114,7 +116,7 @@ class _model(object):
         """Change model config file settings. This will only have affect before
         the model is initialized.
 
-        Parameters
+        Arguments
         ----------
         sec : str
           Configuration file section header name
@@ -149,6 +151,7 @@ class _model(object):
         self.bmi.initialize(self.config_fn)
         # set start time attribute
         self.start_time = self.get_start_time()
+        self.initialized = True
         logger.info('{:s} initialized'.format(self.name))
 
     def finalize(self):
@@ -169,7 +172,7 @@ class _model(object):
         """Get data as nd array from the given variable <name>. All variables are
         returned in SI units based on the internal _si_unit_conversions dict.
 
-        Parameters
+        Arguments
         ----------
         name : str
           An input or output variable name. use the get_var_name_all function to
@@ -198,7 +201,7 @@ class _model(object):
         should be set in SI units and are converted to model units based on the
         internal _si_unit_conversions dict.
 
-        Parameters
+        Arguments
         ----------
         name : str
           An input or output variable name. use the get_var_name_all function to
@@ -224,7 +227,7 @@ class _model(object):
         state. All variables should be set in SI units and are converted to model
         units based on the internal _si_unit_conversions dict.
 
-        Parameters
+        Arguments
         ----------
         name : str
           An input or output variable name. use the get_var_name_all function to
@@ -300,39 +303,107 @@ class _model(object):
     def get_var_name_all(self):
         return [self.get_var_name(i) for i in xrange(self.get_var_count())]
 
-    def couple_1d_2d(self, xy, indices=None):
-        """Couple external 1d coordinates to internal model 2d grid. A dictionary
-        with for each 1d xy coordinates, the index of the 2d grid (1 to 1) and
-        its inversed dictionary (1 to n).
+    ## coupling functions
+    def couple_grid_to_1d(self, other):
+        """Couple external 1d coordinates to internal model 2d grid. The model
+        routing is deactivated at coupled cells and area fractions are calculated
+        to distribute water volume accross 1d nodes.
 
-        The 2d grid is dependent of the model and therefore the internal 2d indices
-        - DMF : regular grid (row, col)
+        The output model grid indices are model specific:
+        - PCR : regular grid (row, col)
         - CMF : irregular unit catchment grid (row, col)
         - DFM : flexible mesh (flat index)
 
-        Parameters
-        ----------
-        xy : list of tuples
-          list of (x, y) coordinate tuples
-        indices : list or nd array, optional
-          if provided these indices are used to create the output dictionary
+        Arguments
+        ---------
+        other : BMI_model_wrapper object
+            downstream BMI_model_wrapper object
+
+        Created Attributes
+        ------------------
+        coupled_idx : list
+            All model indices of the coupled cells (upstream model) to 1d nodes (downstream model)
+        coupled_dict : dict
+            Per coupled model index, the indices of the other model
+        coupled_area_frac : nd array
+            Fraction of water volume from upstream model grid cell that should be
+            added to downstream 1d node
         """
-        if not hasattr(self, 'model_2d_index'):
-            logger.info('No model_2d_index attribute found, creating index ...')
-            self.get_model_2d_index()
+        if (other.name != 'DFM') or (self.name not in ['PCR', 'CMF']):
+            msg = 'Grid to 1D coupling has only been implemented for PCR to' + \
+                  ' CMF (upstream) to DFM (downstream) coupling'
+            raise NotImplementedError(msg)
 
-        cellidx = self.model_2d_index(xy)
-        if indices is None:
-            coupled_indices = {i: idx for i, idx in enumerate(cellidx)}
-        else:
-            coupled_indices = {i: idx for i, idx in zip(indices, cellidx)}
-        return coupled_indices, dictinvert(coupled_indices)
+        if other.name == 'DFM':
+            if not other.initialized:
+                msg = 'The DFM model should be initialized first to obtain ' + \
+                      ' the 1D model coordinates via BMI'
+                raise AssertionError(msg)
+            if not hasattr(other, 'model_1d_coords'):
+                other.get_model_coords()
+            xy_other, indices_other = other.model_1d_coords, other.model_1d_indices
+            area_other = other.get_var('ba')
+
+        logger.info('Coupling {} grid to {} 1D nodes.'.format(self.name, other.name))
+        # get cell indices at 1D coordinates
+        cellidx = self.model_2d_index(xy_other)
+        # set indices to easily exchange variables
+        other.coupled_idx = indices_other
+        self.coupled_idx = zip(*cellidx) # tuple of (row, col) lists
+        # create coupled 1-to-1 downstream-to-upstream indices dictionary
+        other.coupled_dict = {i: idx for i, idx in zip(indices_other, cellidx)}
+        # invert dictionary for 1-to-n upstream-to-downstream coupling
+        self.coupled_dict = dictinvert(other.coupled_dict)
+
+        logger.info('Getting fraction of coupled 1d nodes based on area.')
+        # get area fractions of coupled cells
+        area_frac = {} # [m2/m2]
+        for _, idx in list(self.coupled_dict.items()):
+            area_other_sum_idx = np.sum(area_other[idx])
+            afs = {i: area_other[i]/area_other_sum_idx for i in idx}
+            area_frac.update(afs)
+        self.coupled_area_frac = np.array([area_frac[i] for i in indices_other])
+
+        # deactivate routing at coupled cells
+        self.deactivate_routing()
+
+    def couple_grid_to_grid(self, other):
+        """Couple external grid to internal model 2d grid. The model
+        ldd grid is deactivated at coupled cells.
+
+        The exact grid coupling method is model specific:
+        - CMF: via the inpmat
+        Note: only implemented for the CMF model
+
+        Arguments
+        ---------
+        other : BMI_model_wrapper object
+            downstream BMI_model_wrapper object
+        """
+        if (self.name != 'PCR') or (other.name != 'CMF'):
+            msg = 'Grid to grid coupling has only been implemented PCR to CMF (other) coupling'
+            raise NotImplementedError(msg)
+
+        # check model grid extends
+        if not hasattr(self, 'model_grid_bounds'):
+            self.get_model_grid()
+        if not hasattr(other, 'model_grid_bounds'):
+            other.get_model_grid()
+        bounds, res = self.model_grid_bounds, self.model_grid_res
+
+        logger.info('Coupling {} grid to {} grid.'.format(self.name, other.name))
+        # set impmat of CMF model based on the model grid bounds and resolution
+        if other.name == 'CMF':
+            other.set_inpmat_file(bounds, res)
+
+        # deactivate routing in upstream model
+        self.deactivate_routing('all')
 
 
-class PCR_model(_model):
+class PCR_model(BMI_model_wrapper):
     def __init__(self, config_fn,
                  model_data_dir, out_dir,
-                 start_date, end_date, dt=1,
+                 start_date, end_date,
                  missing_value=-999, landmask_mv=255, forcing_data_dir=None,
                  **kwargs):
         """initialize the PCR-GLOBWB (PCR) model BMI class and model configuration file"""
@@ -343,10 +414,10 @@ class PCR_model(_model):
         # model and forcing data both in model_data_dir
         if forcing_data_dir is None:
             forcing_data_dir = model_data_dir
-        options = dict(dt=dt, tscale=86400, # seconds per dt
+        options = dict(dt=1, tscale=86400, # seconds per dt
                         missing_value=missing_value, landmask_mv=landmask_mv)
         # initialize BMIWrapper for model
-        super(PCR_model, self).__init__(pcr_bmi, config_fn, 'PCRGLOB-WB', 'day',
+        super(PCR_model, self).__init__(pcr_bmi, config_fn, 'PCR', 'day',
                                         model_data_dir, forcing_data_dir, out_dir,
                                         options, **kwargs)
         # set some basic model properties
@@ -358,17 +429,22 @@ class PCR_model(_model):
                         }}
         self.set_config(globalOptions)
 
-    def get_model_2d_index(self):
+    def get_model_grid(self):
         """Get PCR model bounding box, resolution and index based on the
         landmask map file.
 
-        This function creates the model_2d_index attribute function
-        which can be used to find the coresponding cell to x, y coordinates.
+        Created attributes
+        -------
+        model_grid_res : tuple
+            model grid x, y resolution
+        model_grid_bounds : list
+            model grid xmin, ymin, xmax, ymax bounds
+        model_grid_shape : tuple
+            model number of rows and cols
         """
-
+        logger.info('Getting PCR model grid parameters.')
         fn_map = join(self.model_config['globalOptions']['inputDir'],
                       self.model_config['globalOptions']['landmask'])
-        self._landmask_fn = fn_map
         if not isfile(fn_map):
             raise IOError('landmask file not found')
         with rasterio.open(fn_map, 'r') as ds:
@@ -376,70 +452,86 @@ class PCR_model(_model):
             self.model_grid_res = ds.res
             self.model_grid_bounds = ds.bounds
             self.model_grid_shape = ds.shape
-            # function for grid row col index
-            def model_2d_index(xy, **kwargs):
-                r, c = ds.index(*zip(*xy), **kwargs)
-                r = np.array(r).astype(int)
-                c = np.array(c).astype(int)
-                return zip(r, c)
-        self.model_2d_index = model_2d_index
+        self._fn_landmask = fn_map
+        msg = 'Model bounds {:s}; width {}, height {}'
+        logger.debug(msg.format(self.model_grid_bounds, *self.model_grid_shape))
 
-        # NOTE: for now decided to keep tuples with index instead linear index.
-        # To not have to tranform between both indices all the time.
-        #
-        # go from tuple with r, c list to linear index. can be added to model_2d_index
-        # np.ravel_multi_index((r, c), dims=ds.shape)
-        #
-        # go from linear index to tuple with r, c lists
-        #     def model_index_2_rc(indices):
-        #         return np.unravel_index(indices, dims=ds.shape)
-        # self.model_index_2_rc = model_index_2_rc
+    def model_2d_index(self, xy, **kwargs):
+        """Get PCR (row, col) indices of xy coordinates.
 
-    def get_delta_water(self):
-        """get total water volume (discharge, runoff and top water layer) per
-        cell per timestep dt"""
-        #- retrieve data from PCR-GLOBWB
-        current_discharge_pcr  = self.get_var('discharge')
-        current_runoff_pcr     = self.get_var('landSurfaceRunoff')
-        current_waterlayer_pcr = self.get_var('topWaterLayer')
-
-        # average discharge flux [m3/s]
-        water_volume_PCR_rivers = current_discharge_pcr * self.options['tscale'] #sec/dt
-        # runoff state [m]
-        water_volume_PCR_runoff = current_runoff_pcr * self.get_var('cellArea')
-        # topwaterlayer state [m]
-        water_volume_PCR_waterlayer = current_waterlayer_pcr * self.get_var('cellArea')
-        # sum volumes [m3]
-        total_water_volume = water_volume_PCR_rivers + water_volume_PCR_runoff + water_volume_PCR_waterlayer
-
-        return total_water_volume
-
-    def deactivate_LDD(self, index):
-        """Deactive LDD at indices
-
-        Parameters
+        Arguments
         ----------
-        index : list of tuples, str
-          list with (x, y) tuples or 'all' to deactivate total grid
+        xy : list of tuples
+          list of (x, y) coordinate tuples
+
+        Returns
+        -------
+        indices : list of tuples
+          list of (row, col) index tuples
         """
 
-        landmask_mv = self.options['landmask_mv']
-        # retrieving current LDD map
-        if index != 'all':
-            # replace LDD values within the hydrodynamic model domain to 5 (pit cell)
-            n = len(index) if isinstance(index, list) else len(index[0]) # else: asume list of tuples
-            LDD_PCR_new = np.ones(n, dtype=int) * 5
-            self.set_var_index(('routing', 'lddMap'), index, LDD_PCR_new, parse_missings=False)
-        else: # replace all
-            LDD_PCR_new = np.copy(self.get_var(('routing', 'lddMap'), parse_missings=False))
-            LDD_PCR_new = np.where(LDD_PCR_new != landmask_mv, 5, landmask_mv)
-            # overwriting current with new LDD information
-            self.set_var(('routing', 'lddMap'), LDD_PCR_new, parse_missings=False)
+        logger.info('Getting PCR model indices of xy coordinates.')
+        if not hasattr(self, '_model_index'):
+            self.get_model_grid()
+        r, c = self._model_index(*zip(*xy), **kwargs)
+        r = np.array(r).astype(int)
+        c = np.array(c).astype(int)
+        return zip(r, c)
 
-class CMF_model(_model):
+    def deactivate_routing(self, coupled_indices=None):
+        """Deactive LDD at indices by replacing the local ldd value with 5, the
+        ldd pit value. The ldd is modified offline. This only has effect before
+        the model is initialized.
+
+        Arguments
+        ----------
+        coupled_indices : list of tuples, str
+          list with (x, y) tuples or 'all' to deactivate total grid
+        """
+        # this function requires pcr functionality
+        import pcraster as pcr
+        if coupled_indices is None:
+            if not hasattr(self, 'coupled_dict'):
+                msg = 'The PCR model must be coupled before deactivating ' + \
+                      'routing in the coupled cells'
+                raise AssertionError(msg)
+            coupled_indices = self.coupled_dict.keys()
+        if self.initialized:
+            msg = "Deactivating the LDD is only possible before the model is initialized"
+            raise AssertionError(msg)
+
+        logger.info('Editing PCR ldd grid to deactivate routing in coupled cells.')
+        # get ldd filename from config
+        fn_ldd = self.model_config['routingOptions']['lddMap']
+        if not isabs(fn_ldd):
+            ddir = self.model_config['globalOptions']['inputDir']
+            fn_ldd = abspath(join(ddir, fn_ldd))
+        # read file with pcr readmap
+        if not isfile(fn_ldd):
+            raise IOError('ldd map file {} not found.'.format(fn_ldd))
+        lddmap = pcr.readmap(str(fn_ldd))
+        # change nextxy coupled indices to pits == 5
+        nodata = self.options.get('landmask_mv', 255)
+        ldd = pcr.pcr2numpy(lddmap, nodata)
+        if coupled_indices == 'all':
+            ldd = np.where(ldd != nodata, 5, ldd)
+        else:
+            rows, cols = zip(*coupled_indices)
+            rows, cols = np.atleast_1d(rows), np.atleast_1d(cols)
+            ldd[rows, cols] = np.where(ldd[rows, cols] != nodata, 5, ldd[rows, cols])
+        # write to tmp file
+        self._fn_ldd_tmp = join(self.out_dir, basename(fn_ldd))
+        # write map with pcr.report
+        lddmap = pcr.numpy2pcr(pcr.Ldd, ldd, nodata)
+        pcr.report(lddmap, str(self._fn_ldd_tmp))
+        # set tmp file in config
+        ldd_options = {'routingOptions': {'lddMap': self._fn_ldd_tmp}}
+        self.set_config(ldd_options)
+
+class CMF_model(BMI_model_wrapper):
     def __init__(self, engine, config_fn,
                  model_data_dir, out_dir,
-                 start_date, end_date, dt=86400,
+                 start_date, end_date,
                  missing_value=1e20, **kwargs):
         """initialize the CaMa-Flood (CMF) model BMI class and model configuration file"""
         ## initialize BMIWrapper and model
@@ -448,10 +540,10 @@ class CMF_model(_model):
         self._configparser = NamConfigParser()
         # for offline use the forcing data dir can be set. not yet inplemented
         forcing_data_dir = ''
-        options = dict(dt=dt, tscale=1, # sec / dt
+        options = dict(dt=86400, tscale=1, # sec / dt
                         missing_value=missing_value)
         # initialize BMIWrapper for model
-        super(CMF_model, self).__init__(cmf_bmi, config_fn, 'CaMa-Flood', 'sec',
+        super(CMF_model, self).__init__(cmf_bmi, config_fn, 'CMF', 'sec',
                                         model_data_dir, forcing_data_dir, out_dir,
                                         options, **kwargs)
         # setup output dir
@@ -495,13 +587,20 @@ class CMF_model(_model):
                 if isfile(fpath):
                     # copy all files with same name, ignore extensions
                     for src_fn in glob.glob('{}.*'.format(os.path.splitext(fpath)[0])):
-                        shutil.copy(
-                                src_fn, dst_path)
+                        shutil.copy(src_fn, dst_path)
+                        # remove *tmp.* files from data_dir
+                        if 'tmp.' in  basename(src_fn):
+                            logger.info('removing tmp file {:s} from model data dir'.format(basename(src_fn)))
+                            os.unlink(src_fn)
+                    # update config_fn
                     self.update_config(sec, opt, '"./{}/{}"'.format(folder, fn))
 
     def set_inpmat_file(self, bounds, res, olat='NtoS'):
         """Set the CMF inpmat file model based on the grid definition of upstream
         model"""
+        ddir = self.model_data_dir
+        if not isfile(join(ddir, 'generate_inpmat')):
+            raise ValueError('{} not found'.format(join(ddir, 'generate_inpmat')))
         if not abs(res[0]) == abs(res[1]):
             raise ValueError('lat and lon resolution should be the same in regular grid')
         westin  = bounds.left
@@ -509,58 +608,130 @@ class CMF_model(_model):
         northin = bounds.top
         southin = bounds.bottom
         # generate inpmat
-        ddir = self.model_data_dir
         msg2 = './generate_inpmat {} {} {} {} {} {:s}'.format(
                         abs(res[0]), westin, eastin, northin, southin, olat)
         logger.info(msg2)
         subcall(msg2, cwd=ddir)
         # set new inpmat and diminfo in config
         rel_path = os.path.relpath(dirname(self.config_fn), ddir)
-        inpmatOptions = {'NINPUT': {'CINPMAT': '"{:s}/inpmat-tmp.bin"'.format(rel_path),
+        inpmat_options = {'NINPUT': {'CINPMAT': '"{:s}/inpmat-tmp.bin"'.format(rel_path),
                                      'LBMIROF': '.TRUE.'
                                     },
                         'NMAP': {'CDIMINFO': '"{:s}/diminfo_tmp.txt"'.format(rel_path)
                                 },
                         'NCONF': {'DROFUNIT': '1'} #  SI units [m]
                         }
-        self.set_config(inpmatOptions)
+        self.set_config(inpmat_options)
 
-    def get_model_2d_index(self, fn=None):
-        # get input file
-        if fn is None:
-            path = join(self.model_data_dir, 'hires', '*.catmxy.tif')
-            fns = glob.glob(path)
-            if len(fns) == 0:
-                raise IOError("catmxy.tif file not found")
-            elif len(fns) > 1:
-                raise NotImplemented("Not yet implemented for mulitple regions")
-            fn = fns[0]
-        else:
-            if not isfile(fn):
-                raise IOError("catmxy.tif file not found")
-        # set model grid paramters
-        with rasterio.open(fn, 'r') as ds:
-            ncount = ds.count
-            assert ncount == 2, "{:s} file should have two layers".format(fn)
-            self._catmxy_fn = fn
+    ## model grid functionality
+    def get_model_grid(self):
+        """Get CMF model bounding box, resolution and shape based on landmask
+        geotiff file 'lsmask.tif'.
+
+        To convert cama bin maps to geotiff use the 'cama_maps_io.py' script.
+
+        The function creates the following attributes
+        -------
+        model_grid_res : tuple
+            model grid x, y resolution
+        model_grid_bounds : list
+            model grid xmin, ymin, xmax, ymax bounds
+        model_grid_shape : tuple
+            model number of rows and cols
+        """
+
+        logger.info('Getting CMF model grid parameters.')
+        fn_lsmask = join(self.model_data_dir, 'lsmask.tif')
+        if not isfile(fn_lsmask):
+            raise IOError("lsmask.tif file not found at {}".format(fn_lsmask))
+        # set model low-res grid parameters
+        with rasterio.open(fn_lsmask, 'r') as ds:
             self.model_grid_res = ds.res
             self.model_grid_bounds = ds.bounds
             self.model_grid_shape = ds.shape
+        self._fn_landmask = fn_lsmask
+        msg = 'Model bounds {:s}; width {}, height {}'
+        logger.debug(msg.format(self.model_grid_bounds, *self.model_grid_shape))
 
-        # define index function.
-        # read catmxy temporary into memory when this function is called
-        def model_2d_index(xy, **kwargs):
-            with rasterio.open(fn, 'r', driver='GTiff') as ds:
-                nrows, ncols = ds.shape
-                rows, cols = ds.index(*zip(*xy))
-                rows, cols = np.atleast_1d(rows).astype(int), np.atleast_1d(cols).astype(int)
-                invalid = np.logical_and.reduce((rows<0,rows>=nrows,cols<0,cols>=ncols))
-                if np.any(invalid):
-                    raise IndexError('XY coordinates outside of CMF domain')
-                cmf_idx = ds.read()[:, rows[:, None], cols[:, None]].squeeze()
-                cmf_cols, cmf_rows = cmf_idx
-            return zip(cmf_rows, cmf_cols)
-        self.model_2d_index = model_2d_index
+    def model_2d_index(self, xy, **kwargs):
+        """Get CMF (row, col) indices at low resolution based on xy coordinates.
+        The low-res indices are looked up catmxy geotiff file 'reg.catmxy.tif'.
+
+        To convert cama binary maps to geotiff use the 'cama_maps_io.py' script.
+
+        Arguments
+        ---------
+        xy : list of tuples
+          list of (x, y) coordinate tuples
+
+        Returns
+        -------
+        indices : list of tuples
+          list of (row, col) index tuples
+        """
+        logger.info('Getting CMF model indices for xy coordinates.')
+        fn_catmxy = join(self.model_data_dir, 'hires', 'reg.catmxy.tif')
+        if not isfile(fn_catmxy):
+            raise IOError("{} file not found".format(fn_catmxy))
+        # read catmxy temporary into memory
+        with rasterio.open(fn_catmxy, 'r', driver='GTiff') as ds:
+            ncount = ds.count
+            if ncount != 2:
+                raise ValueError("{} file should have two layers".format(fn))
+            nrows, ncols = ds.shape
+            rows, cols = ds.index(*zip(*xy))
+            # go from fortran one-based to python zero-based indices
+            rows, cols = np.atleast_1d(rows).astype(int)-1, np.atleast_1d(cols).astype(int)-1
+            invalid = np.logical_and.reduce((rows<0,rows>=nrows,cols<0,cols>=ncols))
+            if np.any(invalid):
+                raise IndexError('XY coordinates outside of CMF domain')
+            cmf_idx = ds.read()[:, rows[:, None], cols[:, None]].squeeze()
+            cmf_cols, cmf_rows = cmf_idx
+        return zip(cmf_rows, cmf_cols)
+
+    def deactivate_routing(self, coupled_indices=None):
+        """Deactive nextxy at coupled indices by replacing the nextxy index
+        values with -9, the nextxy pit value.
+
+        Arguments
+        ----------
+        coupled_indices : list of tuples, str
+          list with (row, col) tuples of low-res CMF model
+        """
+        if coupled_indices is None:
+            if not hasattr(self, 'coupled_dict'):
+                msg = 'The CMF model must be coupled before deactivating ' + \
+                      'routing in the coupled cells'
+                raise AssertionError(msg)
+            coupled_indices = self.coupled_dict.keys()
+        if self.initialized:
+            msg = "Deactivate routing is only possible before the model is initialized"
+            raise AssertionError(msg)
+        # model_grid_shape attribute required to read data correctly
+        if not hasattr(self, 'model_grid_shape'):
+            self.get_model_grid()
+
+        logger.info('Editing CMF nextxy grid to deactivate routing in coupled cells.')
+        # read input data
+        fn_nextxy = join(self.model_data_dir, 'nextxy.bin')
+        if not isfile(fn_nextxy):
+            raise IOError("lsmask.tif file not found at {}".format(fn_nextxy))
+        nextxy = np.fromfile(fn_nextxy, dtype=np.int32).reshape(2, *self.model_grid_shape)
+        rows, cols = zip(*coupled_indices)
+        # change nextxy coupled indices to pits == -9
+        rows, cols = np.atleast_1d(rows), np.atleast_1d(cols)
+        nextxy[:, rows[:, None], cols[:, None]] = -9
+        # get file name for tmp file based on orignal file name from config
+        fn_nextxy_org = self.model_config['NMAP']['CNEXTXY'].strip('"')
+        if not isabs(fn_nextxy_org):
+            fn_nextxy_org = abspath(join(dirname(self.config_fn), fn_nextxy_org))
+        fn_nextxy_new = fn_nextxy_org.replace('.bin', '_tmp.bin')
+        # write data to tmp file
+        nextxy.astype(np.int32).tofile(fn_nextxy_new)
+        # set new nextxy in config
+        rel_path = os.path.relpath(dirname(self.config_fn), dirname(fn_nextxy_new))
+        nextxy_options = {'NMAP': {'CNEXTXY': join(rel_path, basename(fn_nextxy_new))}}
+        self.set_config(nextxy_options)
 
     def get_var(self, name, parse_missings=True, *args, **kwargs):
         var = super(CMF_model, self).get_var(name, parse_missings=parse_missings)
@@ -569,17 +740,20 @@ class CMF_model(_model):
 
     def get_current_time(self):
         t = super(CMF_model, self).get_current_time()
-        return CMFtime_2_datetime(t)
+        return self._CMFtime_2_datetime(t)
 
     def get_start_time(self):
         t = super(CMF_model, self).get_start_time()
-        return CMFtime_2_datetime(t)
+        return self._CMFtime_2_datetime(t)
 
+    def _CMFtime_2_datetime(self, t):
+        # internal CMF time is in minutes since 1850
+        return datetime(1850, 1, 1) + timedelta(minutes = t)
 
-class DFM_model(_model):
+class DFM_model(BMI_model_wrapper):
     def __init__(self, engine, config_fn,
                  model_data_dir, out_dir,
-                 start_date, end_date, dt=86400,
+                 start_date, end_date,
                  missing_value=np.nan, **kwargs):
         """initialize the Delft3D-FM (DFM) model BMI class and model configuration file"""
         # TODO: extend this list to cover all variables
@@ -591,10 +765,10 @@ class DFM_model(_model):
         self._configparser = ConfigParser(inline_comment_prefixes=('#'))
         # for offline use the forcing data dir can be set. not yet inplemented
         forcing_data_dir = ''
-        options = dict(dt=dt, tscale=1., # sec / dt
+        options = dict(dt=86400, tscale=1., # sec / dt
                         missing_value=missing_value)
         # initialize BMIWrapper for model
-        super(DFM_model, self).__init__(dfm_bmi, config_fn, 'Delft3D-FM', 'sec',
+        super(DFM_model, self).__init__(dfm_bmi, config_fn, 'DFM', 'sec',
                                         model_data_dir, forcing_data_dir, out_dir,
                                         options, si_unit_conversions=si_unit_conversions,
                                         **kwargs)
@@ -625,10 +799,12 @@ class DFM_model(_model):
                 if not isdir(join(dst, basename(fn))):
                     mkdir(join(dst, basename(fn)))
 
+    ## model grid functionality
     def get_model_coords(self):
         """Get DFM model coordinates for 1D and 2D mesh via BMI. The DFM model
         should be initialized first in order to access the variables."""
 
+        logger.info('Getting DFM model coordinates.')
         # define separator between 2D and 1D parts of arrays == lenght of 2d cell points
         self._1d2d_idx = len(self.get_var('flowelemnode'))
         x_coords = self.get_var('xz') # x-coords of each cell centre point
@@ -643,20 +819,24 @@ class DFM_model(_model):
     def get_model_1d_index(self):
         """Creat a spatial index for the 1d coordinates. A model_1d_index
         attribute funtion is created to find the nearest 1d coordinate tuple"""
+
         if not hasattr(self, 'model_1d_coords'):
             self.get_model_coords()
+        logger.info('Constructing spatial index for the 1D coordinates of the DFM model.')
         # 1d coords
         n1d = len(self.model_1d_coords)
         self.model_1d_indices = np.arange(n1d, dtype=np.int32) + self._1d2d_idx
         # build spatial rtree index of points2
+        logger.info('Constructing spatial index for 1D vertices of DFM model')
         self.model_1d_rtree = rtree.index.Index()
         for i, xy in enumerate(self.model_1d_coords):
             self.model_1d_rtree.insert(i+n1d, xy) # return index including 2d
-        def model_1d_index(xy, n=1):
-            if isinstance(xy, tuple):
-                xy = [xy]
-            return [list(self.model_1d_rtree.nearest(xy0, 1))[0] for xy0 in xy]
-        self.model_1d_index = model_1d_index
+
+    def model_1d_index(self, xy, n=1):
+        if not hasattr(self, 'model_1d_rtree'):
+            self.get_model_1d_index()
+        xy = [xy] if isinstance(xy, tuple) else xy
+        return [list(self.model_1d_rtree.nearest(xy0, 1))[0] for xy0 in xy]
 
     def get_model_2d_index(self):
         """Creat a spatial index for the 2d mesh center coordinates.
@@ -664,24 +844,17 @@ class DFM_model(_model):
         2d cell center"""
         if not hasattr(self, 'model_2d_coords'):
             self.get_model_coords()
+        # build spatial rtree index of 2d coords
+        logger.info('Constructing spatial index for the 2D mesh of the DFM model')
+        self.model_2d_rtree = rtree.index.Index()
+        for i, xy in enumerate(self.model_2d_coords):
+            self.model_2d_rtree.insert(i, xy)
 
-        # 2d coords
-        if not only_1d:
-            # build spatial rtree index of points2
-            self.model_2d_rtree = rtree.index.Index()
-            for i, xy in enumerate(self.model_2d_coords):
-                self.model_2d_rtree.insert(i, xy)
-            def model_2d_index(xy, n=1):
-                if isinstance(xy, tuple):
-                    xy = [xy]
-                return [list(self.model_2d_rtree.nearest(xy0, 1))[0] for xy0 in xy]
-            self.model_2d_index = model_2d_index
-
-    # def calculateDeltaWater(self, total_water_volume, af_list):
-    #     delta_water = []
-    #     for i in xrange(len(total_water_volume)):
-    #         added_water_level = total_water_volume[i] / af_list[i]
-    #         delta_water.extend(added_water_level)
+    def model_2d_index(self, xy, n=1):
+        if not hasattr(self, 'model_2d_rtree'):
+            self.get_model_2d_index()
+        xy = [xy] if isinstance(xy, tuple) else xy
+        return [list(self.model_2d_rtree.nearest(xy0, 1))[0] for xy0 in xy]
 
 
 # utils
@@ -691,7 +864,3 @@ def dictinvert(d):
         keys = inv.setdefault(v, [])
         keys.append(k)
     return inv
-
-def CMFtime_2_datetime(t):
-    # internal CMF time is in minutes since 1850
-    return datetime(1850, 1, 1) + timedelta(minutes = t)
