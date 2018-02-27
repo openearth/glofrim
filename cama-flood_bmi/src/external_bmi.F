@@ -35,7 +35,7 @@ module demo_model
        R2PTHOUT, R2PTHINF, R2SFCELV, R2OUTFLW, R2STORGE
   USE MOD_DIAG   ,ONLY: R2OUTFLW_AVG, R2RIVOUT_AVG, R2FLDOUT_AVG, R2RIVVEL_AVG, R2PTHOUT_AVG, R1PTHFLW_AVG
   USE MOD_PROG   ,ONLY: D2RIVSTO_IN, D2RIVSTO_OUT
-  USE MOD_PROG   ,ONLY: R2ROFFIN, R2RIVSTO_OUT, R2FLDSTO_OUT
+  USE MOD_PROG   ,ONLY: R2ROFFIN, R2RUNOFF, R2RIVSTO_OUT, R2FLDSTO_OUT
   USE LIB_DATES  ,ONLY: MIN2DATE, SPLITDATE
 
   ! USE MOD_PROG   ,ONLY: D2RIVSTO_OUT, D2FLDSTO_OUT, D2RIVOUT_OUT, D2FLDOUT_OUT, D1PTHFLW_OUT
@@ -254,6 +254,8 @@ contains
     var_name = char_array_to_string(c_var_name)
 
     select case(var_name)
+    case('roffin')
+       type_name = 'float'
     case('runoff')
        type_name = 'float'
     case('rivinf')
@@ -316,8 +318,10 @@ contains
     var_name = char_array_to_string(c_var_name)
 
     select case(var_name)
-    case("runoff")
+    case("roffin")
        rank = size(shape(R2ROFFIN))
+    case("runoff")
+       rank = size(shape(R2RUNOFF))
     case("rivinf")
        rank = size(shape(R2RIVINF))
     case("rivdph")
@@ -375,8 +379,10 @@ contains
     the_shape = (/0, 0, 0, 0, 0, 0/)
 
     select case(var_name)
-    case("runoff")
+    case("roffin")
        the_shape(1:size(shape(R2ROFFIN)))     = shape(R2ROFFIN)
+    case("runoff")
+       the_shape(1:size(shape(R2RUNOFF)))     = shape(R2RUNOFF)
     case("rivinf")
        the_shape(1:size(shape(R2RIVINF)))     = shape(R2RIVINF)
     case("rivdph")
@@ -435,8 +441,10 @@ contains
     var_name = char_array_to_string(c_var_name)
 
     select case(var_name)
-    case("runoff")
+    case("roffin")
        x = c_loc(R2ROFFIN)
+    case("runoff")
+       x = c_loc(R2RUNOFF)
     case("rivinf")
        x = c_loc(R2RIVINF)
     case("rivdph")
@@ -511,9 +519,12 @@ contains
     var_name = char_array_to_string(c_var_name)
 
     select case(var_name)
-    case("runoff")
+    case("roffin")
        call c_f_pointer(xptr, x_2d_float_ptr, shape(R2ROFFIN))
        R2ROFFIN(:, :) = x_2d_float_ptr
+    case("runoff")
+       call c_f_pointer(xptr, x_2d_float_ptr, shape(R2RUNOFF))
+       R2RUNOFF(:, :) = x_2d_float_ptr
     case("rivinf")
        call c_f_pointer(xptr, x_2d_float_ptr, shape(R2RIVINF))
        R2RIVINF(:, :) = x_2d_float_ptr
