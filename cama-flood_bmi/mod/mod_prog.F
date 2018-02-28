@@ -6,6 +6,7 @@ SAVE
 !! Exposed variables for BMI
 REAL(KIND=JPRM),ALLOCATABLE, TARGET   ::  R2ROFFIN(:,:)        !! input runoff       [m3/s]
 REAL(KIND=JPRM),ALLOCATABLE, TARGET   ::  R2RUNOFF(:,:)        !! converted input runoff       [m3/s]
+REAL(KIND=JPRM),ALLOCATABLE, TARGET   ::  R2RUNOFF_M(:,:)        !! converted input runoff       [m/s]
 REAL(KIND=JPRM),ALLOCATABLE, TARGET   ::  R2RIVSTO_OUT(:,:)    !! river      storage [m3]
 REAL(KIND=JPRM),ALLOCATABLE, TARGET   ::  R2FLDSTO_OUT(:,:)    !! river      storage [m3]
 
@@ -20,6 +21,7 @@ REAL(KIND=JPRB),ALLOCATABLE   ::  D2FLDOUT_IN(:,:)     !! floodplain outflow [m3
 
 
 REAL(KIND=JPRB),ALLOCATABLE   ::  D2RUNOFF(:,:)        !! input runoff       [m3/s]
+REAL(KIND=JPRB),ALLOCATABLE   ::  D2RUNOFF_M(:,:)        !! converted input runoff       [m/s]
 REAL(KIND=JPRB),ALLOCATABLE   ::  D2BOUND(:,:)         !! boundary condition [m]
 
 REAL(KIND=JPRB),ALLOCATABLE   ::  D2RIVSTO_OUT(:,:)    !! river      storage [m3]
