@@ -402,7 +402,7 @@ class BMI_model_wrapper(object):
             other.set_inpmat_file(bounds, res)
 
         # deactivate routing in upstream model
-        self.deactivate_routing('all')
+#        self.deactivate_routing('all')
 
 
 class PCR_model(BMI_model_wrapper):
