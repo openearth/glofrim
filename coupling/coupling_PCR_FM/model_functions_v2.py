@@ -365,8 +365,7 @@ class BMI_model_wrapper(object):
         self.coupled_area_frac = np.array([area_frac[i] for i in indices_other])
 
         # deactivate routing at coupled cells
-        if self.name != 'CMF':
-            self.deactivate_routing()
+        self.deactivate_routing()
 
     def couple_grid_to_grid(self, other):
         """Couple external grid to internal model 2d grid. The model
@@ -398,8 +397,7 @@ class BMI_model_wrapper(object):
             other.set_inpmat_file(bounds, res)
 
         # deactivate routing in upstream model
-        if other.name != 'CMF':
-            self.deactivate_routing('all')
+        self.deactivate_routing('all')
 
 
 class PCR_model(BMI_model_wrapper):
