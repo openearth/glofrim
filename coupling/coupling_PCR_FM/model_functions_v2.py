@@ -482,7 +482,7 @@ class PCR_model(BMI_model_wrapper):
         c = np.array(c).astype(int)
         return zip(r, c)
 
-    def get_coupled_grid_mask(self, coupled_indices):
+    def get_coupled_grid_mask(self, coupled_indices=None):
         """Derives a coupled grid mask wich can be use to read out corresponding
         cells from the PCR model.
 
@@ -498,6 +498,12 @@ class PCR_model(BMI_model_wrapper):
         """
         import pcraster as pcr
         from nb.dd_ops import LDD
+        if coupled_indices is None:
+            if not hasattr(self, 'coupled_dict'):
+                msg = 'The PCR model must be coupled before creating a ' + \
+                      'coupled grid mask '
+                raise AssertionError(msg)
+            coupled_indices = self.coupled_dict.keys()
         # model_grid_shape attribute required to read data correctly
         if not hasattr(self, 'model_grid_shape'):
             self.get_model_grid()
