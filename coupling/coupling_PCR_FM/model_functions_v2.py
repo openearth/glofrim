@@ -354,18 +354,13 @@ class BMI_model_wrapper(object):
         other.coupled_dict = {i: idx for i, idx in zip(indices_other, cellidx)}
         # invert dictionary for 1-to-n upstream-to-downstream coupling
         self.coupled_dict = dictinvert(other.coupled_dict)
-        # save coupled grid that can be used to multiply get var results
-        self.coupled_grid = np.zeros(self.model_grid_shape)
-        r, c = zip(*self.coupled_dict.keys())
-        self.coupled_grid[r, c] = 1
-        
+
         logger.info('Getting fraction of coupled 1d nodes based on area.')
         # get area fractions of coupled cells
         area_frac = {} # [m2/m2]
         for _, idx in list(self.coupled_dict.items()):
             area_other_sum_idx = np.sum(area_other[idx])
             afs = {i: area_other[i]/area_other_sum_idx for i in idx}
-            assert np.abs(np.sum([afs[i] for i in idx]) - 1) < 1e-9, "sum of area fractions should equal one per {} cell".format(self.name)
             area_frac.update(afs)
         self.coupled_area_frac = np.array([area_frac[i] for i in indices_other])
 
@@ -402,7 +397,7 @@ class BMI_model_wrapper(object):
             other.set_inpmat_file(bounds, res)
 
         # deactivate routing in upstream model
-#        self.deactivate_routing('all')
+        self.deactivate_routing('all')
 
 
 class PCR_model(BMI_model_wrapper):
