@@ -1,0 +1,2238 @@
+* Deltares, D-Flow FM Version 1.1.264.52751, Oct 10 2017, 11:29:05
+* File creation date: 11:37:01, 19-02-2018
+** DEBUG  :            0  0.1000020     NOD(KMAX)
+** DEBUG  :            6  0.7000140     XK (KMAX), YK (KMAX), ZK (KMAX), KC (KMAX), NMK (KMAX), RNOD(KMAX)
+** DEBUG  :            6  9.9999998E-03 XS(NSMAX)
+** DEBUG  :            6  9.9999998E-03 YS(NSMAX)
+** DEBUG  :            6  9.9999998E-03 ZS(NSMAX)
+** DEBUG  :            6  9.9999998E-03 IPSAM
+** DEBUG  :            7  5.0000001E-02 xlan(maxlan)
+** DEBUG  :            7  5.0000001E-02 ylan(maxlan)
+** DEBUG  :            7  5.0000001E-02 zlan(maxlan)
+** DEBUG  :            8  2.5000000E-02 nclan(maxlan)
+ Until here copy of previous diagnostic file
+** WARNING: TimeSplitInterval invalid, disabling time partitioning of output. Got: 0X
+** WARNING: readMDUFile: [numerics] jaorgsethu=0 was in file, but not used. Check possible typo.
+** DEBUG  : unc_read_net_ugrid: net file 'Elbe4VU_net.nc' is not UGRID. No problem, will fall back to old format reader.
+** DEBUG  : Opened 'Elbe4VU_net.nc' as #     65536.
+** DEBUG  : Closed NetCDF file 'Elbe4VU_net.nc.
+** INFO   : Opened file : NeuDarchauSMALLnWIDE_crs.pli
+** INFO   : Closed file : NeuDarchauSMALLnWIDE_crs.pli
+** INFO   : Initializing flow model geometry...
+** DEBUG  : Opened 'Elbe4VU_net.nc' as #     65536.
+** WARNING: Could not read net cells from NetCDF file 'Elbe4VU_net.nc' (is not critical). Details follow:
+** WARNING: NetCDF error: NetCDF: Variable not found (NetElemNode)
+** WARNING: NetCDF error: NetCDF: Variable not found (NetElemLink)
+** WARNING: NetCDF error: NetCDF: Invalid dimension ID or name (nNetElemMaxNode)
+** DEBUG  :            8  6.2040002E-03 netcell(numpx1)
+** DEBUG  :            8  5.3039999E-03 lnn(numl)
+** DEBUG  :            8  1.0608000E-02 lne(2,numl)
+** DEBUG  :            8  1.1710000E-03 xz(numc)
+** DEBUG  :            8  1.1710000E-03 yz(numc)
+** DEBUG  :            8  1.1710000E-03 xzw(numc)
+** DEBUG  :            8  1.1710000E-03 yzw(numc)
+** DEBUG  :            8  1.1710000E-03 ba(numc)
+** DEBUG  :  Renumber flow nodes...
+** DEBUG  :  Sumdiff:     2514579  Sumdiff renum:      2006416
+** DEBUG  :  Bandwidth:        1621  Bandwidth renum:           33
+** INFO   : Opened file : boundary_info_Elbe_fine.ext
+** DEBUG  :            8  5.3039999E-03 xe (nx)
+** DEBUG  :            8  5.3039999E-03 ye (nx)
+** DEBUG  :            8  5.3039999E-03 xyen(2, nx)
+** DEBUG  :            9  9.0167999E-02 kce(nx), ke(nx), kez(nx), keu(nx), kes(nx), ketm(nx), kesd(nx), keuxy(nx), ket(nx), ken(nx), ke1d2d(nx), keg(nx), ked(nx), kep(nx), keklep(nx), kegs(nx), kegen(nx), itpez(nx), itpenz(nx), itpeu(nx) , itpenu(nx) , kew(nx)
+** DEBUG  :            9  5.3039999E-03 ketr(1,nx)
+** INFO   : Opened file : downstreamBC.pli
+** INFO   : Closed file : downstreamBC.pli
+** INFO   : boundary: 'downstreamBC.pli' opened 5 cells.
+** INFO   : waterlevelbnd downstreamBC.pli       5 nr of open bndcells
+** INFO   : Opened file : BfG_Tangermuende.pli
+** INFO   : Closed file : BfG_Tangermuende.pli
+** INFO   : boundary: 'BfG_Tangermuende.pli' opened 1 cells.
+** INFO   : dischargebnd BfG_Tangermuende.pli       1 nr of open bndcells
+** DEBUG  :            9  2.0800000E-02 nd(ndx), bl(ndx), bai(ndx), kcs(ndx)
+** DEBUG  :            9  9.9679995E-03 ln   (2,lnx)
+** DEBUG  :            9  9.9679995E-03 lncn (2,lnx)
+** DEBUG  :            9  9.9679995E-03 bob  (2,lnx)
+** DEBUG  :            9  4.9839998E-03 dx   (  lnx)
+** DEBUG  :            9  4.9839998E-03 dxi  (  lnx)
+** DEBUG  :            9  4.9839998E-03 wu   (  lnx)
+** DEBUG  :            9  4.9839998E-03 wui  (  lnx)
+** DEBUG  :            9  4.9839998E-03 kcu  (  lnx)
+** DEBUG  :           10  4.9839998E-03 csu  (  lnx)
+** DEBUG  :           10  4.9839998E-03 snu  (  lnx)
+** DEBUG  :           10  4.9839998E-03 acl  (  lnx)
+** DEBUG  :           10  4.9839998E-03 acn  (2,lnx)
+** DEBUG  :           10  4.9839998E-03 iadv   (lnx)
+** DEBUG  :           10  4.9839998E-03 teta   (lnx)
+** DEBUG  :           10  4.9839998E-03 ibot   (lnx)
+** DEBUG  :           10  1.4952000E-02 xu(lnx), yu(lnx) , blu(lnx)
+** DEBUG  :           10  5.3039999E-03 ln2lne (nex)
+** DEBUG  :           10  5.3039999E-03 lne2ln (nex)
+** DEBUG  : addexternalboundarypoints: added 0 bnd points for SOBEK1D-FM2D connections.
+** DEBUG  :           10  4.1359998E-03  cn (numk)
+** DEBUG  :           10  4.1359998E-03 ucnx(numk)
+** DEBUG  :           10  4.1359998E-03 ucny(numk)
+** DEBUG  :           10  4.1359998E-03 ban (numk)
+** DEBUG  :           10  5.5979998E-03 prof1D(3,lnx1D)
+** INFO   : Opened file : Hydrography_Elbe_1d_minDis_profloc.xyz
+** INFO   : Closed file : Hydrography_Elbe_1d_minDis_profloc.xyz
+** INFO   : Opened file : Hydrography_Elbe_1d_minDis_profFile.txt
+** INFO   : Closed file : Hydrography_Elbe_1d_minDis_profFile.txt
+** DEBUG  :           10  5.3039999E-03 NETBR(IBX)
+** DEBUG  :           13  5.3039999E-03 XLLIN(numL)
+** DEBUG  :           13  4.9839998E-03 wcx1(lnx)
+** DEBUG  :           13  4.9839998E-03 wcy1(lnx)
+** DEBUG  :           13  4.9839998E-03 wcx2(lnx)
+** DEBUG  :           13  4.9839998E-03 wcy2(lnx)
+** DEBUG  :           13  5.2000000E-03 wcxy (2,ndx)
+** DEBUG  :           13  9.9679995E-03 wcL  (2,Lnx)
+** DEBUG  :           13  2.6000000E-03 wc     (ndx)
+** DEBUG  :           13  4.9839998E-03 wcnx3(lnx)
+** DEBUG  :           13  4.9839998E-03 wcny3(lnx)
+** DEBUG  :           13  4.9839998E-03 wcnx4(lnx)
+** DEBUG  :           13  4.9839998E-03 wcny4(lnx)
+** DEBUG  :           13  1.2408000E-02 wcnxy(3,numk)
+** DEBUG  :           13  4.1359998E-03 jacorner(numk)
+** DEBUG  :           14  5.1199999E-03 walls(17,nw)
+** INFO   : Building kdtree...
+** DEBUG  :           14  4.2690001E-03 sample_coords(NTREEDIM,N)
+** INFO   : done
+** INFO   : Finding flow nodes...
+** INFO   : find_flowcells_kdtree: sample/point 1413 in cells 106 and 118
+** INFO   : find_flowcells_kdtree: sample/point 2 in cells 22 and 1173
+** INFO   : find_flowcells_kdtree: sample/point 3 in cells 22 and 1173
+** INFO   : find_flowcells_kdtree: sample/point 3 in cells 22 and 1174
+** INFO   : find_flowcells_kdtree: sample/point 4 in cells 22 and 1175
+** INFO   : find_flowcells_kdtree: sample/point 5 in cells 22 and 1176
+** INFO   : find_flowcells_kdtree: sample/point 6 in cells 34 and 1177
+** INFO   : find_flowcells_kdtree: sample/point 7 in cells 34 and 1178
+** INFO   : find_flowcells_kdtree: sample/point 8 in cells 34 and 1179
+** INFO   : find_flowcells_kdtree: sample/point 9 in cells 34 and 1180
+** INFO   : find_flowcells_kdtree: sample/point 10 in cells 46 and 1181
+** INFO   : find_flowcells_kdtree: sample/point 11 in cells 46 and 1182
+** INFO   : find_flowcells_kdtree: sample/point 12 in cells 56 and 1183
+** INFO   : find_flowcells_kdtree: sample/point 13 in cells 56 and 1183
+** INFO   : find_flowcells_kdtree: sample/point 11 in cells 46 and 1183
+** INFO   : find_flowcells_kdtree: sample/point 14 in cells 56 and 1183
+** INFO   : find_flowcells_kdtree: sample/point 10 in cells 46 and 1183
+** INFO   : find_flowcells_kdtree: sample/point 15 in cells 66 and 1183
+** INFO   : find_flowcells_kdtree: sample/point 9 in cells 34 and 1183
+** INFO   : find_flowcells_kdtree: sample/point 16 in cells 66 and 1183
+** INFO   : find_flowcells_kdtree: sample/point 97 in cells 66 and 1183
+** INFO   : find_flowcells_kdtree: sample/point 17 in cells 66 and 1183
+** INFO   : find_flowcells_kdtree: sample/point 8 in cells 34 and 1183
+** INFO   : find_flowcells_kdtree: sample/point 18 in cells 66 and 1183
+** INFO   : find_flowcells_kdtree: sample/point 98 in cells 66 and 1183
+** INFO   : find_flowcells_kdtree: sample/point 7 in cells 34 and 1183
+** INFO   : find_flowcells_kdtree: sample/point 19 in cells 57 and 1183
+** INFO   : find_flowcells_kdtree: sample/point 20 in cells 57 and 1183
+** INFO   : find_flowcells_kdtree: sample/point 99 in cells 66 and 1183
+** INFO   : find_flowcells_kdtree: sample/point 6 in cells 34 and 1183
+** INFO   : find_flowcells_kdtree: sample/point 21 in cells 57 and 1183
+** INFO   : find_flowcells_kdtree: sample/point 13 in cells 56 and 1184
+** INFO   : find_flowcells_kdtree: sample/point 12 in cells 56 and 1184
+** INFO   : find_flowcells_kdtree: sample/point 14 in cells 56 and 1184
+** INFO   : find_flowcells_kdtree: sample/point 11 in cells 46 and 1184
+** INFO   : find_flowcells_kdtree: sample/point 15 in cells 66 and 1184
+** INFO   : find_flowcells_kdtree: sample/point 16 in cells 66 and 1184
+** INFO   : find_flowcells_kdtree: sample/point 97 in cells 66 and 1184
+** INFO   : find_flowcells_kdtree: sample/point 10 in cells 46 and 1184
+** INFO   : find_flowcells_kdtree: sample/point 17 in cells 66 and 1184
+** INFO   : find_flowcells_kdtree: sample/point 98 in cells 66 and 1184
+** INFO   : find_flowcells_kdtree: sample/point 9 in cells 34 and 1184
+** INFO   : find_flowcells_kdtree: sample/point 18 in cells 66 and 1184
+** INFO   : find_flowcells_kdtree: sample/point 19 in cells 57 and 1184
+** INFO   : find_flowcells_kdtree: sample/point 99 in cells 66 and 1184
+** INFO   : find_flowcells_kdtree: sample/point 8 in cells 34 and 1184
+** INFO   : find_flowcells_kdtree: sample/point 20 in cells 57 and 1184
+** INFO   : find_flowcells_kdtree: sample/point 100 in cells 66 and 1184
+** INFO   : find_flowcells_kdtree: sample/point 21 in cells 57 and 1184
+** INFO   : find_flowcells_kdtree: sample/point 7 in cells 34 and 1184
+** INFO   : find_flowcells_kdtree: sample/point 14 in cells 56 and 1185
+** INFO   : find_flowcells_kdtree: sample/point 15 in cells 66 and 1186
+** INFO   : find_flowcells_kdtree: sample/point 16 in cells 66 and 1187
+** INFO   : find_flowcells_kdtree: sample/point 17 in cells 66 and 1188
+** INFO   : find_flowcells_kdtree: sample/point 18 in cells 66 and 1189
+** INFO   : find_flowcells_kdtree: sample/point 19 in cells 57 and 1190
+** INFO   : find_flowcells_kdtree: sample/point 18 in cells 66 and 1190
+** INFO   : find_flowcells_kdtree: sample/point 20 in cells 57 and 1191
+** INFO   : find_flowcells_kdtree: sample/point 21 in cells 57 and 1192
+** INFO   : find_flowcells_kdtree: sample/point 22 in cells 57 and 1192
+** INFO   : find_flowcells_kdtree: sample/point 20 in cells 57 and 1192
+** INFO   : find_flowcells_kdtree: sample/point 22 in cells 57 and 1193
+** INFO   : find_flowcells_kdtree: sample/point 23 in cells 57 and 1194
+** INFO   : find_flowcells_kdtree: sample/point 24 in cells 57 and 1195
+** INFO   : find_flowcells_kdtree: sample/point 25 in cells 57 and 1196
+** INFO   : find_flowcells_kdtree: sample/point 26 in cells 47 and 1197
+** INFO   : find_flowcells_kdtree: sample/point 27 in cells 58 and 1198
+** INFO   : find_flowcells_kdtree: sample/point 28 in cells 58 and 1199
+** INFO   : find_flowcells_kdtree: sample/point 29 in cells 58 and 1200
+** INFO   : find_flowcells_kdtree: sample/point 30 in cells 58 and 1201
+** INFO   : find_flowcells_kdtree: sample/point 31 in cells 58 and 1202
+** INFO   : find_flowcells_kdtree: sample/point 32 in cells 58 and 1203
+** INFO   : find_flowcells_kdtree: sample/point 33 in cells 50 and 1204
+** INFO   : find_flowcells_kdtree: sample/point 34 in cells 50 and 1205
+** INFO   : find_flowcells_kdtree: sample/point 35 in cells 39 and 1205
+** INFO   : find_flowcells_kdtree: sample/point 33 in cells 50 and 1205
+** INFO   : find_flowcells_kdtree: sample/point 32 in cells 58 and 1205
+** INFO   : find_flowcells_kdtree: sample/point 36 in cells 39 and 1205
+** INFO   : find_flowcells_kdtree: sample/point 35 in cells 39 and 1206
+** INFO   : find_flowcells_kdtree: sample/point 34 in cells 50 and 1206
+** INFO   : find_flowcells_kdtree: sample/point 36 in cells 39 and 1206
+** INFO   : find_flowcells_kdtree: sample/point 33 in cells 50 and 1206
+** INFO   : find_flowcells_kdtree: sample/point 37 in cells 39 and 1206
+** INFO   : find_flowcells_kdtree: sample/point 36 in cells 39 and 1207
+** INFO   : find_flowcells_kdtree: sample/point 37 in cells 39 and 1207
+** INFO   : find_flowcells_kdtree: sample/point 35 in cells 39 and 1207
+** INFO   : find_flowcells_kdtree: sample/point 37 in cells 39 and 1208
+** INFO   : find_flowcells_kdtree: sample/point 38 in cells 39 and 1208
+** INFO   : find_flowcells_kdtree: sample/point 36 in cells 39 and 1208
+** INFO   : find_flowcells_kdtree: sample/point 38 in cells 39 and 1209
+** INFO   : find_flowcells_kdtree: sample/point 39 in cells 39 and 1209
+** INFO   : find_flowcells_kdtree: sample/point 37 in cells 39 and 1209
+** INFO   : find_flowcells_kdtree: sample/point 39 in cells 39 and 1210
+** INFO   : find_flowcells_kdtree: sample/point 40 in cells 39 and 1210
+** INFO   : find_flowcells_kdtree: sample/point 38 in cells 39 and 1210
+** INFO   : find_flowcells_kdtree: sample/point 40 in cells 39 and 1211
+** INFO   : find_flowcells_kdtree: sample/point 41 in cells 28 and 1212
+** INFO   : find_flowcells_kdtree: sample/point 42 in cells 28 and 1213
+** INFO   : find_flowcells_kdtree: sample/point 43 in cells 40 and 1214
+** INFO   : find_flowcells_kdtree: sample/point 44 in cells 40 and 1215
+** INFO   : find_flowcells_kdtree: sample/point 45 in cells 40 and 1216
+** INFO   : find_flowcells_kdtree: sample/point 46 in cells 40 and 1217
+** INFO   : find_flowcells_kdtree: sample/point 47 in cells 40 and 1218
+** INFO   : find_flowcells_kdtree: sample/point 48 in cells 51 and 1219
+** INFO   : find_flowcells_kdtree: sample/point 49 in cells 51 and 1220
+** INFO   : find_flowcells_kdtree: sample/point 48 in cells 51 and 1220
+** INFO   : find_flowcells_kdtree: sample/point 50 in cells 41 and 1220
+** INFO   : find_flowcells_kdtree: sample/point 47 in cells 40 and 1220
+** INFO   : find_flowcells_kdtree: sample/point 51 in cells 41 and 1220
+** INFO   : find_flowcells_kdtree: sample/point 50 in cells 41 and 1221
+** INFO   : find_flowcells_kdtree: sample/point 51 in cells 41 and 1221
+** INFO   : find_flowcells_kdtree: sample/point 49 in cells 51 and 1221
+** INFO   : find_flowcells_kdtree: sample/point 48 in cells 51 and 1221
+** INFO   : find_flowcells_kdtree: sample/point 52 in cells 41 and 1221
+** INFO   : find_flowcells_kdtree: sample/point 51 in cells 41 and 1222
+** INFO   : find_flowcells_kdtree: sample/point 50 in cells 41 and 1222
+** INFO   : find_flowcells_kdtree: sample/point 52 in cells 41 and 1222
+** INFO   : find_flowcells_kdtree: sample/point 49 in cells 51 and 1222
+** INFO   : find_flowcells_kdtree: sample/point 53 in cells 41 and 1222
+** INFO   : find_flowcells_kdtree: sample/point 52 in cells 41 and 1223
+** INFO   : find_flowcells_kdtree: sample/point 53 in cells 41 and 1223
+** INFO   : find_flowcells_kdtree: sample/point 51 in cells 41 and 1223
+** INFO   : find_flowcells_kdtree: sample/point 50 in cells 41 and 1223
+** INFO   : find_flowcells_kdtree: sample/point 54 in cells 41 and 1223
+** INFO   : find_flowcells_kdtree: sample/point 53 in cells 41 and 1224
+** INFO   : find_flowcells_kdtree: sample/point 54 in cells 41 and 1224
+** INFO   : find_flowcells_kdtree: sample/point 52 in cells 41 and 1224
+** INFO   : find_flowcells_kdtree: sample/point 55 in cells 52 and 1224
+** INFO   : find_flowcells_kdtree: sample/point 51 in cells 41 and 1224
+** INFO   : find_flowcells_kdtree: sample/point 54 in cells 41 and 1225
+** INFO   : find_flowcells_kdtree: sample/point 55 in cells 52 and 1225
+** INFO   : find_flowcells_kdtree: sample/point 53 in cells 41 and 1225
+** INFO   : find_flowcells_kdtree: sample/point 56 in cells 52 and 1225
+** INFO   : find_flowcells_kdtree: sample/point 52 in cells 41 and 1225
+** INFO   : find_flowcells_kdtree: sample/point 55 in cells 52 and 1226
+** INFO   : find_flowcells_kdtree: sample/point 54 in cells 41 and 1226
+** INFO   : find_flowcells_kdtree: sample/point 56 in cells 52 and 1226
+** INFO   : find_flowcells_kdtree: sample/point 53 in cells 41 and 1226
+** INFO   : find_flowcells_kdtree: sample/point 57 in cells 52 and 1226
+** INFO   : find_flowcells_kdtree: sample/point 56 in cells 52 and 1227
+** INFO   : find_flowcells_kdtree: sample/point 57 in cells 52 and 1228
+** INFO   : find_flowcells_kdtree: sample/point 58 in cells 52 and 1229
+** INFO   : find_flowcells_kdtree: sample/point 59 in cells 52 and 1230
+** INFO   : find_flowcells_kdtree: sample/point 60 in cells 63 and 1231
+** INFO   : find_flowcells_kdtree: sample/point 61 in cells 63 and 1232
+** INFO   : find_flowcells_kdtree: sample/point 62 in cells 53 and 1233
+** INFO   : find_flowcells_kdtree: sample/point 63 in cells 53 and 1234
+** INFO   : find_flowcells_kdtree: sample/point 64 in cells 53 and 1235
+** INFO   : find_flowcells_kdtree: sample/point 65 in cells 53 and 1236
+** INFO   : find_flowcells_kdtree: sample/point 66 in cells 53 and 1237
+** INFO   : find_flowcells_kdtree: sample/point 67 in cells 53 and 1238
+** INFO   : find_flowcells_kdtree: sample/point 68 in cells 60 and 1239
+** INFO   : find_flowcells_kdtree: sample/point 69 in cells 60 and 1240
+** INFO   : find_flowcells_kdtree: sample/point 70 in cells 49 and 1240
+** INFO   : find_flowcells_kdtree: sample/point 68 in cells 60 and 1240
+** INFO   : find_flowcells_kdtree: sample/point 71 in cells 49 and 1240
+** INFO   : find_flowcells_kdtree: sample/point 67 in cells 53 and 1240
+** INFO   : find_flowcells_kdtree: sample/point 70 in cells 49 and 1241
+** INFO   : find_flowcells_kdtree: sample/point 69 in cells 60 and 1241
+** INFO   : find_flowcells_kdtree: sample/point 71 in cells 49 and 1241
+** INFO   : find_flowcells_kdtree: sample/point 68 in cells 60 and 1241
+** INFO   : find_flowcells_kdtree: sample/point 72 in cells 49 and 1241
+** INFO   : find_flowcells_kdtree: sample/point 71 in cells 49 and 1242
+** INFO   : find_flowcells_kdtree: sample/point 72 in cells 49 and 1242
+** INFO   : find_flowcells_kdtree: sample/point 70 in cells 49 and 1242
+** INFO   : find_flowcells_kdtree: sample/point 69 in cells 60 and 1242
+** INFO   : find_flowcells_kdtree: sample/point 73 in cells 49 and 1242
+** INFO   : find_flowcells_kdtree: sample/point 72 in cells 49 and 1243
+** INFO   : find_flowcells_kdtree: sample/point 73 in cells 49 and 1243
+** INFO   : find_flowcells_kdtree: sample/point 71 in cells 49 and 1243
+** INFO   : find_flowcells_kdtree: sample/point 74 in cells 49 and 1243
+** INFO   : find_flowcells_kdtree: sample/point 70 in cells 49 and 1243
+** INFO   : find_flowcells_kdtree: sample/point 73 in cells 49 and 1244
+** INFO   : find_flowcells_kdtree: sample/point 74 in cells 49 and 1244
+** INFO   : find_flowcells_kdtree: sample/point 72 in cells 49 and 1244
+** INFO   : find_flowcells_kdtree: sample/point 75 in cells 49 and 1244
+** INFO   : find_flowcells_kdtree: sample/point 71 in cells 49 and 1244
+** INFO   : find_flowcells_kdtree: sample/point 74 in cells 49 and 1245
+** INFO   : find_flowcells_kdtree: sample/point 75 in cells 49 and 1245
+** INFO   : find_flowcells_kdtree: sample/point 73 in cells 49 and 1245
+** INFO   : find_flowcells_kdtree: sample/point 76 in cells 49 and 1245
+** INFO   : find_flowcells_kdtree: sample/point 72 in cells 49 and 1245
+** INFO   : find_flowcells_kdtree: sample/point 75 in cells 49 and 1246
+** INFO   : find_flowcells_kdtree: sample/point 76 in cells 49 and 1246
+** INFO   : find_flowcells_kdtree: sample/point 74 in cells 49 and 1246
+** INFO   : find_flowcells_kdtree: sample/point 77 in cells 38 and 1246
+** INFO   : find_flowcells_kdtree: sample/point 73 in cells 49 and 1246
+** INFO   : find_flowcells_kdtree: sample/point 76 in cells 49 and 1247
+** INFO   : find_flowcells_kdtree: sample/point 77 in cells 38 and 1247
+** INFO   : find_flowcells_kdtree: sample/point 75 in cells 49 and 1247
+** INFO   : find_flowcells_kdtree: sample/point 78 in cells 38 and 1247
+** INFO   : find_flowcells_kdtree: sample/point 85 in cells 38 and 1247
+** INFO   : find_flowcells_kdtree: sample/point 74 in cells 49 and 1247
+** INFO   : find_flowcells_kdtree: sample/point 77 in cells 38 and 1248
+** INFO   : find_flowcells_kdtree: sample/point 85 in cells 38 and 1248
+** INFO   : find_flowcells_kdtree: sample/point 78 in cells 38 and 1248
+** INFO   : find_flowcells_kdtree: sample/point 76 in cells 49 and 1248
+** INFO   : find_flowcells_kdtree: sample/point 86 in cells 38 and 1248
+** INFO   : find_flowcells_kdtree: sample/point 79 in cells 38 and 1248
+** INFO   : find_flowcells_kdtree: sample/point 75 in cells 49 and 1248
+** INFO   : find_flowcells_kdtree: sample/point 78 in cells 38 and 1249
+** INFO   : find_flowcells_kdtree: sample/point 85 in cells 38 and 1249
+** INFO   : find_flowcells_kdtree: sample/point 79 in cells 38 and 1250
+** INFO   : find_flowcells_kdtree: sample/point 80 in cells 38 and 1251
+** INFO   : find_flowcells_kdtree: sample/point 81 in cells 38 and 1252
+** INFO   : find_flowcells_kdtree: sample/point 82 in cells 38 and 1253
+** INFO   : find_flowcells_kdtree: sample/point 83 in cells 38 and 1254
+** INFO   : find_flowcells_kdtree: sample/point 84 in cells 38 and 1255
+** INFO   : find_flowcells_kdtree: sample/point 85 in cells 38 and 1256
+** INFO   : find_flowcells_kdtree: sample/point 78 in cells 38 and 1256
+** INFO   : find_flowcells_kdtree: sample/point 86 in cells 38 and 1256
+** INFO   : find_flowcells_kdtree: sample/point 77 in cells 38 and 1256
+** INFO   : find_flowcells_kdtree: sample/point 86 in cells 38 and 1257
+** INFO   : find_flowcells_kdtree: sample/point 79 in cells 38 and 1257
+** INFO   : find_flowcells_kdtree: sample/point 87 in cells 48 and 1257
+** INFO   : find_flowcells_kdtree: sample/point 85 in cells 38 and 1257
+** INFO   : find_flowcells_kdtree: sample/point 87 in cells 48 and 1258
+** INFO   : find_flowcells_kdtree: sample/point 88 in cells 48 and 1259
+** INFO   : find_flowcells_kdtree: sample/point 89 in cells 48 and 1260
+** INFO   : find_flowcells_kdtree: sample/point 90 in cells 48 and 1261
+** INFO   : find_flowcells_kdtree: sample/point 91 in cells 48 and 1262
+** INFO   : find_flowcells_kdtree: sample/point 92 in cells 37 and 1263
+** INFO   : find_flowcells_kdtree: sample/point 93 in cells 37 and 1264
+** INFO   : find_flowcells_kdtree: sample/point 94 in cells 37 and 1265
+** INFO   : find_flowcells_kdtree: sample/point 95 in cells 37 and 1266
+** INFO   : find_flowcells_kdtree: sample/point 96 in cells 26 and 1267
+** INFO   : find_flowcells_kdtree: sample/point 97 in cells 66 and 1268
+** INFO   : find_flowcells_kdtree: sample/point 98 in cells 66 and 1269
+** INFO   : find_flowcells_kdtree: sample/point 99 in cells 66 and 1270
+** INFO   : find_flowcells_kdtree: sample/point 100 in cells 66 and 1271
+** INFO   : find_flowcells_kdtree: sample/point 101 in cells 66 and 1272
+** INFO   : find_flowcells_kdtree: sample/point 102 in cells 75 and 1273
+** INFO   : find_flowcells_kdtree: sample/point 103 in cells 75 and 1274
+** INFO   : find_flowcells_kdtree: sample/point 104 in cells 75 and 1275
+** INFO   : find_flowcells_kdtree: sample/point 105 in cells 75 and 1276
+** INFO   : find_flowcells_kdtree: sample/point 106 in cells 84 and 1277
+** INFO   : find_flowcells_kdtree: sample/point 107 in cells 84 and 1278
+** INFO   : find_flowcells_kdtree: sample/point 108 in cells 84 and 1279
+** INFO   : find_flowcells_kdtree: sample/point 109 in cells 84 and 1280
+** INFO   : find_flowcells_kdtree: sample/point 110 in cells 84 and 1281
+** INFO   : find_flowcells_kdtree: sample/point 111 in cells 93 and 1282
+** INFO   : find_flowcells_kdtree: sample/point 112 in cells 93 and 1283
+** INFO   : find_flowcells_kdtree: sample/point 113 in cells 93 and 1284
+** INFO   : find_flowcells_kdtree: sample/point 114 in cells 93 and 1285
+** INFO   : find_flowcells_kdtree: sample/point 115 in cells 93 and 1286
+** INFO   : find_flowcells_kdtree: sample/point 116 in cells 102 and 1287
+** INFO   : find_flowcells_kdtree: sample/point 117 in cells 112 and 1288
+** INFO   : find_flowcells_kdtree: sample/point 118 in cells 112 and 1289
+** INFO   : find_flowcells_kdtree: sample/point 119 in cells 112 and 1290
+** INFO   : find_flowcells_kdtree: sample/point 120 in cells 112 and 1291
+** INFO   : find_flowcells_kdtree: sample/point 121 in cells 112 and 1292
+** INFO   : find_flowcells_kdtree: sample/point 120 in cells 112 and 1292
+** INFO   : find_flowcells_kdtree: sample/point 122 in cells 124 and 1292
+** INFO   : find_flowcells_kdtree: sample/point 122 in cells 124 and 1293
+** INFO   : find_flowcells_kdtree: sample/point 123 in cells 124 and 1293
+** INFO   : find_flowcells_kdtree: sample/point 121 in cells 112 and 1293
+** INFO   : find_flowcells_kdtree: sample/point 123 in cells 124 and 1294
+** INFO   : find_flowcells_kdtree: sample/point 122 in cells 124 and 1294
+** INFO   : find_flowcells_kdtree: sample/point 124 in cells 124 and 1294
+** INFO   : find_flowcells_kdtree: sample/point 124 in cells 124 and 1295
+** INFO   : find_flowcells_kdtree: sample/point 123 in cells 124 and 1295
+** INFO   : find_flowcells_kdtree: sample/point 125 in cells 124 and 1295
+** INFO   : find_flowcells_kdtree: sample/point 125 in cells 124 and 1296
+** INFO   : find_flowcells_kdtree: sample/point 124 in cells 124 and 1296
+** INFO   : find_flowcells_kdtree: sample/point 126 in cells 124 and 1296
+** INFO   : find_flowcells_kdtree: sample/point 126 in cells 124 and 1297
+** INFO   : find_flowcells_kdtree: sample/point 127 in cells 135 and 1297
+** INFO   : find_flowcells_kdtree: sample/point 125 in cells 124 and 1297
+** INFO   : find_flowcells_kdtree: sample/point 127 in cells 135 and 1298
+** INFO   : find_flowcells_kdtree: sample/point 126 in cells 124 and 1298
+** INFO   : find_flowcells_kdtree: sample/point 128 in cells 135 and 1298
+** INFO   : find_flowcells_kdtree: sample/point 128 in cells 135 and 1299
+** INFO   : find_flowcells_kdtree: sample/point 127 in cells 135 and 1299
+** INFO   : find_flowcells_kdtree: sample/point 129 in cells 135 and 1299
+** INFO   : find_flowcells_kdtree: sample/point 129 in cells 135 and 1300
+** INFO   : find_flowcells_kdtree: sample/point 130 in cells 144 and 1300
+** INFO   : find_flowcells_kdtree: sample/point 128 in cells 135 and 1300
+** INFO   : find_flowcells_kdtree: sample/point 130 in cells 144 and 1301
+** INFO   : find_flowcells_kdtree: sample/point 129 in cells 135 and 1301
+** INFO   : find_flowcells_kdtree: sample/point 131 in cells 144 and 1301
+** INFO   : find_flowcells_kdtree: sample/point 131 in cells 144 and 1302
+** INFO   : find_flowcells_kdtree: sample/point 132 in cells 156 and 1303
+** INFO   : find_flowcells_kdtree: sample/point 133 in cells 156 and 1304
+** INFO   : find_flowcells_kdtree: sample/point 134 in cells 156 and 1305
+** INFO   : find_flowcells_kdtree: sample/point 135 in cells 156 and 1306
+** INFO   : find_flowcells_kdtree: sample/point 136 in cells 170 and 1307
+** INFO   : find_flowcells_kdtree: sample/point 137 in cells 170 and 1308
+** INFO   : find_flowcells_kdtree: sample/point 138 in cells 170 and 1309
+** INFO   : find_flowcells_kdtree: sample/point 139 in cells 170 and 1310
+** INFO   : find_flowcells_kdtree: sample/point 140 in cells 157 and 1310
+** INFO   : find_flowcells_kdtree: sample/point 138 in cells 170 and 1310
+** INFO   : find_flowcells_kdtree: sample/point 141 in cells 171 and 1310
+** INFO   : find_flowcells_kdtree: sample/point 137 in cells 170 and 1310
+** INFO   : find_flowcells_kdtree: sample/point 140 in cells 157 and 1311
+** INFO   : find_flowcells_kdtree: sample/point 139 in cells 170 and 1311
+** INFO   : find_flowcells_kdtree: sample/point 141 in cells 171 and 1311
+** INFO   : find_flowcells_kdtree: sample/point 138 in cells 170 and 1311
+** INFO   : find_flowcells_kdtree: sample/point 142 in cells 171 and 1311
+** INFO   : find_flowcells_kdtree: sample/point 141 in cells 171 and 1312
+** INFO   : find_flowcells_kdtree: sample/point 140 in cells 157 and 1312
+** INFO   : find_flowcells_kdtree: sample/point 142 in cells 171 and 1312
+** INFO   : find_flowcells_kdtree: sample/point 139 in cells 170 and 1312
+** INFO   : find_flowcells_kdtree: sample/point 143 in cells 171 and 1312
+** INFO   : find_flowcells_kdtree: sample/point 142 in cells 171 and 1313
+** INFO   : find_flowcells_kdtree: sample/point 143 in cells 171 and 1314
+** INFO   : find_flowcells_kdtree: sample/point 144 in cells 171 and 1315
+** INFO   : find_flowcells_kdtree: sample/point 145 in cells 171 and 1316
+** INFO   : find_flowcells_kdtree: sample/point 146 in cells 171 and 1317
+** INFO   : find_flowcells_kdtree: sample/point 147 in cells 171 and 1318
+** INFO   : find_flowcells_kdtree: sample/point 148 in cells 171 and 1319
+** INFO   : find_flowcells_kdtree: sample/point 149 in cells 184 and 1320
+** INFO   : find_flowcells_kdtree: sample/point 150 in cells 184 and 1321
+** INFO   : find_flowcells_kdtree: sample/point 151 in cells 184 and 1322
+** INFO   : find_flowcells_kdtree: sample/point 152 in cells 172 and 1322
+** INFO   : find_flowcells_kdtree: sample/point 150 in cells 184 and 1322
+** INFO   : find_flowcells_kdtree: sample/point 153 in cells 172 and 1322
+** INFO   : find_flowcells_kdtree: sample/point 149 in cells 184 and 1322
+** INFO   : find_flowcells_kdtree: sample/point 152 in cells 172 and 1323
+** INFO   : find_flowcells_kdtree: sample/point 151 in cells 184 and 1323
+** INFO   : find_flowcells_kdtree: sample/point 153 in cells 172 and 1323
+** INFO   : find_flowcells_kdtree: sample/point 150 in cells 184 and 1323
+** INFO   : find_flowcells_kdtree: sample/point 154 in cells 172 and 1323
+** INFO   : find_flowcells_kdtree: sample/point 153 in cells 172 and 1324
+** INFO   : find_flowcells_kdtree: sample/point 154 in cells 172 and 1324
+** INFO   : find_flowcells_kdtree: sample/point 152 in cells 172 and 1324
+** INFO   : find_flowcells_kdtree: sample/point 151 in cells 184 and 1324
+** INFO   : find_flowcells_kdtree: sample/point 154 in cells 172 and 1325
+** INFO   : find_flowcells_kdtree: sample/point 155 in cells 185 and 1325
+** INFO   : find_flowcells_kdtree: sample/point 153 in cells 172 and 1325
+** INFO   : find_flowcells_kdtree: sample/point 155 in cells 185 and 1326
+** INFO   : find_flowcells_kdtree: sample/point 154 in cells 172 and 1326
+** INFO   : find_flowcells_kdtree: sample/point 156 in cells 185 and 1326
+** INFO   : find_flowcells_kdtree: sample/point 156 in cells 185 and 1327
+** INFO   : find_flowcells_kdtree: sample/point 157 in cells 185 and 1328
+** INFO   : find_flowcells_kdtree: sample/point 158 in cells 185 and 1329
+** INFO   : find_flowcells_kdtree: sample/point 159 in cells 185 and 1330
+** INFO   : find_flowcells_kdtree: sample/point 160 in cells 185 and 1331
+** INFO   : find_flowcells_kdtree: sample/point 161 in cells 173 and 1332
+** INFO   : find_flowcells_kdtree: sample/point 162 in cells 186 and 1333
+** INFO   : find_flowcells_kdtree: sample/point 163 in cells 197 and 1334
+** INFO   : find_flowcells_kdtree: sample/point 164 in cells 197 and 1335
+** INFO   : find_flowcells_kdtree: sample/point 165 in cells 197 and 1336
+** INFO   : find_flowcells_kdtree: sample/point 166 in cells 210 and 1337
+** INFO   : find_flowcells_kdtree: sample/point 165 in cells 197 and 1337
+** INFO   : find_flowcells_kdtree: sample/point 167 in cells 198 and 1337
+** INFO   : find_flowcells_kdtree: sample/point 167 in cells 198 and 1338
+** INFO   : find_flowcells_kdtree: sample/point 166 in cells 210 and 1338
+** INFO   : find_flowcells_kdtree: sample/point 168 in cells 198 and 1338
+** INFO   : find_flowcells_kdtree: sample/point 168 in cells 198 and 1339
+** INFO   : find_flowcells_kdtree: sample/point 169 in cells 198 and 1340
+** INFO   : find_flowcells_kdtree: sample/point 170 in cells 198 and 1341
+** INFO   : find_flowcells_kdtree: sample/point 171 in cells 198 and 1341
+** INFO   : find_flowcells_kdtree: sample/point 169 in cells 198 and 1341
+** INFO   : find_flowcells_kdtree: sample/point 171 in cells 198 and 1342
+** INFO   : find_flowcells_kdtree: sample/point 170 in cells 198 and 1342
+** INFO   : find_flowcells_kdtree: sample/point 172 in cells 75 and 1343
+** INFO   : find_flowcells_kdtree: sample/point 173 in cells 75 and 1344
+** INFO   : find_flowcells_kdtree: sample/point 174 in cells 83 and 1345
+** INFO   : find_flowcells_kdtree: sample/point 175 in cells 83 and 1346
+** INFO   : find_flowcells_kdtree: sample/point 176 in cells 83 and 1347
+** INFO   : find_flowcells_kdtree: sample/point 177 in cells 83 and 1348
+** INFO   : find_flowcells_kdtree: sample/point 178 in cells 92 and 1349
+** INFO   : find_flowcells_kdtree: sample/point 179 in cells 92 and 1350
+** INFO   : find_flowcells_kdtree: sample/point 180 in cells 92 and 1351
+** INFO   : find_flowcells_kdtree: sample/point 181 in cells 92 and 1352
+** INFO   : find_flowcells_kdtree: sample/point 182 in cells 92 and 1353
+** INFO   : find_flowcells_kdtree: sample/point 183 in cells 92 and 1354
+** INFO   : find_flowcells_kdtree: sample/point 184 in cells 111 and 1355
+** INFO   : find_flowcells_kdtree: sample/point 185 in cells 111 and 1356
+** INFO   : find_flowcells_kdtree: sample/point 1365 in cells 111 and 1356
+** INFO   : find_flowcells_kdtree: sample/point 186 in cells 111 and 1357
+** INFO   : find_flowcells_kdtree: sample/point 187 in cells 111 and 1358
+** INFO   : find_flowcells_kdtree: sample/point 188 in cells 111 and 1359
+** INFO   : find_flowcells_kdtree: sample/point 189 in cells 111 and 1360
+** INFO   : find_flowcells_kdtree: sample/point 190 in cells 111 and 1361
+** INFO   : find_flowcells_kdtree: sample/point 191 in cells 123 and 1362
+** INFO   : find_flowcells_kdtree: sample/point 192 in cells 123 and 1363
+** INFO   : find_flowcells_kdtree: sample/point 193 in cells 133 and 1364
+** INFO   : find_flowcells_kdtree: sample/point 194 in cells 133 and 1365
+** INFO   : find_flowcells_kdtree: sample/point 195 in cells 133 and 1366
+** INFO   : find_flowcells_kdtree: sample/point 196 in cells 133 and 1367
+** INFO   : find_flowcells_kdtree: sample/point 197 in cells 133 and 1368
+** INFO   : find_flowcells_kdtree: sample/point 198 in cells 143 and 1369
+** INFO   : find_flowcells_kdtree: sample/point 199 in cells 143 and 1370
+** INFO   : find_flowcells_kdtree: sample/point 200 in cells 143 and 1371
+** INFO   : find_flowcells_kdtree: sample/point 201 in cells 154 and 1372
+** INFO   : find_flowcells_kdtree: sample/point 202 in cells 154 and 1373
+** INFO   : find_flowcells_kdtree: sample/point 203 in cells 154 and 1374
+** INFO   : find_flowcells_kdtree: sample/point 204 in cells 168 and 1375
+** INFO   : find_flowcells_kdtree: sample/point 205 in cells 168 and 1376
+** INFO   : find_flowcells_kdtree: sample/point 206 in cells 168 and 1377
+** INFO   : find_flowcells_kdtree: sample/point 207 in cells 168 and 1378
+** INFO   : find_flowcells_kdtree: sample/point 208 in cells 168 and 1379
+** INFO   : find_flowcells_kdtree: sample/point 209 in cells 168 and 1380
+** INFO   : find_flowcells_kdtree: sample/point 210 in cells 181 and 1381
+** INFO   : find_flowcells_kdtree: sample/point 211 in cells 181 and 1382
+** INFO   : find_flowcells_kdtree: sample/point 212 in cells 181 and 1383
+** INFO   : find_flowcells_kdtree: sample/point 213 in cells 192 and 1384
+** INFO   : find_flowcells_kdtree: sample/point 214 in cells 192 and 1385
+** INFO   : find_flowcells_kdtree: sample/point 215 in cells 205 and 1386
+** INFO   : find_flowcells_kdtree: sample/point 216 in cells 205 and 1387
+** INFO   : find_flowcells_kdtree: sample/point 217 in cells 205 and 1388
+** INFO   : find_flowcells_kdtree: sample/point 218 in cells 205 and 1389
+** INFO   : find_flowcells_kdtree: sample/point 219 in cells 219 and 1390
+** INFO   : find_flowcells_kdtree: sample/point 1315 in cells 219 and 1390
+** INFO   : find_flowcells_kdtree: sample/point 220 in cells 219 and 1391
+** INFO   : find_flowcells_kdtree: sample/point 221 in cells 219 and 1392
+** INFO   : find_flowcells_kdtree: sample/point 222 in cells 219 and 1393
+** INFO   : find_flowcells_kdtree: sample/point 223 in cells 219 and 1394
+** INFO   : find_flowcells_kdtree: sample/point 224 in cells 233 and 1395
+** INFO   : find_flowcells_kdtree: sample/point 225 in cells 233 and 1396
+** INFO   : find_flowcells_kdtree: sample/point 226 in cells 233 and 1397
+** INFO   : find_flowcells_kdtree: sample/point 227 in cells 233 and 1398
+** INFO   : find_flowcells_kdtree: sample/point 228 in cells 220 and 1399
+** INFO   : find_flowcells_kdtree: sample/point 229 in cells 220 and 1400
+** INFO   : find_flowcells_kdtree: sample/point 230 in cells 234 and 1401
+** INFO   : find_flowcells_kdtree: sample/point 231 in cells 234 and 1401
+** INFO   : find_flowcells_kdtree: sample/point 229 in cells 220 and 1401
+** INFO   : find_flowcells_kdtree: sample/point 231 in cells 234 and 1402
+** INFO   : find_flowcells_kdtree: sample/point 232 in cells 234 and 1403
+** INFO   : find_flowcells_kdtree: sample/point 233 in cells 234 and 1404
+** INFO   : find_flowcells_kdtree: sample/point 234 in cells 234 and 1405
+** INFO   : find_flowcells_kdtree: sample/point 235 in cells 234 and 1406
+** INFO   : find_flowcells_kdtree: sample/point 236 in cells 248 and 1407
+** INFO   : find_flowcells_kdtree: sample/point 237 in cells 248 and 1408
+** INFO   : find_flowcells_kdtree: sample/point 238 in cells 235 and 1409
+** INFO   : find_flowcells_kdtree: sample/point 239 in cells 235 and 1410
+** INFO   : find_flowcells_kdtree: sample/point 240 in cells 235 and 1411
+** INFO   : find_flowcells_kdtree: sample/point 241 in cells 249 and 1411
+** INFO   : find_flowcells_kdtree: sample/point 239 in cells 235 and 1411
+** INFO   : find_flowcells_kdtree: sample/point 241 in cells 249 and 1412
+** INFO   : find_flowcells_kdtree: sample/point 242 in cells 249 and 1413
+** INFO   : find_flowcells_kdtree: sample/point 243 in cells 249 and 1414
+** INFO   : find_flowcells_kdtree: sample/point 244 in cells 249 and 1415
+** INFO   : find_flowcells_kdtree: sample/point 245 in cells 262 and 1416
+** INFO   : find_flowcells_kdtree: sample/point 246 in cells 273 and 1417
+** INFO   : find_flowcells_kdtree: sample/point 247 in cells 273 and 1418
+** INFO   : find_flowcells_kdtree: sample/point 248 in cells 273 and 1419
+** INFO   : find_flowcells_kdtree: sample/point 249 in cells 273 and 1420
+** INFO   : find_flowcells_kdtree: sample/point 250 in cells 285 and 1421
+** INFO   : find_flowcells_kdtree: sample/point 251 in cells 285 and 1422
+** INFO   : find_flowcells_kdtree: sample/point 252 in cells 285 and 1423
+** INFO   : find_flowcells_kdtree: sample/point 253 in cells 285 and 1424
+** INFO   : find_flowcells_kdtree: sample/point 254 in cells 296 and 1425
+** INFO   : find_flowcells_kdtree: sample/point 255 in cells 296 and 1426
+** INFO   : find_flowcells_kdtree: sample/point 256 in cells 296 and 1427
+** INFO   : find_flowcells_kdtree: sample/point 257 in cells 296 and 1428
+** INFO   : find_flowcells_kdtree: sample/point 258 in cells 296 and 1429
+** INFO   : find_flowcells_kdtree: sample/point 259 in cells 296 and 1430
+** INFO   : find_flowcells_kdtree: sample/point 260 in cells 306 and 1431
+** INFO   : find_flowcells_kdtree: sample/point 261 in cells 306 and 1432
+** INFO   : find_flowcells_kdtree: sample/point 262 in cells 306 and 1433
+** INFO   : find_flowcells_kdtree: sample/point 263 in cells 306 and 1434
+** INFO   : find_flowcells_kdtree: sample/point 264 in cells 306 and 1435
+** INFO   : find_flowcells_kdtree: sample/point 265 in cells 323 and 1436
+** INFO   : find_flowcells_kdtree: sample/point 266 in cells 323 and 1437
+** INFO   : find_flowcells_kdtree: sample/point 267 in cells 323 and 1438
+** INFO   : find_flowcells_kdtree: sample/point 268 in cells 323 and 1439
+** INFO   : find_flowcells_kdtree: sample/point 269 in cells 323 and 1440
+** INFO   : find_flowcells_kdtree: sample/point 270 in cells 332 and 1441
+** INFO   : find_flowcells_kdtree: sample/point 271 in cells 332 and 1442
+** INFO   : find_flowcells_kdtree: sample/point 272 in cells 332 and 1443
+** INFO   : find_flowcells_kdtree: sample/point 273 in cells 332 and 1444
+** INFO   : find_flowcells_kdtree: sample/point 274 in cells 341 and 1445
+** INFO   : find_flowcells_kdtree: sample/point 275 in cells 341 and 1446
+** INFO   : find_flowcells_kdtree: sample/point 276 in cells 341 and 1447
+** INFO   : find_flowcells_kdtree: sample/point 277 in cells 341 and 1448
+** INFO   : find_flowcells_kdtree: sample/point 278 in cells 341 and 1449
+** INFO   : find_flowcells_kdtree: sample/point 279 in cells 358 and 1450
+** INFO   : find_flowcells_kdtree: sample/point 280 in cells 358 and 1451
+** INFO   : find_flowcells_kdtree: sample/point 281 in cells 358 and 1452
+** INFO   : find_flowcells_kdtree: sample/point 282 in cells 358 and 1453
+** INFO   : find_flowcells_kdtree: sample/point 283 in cells 358 and 1454
+** INFO   : find_flowcells_kdtree: sample/point 284 in cells 367 and 1455
+** INFO   : find_flowcells_kdtree: sample/point 285 in cells 367 and 1456
+** INFO   : find_flowcells_kdtree: sample/point 286 in cells 367 and 1457
+** INFO   : find_flowcells_kdtree: sample/point 287 in cells 367 and 1458
+** INFO   : find_flowcells_kdtree: sample/point 288 in cells 377 and 1459
+** INFO   : find_flowcells_kdtree: sample/point 289 in cells 377 and 1460
+** INFO   : find_flowcells_kdtree: sample/point 290 in cells 377 and 1461
+** INFO   : find_flowcells_kdtree: sample/point 291 in cells 377 and 1462
+** INFO   : find_flowcells_kdtree: sample/point 292 in cells 377 and 1463
+** INFO   : find_flowcells_kdtree: sample/point 293 in cells 388 and 1464
+** INFO   : find_flowcells_kdtree: sample/point 294 in cells 388 and 1465
+** INFO   : find_flowcells_kdtree: sample/point 295 in cells 388 and 1466
+** INFO   : find_flowcells_kdtree: sample/point 296 in cells 388 and 1467
+** INFO   : find_flowcells_kdtree: sample/point 297 in cells 400 and 1468
+** INFO   : find_flowcells_kdtree: sample/point 298 in cells 400 and 1469
+** INFO   : find_flowcells_kdtree: sample/point 347 in cells 400 and 1469
+** INFO   : find_flowcells_kdtree: sample/point 299 in cells 400 and 1470
+** INFO   : find_flowcells_kdtree: sample/point 300 in cells 400 and 1471
+** INFO   : find_flowcells_kdtree: sample/point 301 in cells 400 and 1472
+** INFO   : find_flowcells_kdtree: sample/point 302 in cells 389 and 1473
+** INFO   : find_flowcells_kdtree: sample/point 303 in cells 389 and 1474
+** INFO   : find_flowcells_kdtree: sample/point 304 in cells 389 and 1475
+** INFO   : find_flowcells_kdtree: sample/point 305 in cells 389 and 1476
+** INFO   : find_flowcells_kdtree: sample/point 306 in cells 389 and 1477
+** INFO   : find_flowcells_kdtree: sample/point 307 in cells 389 and 1478
+** INFO   : find_flowcells_kdtree: sample/point 308 in cells 389 and 1479
+** INFO   : find_flowcells_kdtree: sample/point 309 in cells 379 and 1480
+** INFO   : find_flowcells_kdtree: sample/point 310 in cells 379 and 1481
+** INFO   : find_flowcells_kdtree: sample/point 311 in cells 379 and 1482
+** INFO   : find_flowcells_kdtree: sample/point 312 in cells 379 and 1483
+** INFO   : find_flowcells_kdtree: sample/point 313 in cells 379 and 1484
+** INFO   : find_flowcells_kdtree: sample/point 314 in cells 379 and 1485
+** INFO   : find_flowcells_kdtree: sample/point 315 in cells 379 and 1486
+** INFO   : find_flowcells_kdtree: sample/point 316 in cells 370 and 1487
+** INFO   : find_flowcells_kdtree: sample/point 317 in cells 370 and 1488
+** INFO   : find_flowcells_kdtree: sample/point 318 in cells 370 and 1488
+** INFO   : find_flowcells_kdtree: sample/point 316 in cells 370 and 1488
+** INFO   : find_flowcells_kdtree: sample/point 318 in cells 370 and 1489
+** INFO   : find_flowcells_kdtree: sample/point 319 in cells 370 and 1489
+** INFO   : find_flowcells_kdtree: sample/point 317 in cells 370 and 1489
+** INFO   : find_flowcells_kdtree: sample/point 319 in cells 370 and 1490
+** INFO   : find_flowcells_kdtree: sample/point 320 in cells 380 and 1491
+** INFO   : find_flowcells_kdtree: sample/point 321 in cells 380 and 1492
+** INFO   : find_flowcells_kdtree: sample/point 322 in cells 380 and 1493
+** INFO   : find_flowcells_kdtree: sample/point 323 in cells 371 and 1494
+** INFO   : find_flowcells_kdtree: sample/point 324 in cells 371 and 1495
+** INFO   : find_flowcells_kdtree: sample/point 325 in cells 371 and 1496
+** INFO   : find_flowcells_kdtree: sample/point 326 in cells 371 and 1497
+** INFO   : find_flowcells_kdtree: sample/point 327 in cells 371 and 1498
+** INFO   : find_flowcells_kdtree: sample/point 328 in cells 362 and 1499
+** INFO   : find_flowcells_kdtree: sample/point 329 in cells 362 and 1500
+** INFO   : find_flowcells_kdtree: sample/point 330 in cells 362 and 1501
+** INFO   : find_flowcells_kdtree: sample/point 331 in cells 354 and 1502
+** INFO   : find_flowcells_kdtree: sample/point 332 in cells 354 and 1503
+** INFO   : find_flowcells_kdtree: sample/point 333 in cells 354 and 1504
+** INFO   : find_flowcells_kdtree: sample/point 334 in cells 345 and 1505
+** INFO   : find_flowcells_kdtree: sample/point 335 in cells 345 and 1506
+** INFO   : find_flowcells_kdtree: sample/point 336 in cells 345 and 1507
+** INFO   : find_flowcells_kdtree: sample/point 337 in cells 345 and 1508
+** INFO   : find_flowcells_kdtree: sample/point 338 in cells 345 and 1509
+** INFO   : find_flowcells_kdtree: sample/point 339 in cells 337 and 1510
+** INFO   : find_flowcells_kdtree: sample/point 340 in cells 337 and 1511
+** INFO   : find_flowcells_kdtree: sample/point 341 in cells 337 and 1512
+** INFO   : find_flowcells_kdtree: sample/point 342 in cells 337 and 1513
+** INFO   : find_flowcells_kdtree: sample/point 343 in cells 337 and 1514
+** INFO   : find_flowcells_kdtree: sample/point 344 in cells 337 and 1515
+** INFO   : find_flowcells_kdtree: sample/point 345 in cells 337 and 1516
+** INFO   : find_flowcells_kdtree: sample/point 346 in cells 329 and 1517
+** INFO   : find_flowcells_kdtree: sample/point 347 in cells 400 and 1518
+** INFO   : find_flowcells_kdtree: sample/point 298 in cells 400 and 1518
+** INFO   : find_flowcells_kdtree: sample/point 348 in cells 400 and 1519
+** INFO   : find_flowcells_kdtree: sample/point 349 in cells 400 and 1520
+** INFO   : find_flowcells_kdtree: sample/point 350 in cells 400 and 1521
+** INFO   : find_flowcells_kdtree: sample/point 351 in cells 414 and 1522
+** INFO   : find_flowcells_kdtree: sample/point 352 in cells 414 and 1523
+** INFO   : find_flowcells_kdtree: sample/point 353 in cells 414 and 1524
+** INFO   : find_flowcells_kdtree: sample/point 354 in cells 414 and 1525
+** INFO   : find_flowcells_kdtree: sample/point 355 in cells 429 and 1526
+** INFO   : find_flowcells_kdtree: sample/point 356 in cells 429 and 1527
+** INFO   : find_flowcells_kdtree: sample/point 357 in cells 429 and 1528
+** INFO   : find_flowcells_kdtree: sample/point 358 in cells 429 and 1529
+** INFO   : find_flowcells_kdtree: sample/point 359 in cells 445 and 1530
+** INFO   : find_flowcells_kdtree: sample/point 360 in cells 445 and 1531
+** INFO   : find_flowcells_kdtree: sample/point 361 in cells 445 and 1532
+** INFO   : find_flowcells_kdtree: sample/point 362 in cells 445 and 1533
+** INFO   : find_flowcells_kdtree: sample/point 363 in cells 460 and 1534
+** INFO   : find_flowcells_kdtree: sample/point 364 in cells 460 and 1535
+** INFO   : find_flowcells_kdtree: sample/point 365 in cells 460 and 1536
+** INFO   : find_flowcells_kdtree: sample/point 366 in cells 460 and 1537
+** INFO   : find_flowcells_kdtree: sample/point 367 in cells 460 and 1538
+** INFO   : find_flowcells_kdtree: sample/point 368 in cells 475 and 1539
+** INFO   : find_flowcells_kdtree: sample/point 369 in cells 461 and 1540
+** INFO   : find_flowcells_kdtree: sample/point 370 in cells 461 and 1541
+** INFO   : find_flowcells_kdtree: sample/point 371 in cells 461 and 1542
+** INFO   : find_flowcells_kdtree: sample/point 372 in cells 461 and 1543
+** INFO   : find_flowcells_kdtree: sample/point 373 in cells 461 and 1544
+** INFO   : find_flowcells_kdtree: sample/point 374 in cells 461 and 1545
+** INFO   : find_flowcells_kdtree: sample/point 375 in cells 461 and 1546
+** INFO   : find_flowcells_kdtree: sample/point 376 in cells 447 and 1547
+** INFO   : find_flowcells_kdtree: sample/point 377 in cells 447 and 1548
+** INFO   : find_flowcells_kdtree: sample/point 378 in cells 447 and 1549
+** INFO   : find_flowcells_kdtree: sample/point 379 in cells 447 and 1550
+** INFO   : find_flowcells_kdtree: sample/point 380 in cells 447 and 1551
+** INFO   : find_flowcells_kdtree: sample/point 381 in cells 447 and 1552
+** INFO   : find_flowcells_kdtree: sample/point 382 in cells 447 and 1553
+** INFO   : find_flowcells_kdtree: sample/point 383 in cells 432 and 1554
+** INFO   : find_flowcells_kdtree: sample/point 384 in cells 432 and 1555
+** INFO   : find_flowcells_kdtree: sample/point 385 in cells 432 and 1556
+** INFO   : find_flowcells_kdtree: sample/point 386 in cells 432 and 1556
+** INFO   : find_flowcells_kdtree: sample/point 384 in cells 432 and 1556
+** INFO   : find_flowcells_kdtree: sample/point 386 in cells 432 and 1557
+** INFO   : find_flowcells_kdtree: sample/point 387 in cells 432 and 1558
+** INFO   : find_flowcells_kdtree: sample/point 388 in cells 432 and 1559
+** INFO   : find_flowcells_kdtree: sample/point 389 in cells 448 and 1560
+** INFO   : find_flowcells_kdtree: sample/point 390 in cells 448 and 1561
+** INFO   : find_flowcells_kdtree: sample/point 391 in cells 448 and 1562
+** INFO   : find_flowcells_kdtree: sample/point 392 in cells 433 and 1563
+** INFO   : find_flowcells_kdtree: sample/point 393 in cells 433 and 1564
+** INFO   : find_flowcells_kdtree: sample/point 394 in cells 433 and 1565
+** INFO   : find_flowcells_kdtree: sample/point 395 in cells 449 and 1566
+** INFO   : find_flowcells_kdtree: sample/point 396 in cells 449 and 1567
+** INFO   : find_flowcells_kdtree: sample/point 397 in cells 449 and 1568
+** INFO   : find_flowcells_kdtree: sample/point 398 in cells 449 and 1569
+** INFO   : find_flowcells_kdtree: sample/point 399 in cells 449 and 1570
+** INFO   : find_flowcells_kdtree: sample/point 400 in cells 434 and 1571
+** INFO   : find_flowcells_kdtree: sample/point 401 in cells 434 and 1572
+** INFO   : find_flowcells_kdtree: sample/point 402 in cells 434 and 1573
+** INFO   : find_flowcells_kdtree: sample/point 403 in cells 434 and 1574
+** INFO   : find_flowcells_kdtree: sample/point 404 in cells 450 and 1574
+** INFO   : find_flowcells_kdtree: sample/point 402 in cells 434 and 1574
+** INFO   : find_flowcells_kdtree: sample/point 404 in cells 450 and 1575
+** INFO   : find_flowcells_kdtree: sample/point 405 in cells 450 and 1576
+** INFO   : find_flowcells_kdtree: sample/point 406 in cells 450 and 1577
+** INFO   : find_flowcells_kdtree: sample/point 407 in cells 450 and 1578
+** INFO   : find_flowcells_kdtree: sample/point 408 in cells 450 and 1579
+** INFO   : find_flowcells_kdtree: sample/point 409 in cells 435 and 1580
+** INFO   : find_flowcells_kdtree: sample/point 410 in cells 451 and 1581
+** INFO   : find_flowcells_kdtree: sample/point 411 in cells 460 and 1582
+** INFO   : find_flowcells_kdtree: sample/point 412 in cells 460 and 1583
+** INFO   : find_flowcells_kdtree: sample/point 413 in cells 460 and 1584
+** INFO   : find_flowcells_kdtree: sample/point 414 in cells 460 and 1585
+** INFO   : find_flowcells_kdtree: sample/point 415 in cells 460 and 1586
+** INFO   : find_flowcells_kdtree: sample/point 416 in cells 475 and 1587
+** INFO   : find_flowcells_kdtree: sample/point 417 in cells 475 and 1588
+** INFO   : find_flowcells_kdtree: sample/point 418 in cells 475 and 1589
+** INFO   : find_flowcells_kdtree: sample/point 419 in cells 475 and 1590
+** INFO   : find_flowcells_kdtree: sample/point 420 in cells 475 and 1591
+** INFO   : find_flowcells_kdtree: sample/point 421 in cells 490 and 1592
+** INFO   : find_flowcells_kdtree: sample/point 422 in cells 504 and 1593
+** INFO   : find_flowcells_kdtree: sample/point 423 in cells 504 and 1594
+** INFO   : find_flowcells_kdtree: sample/point 424 in cells 504 and 1595
+** INFO   : find_flowcells_kdtree: sample/point 425 in cells 504 and 1596
+** INFO   : find_flowcells_kdtree: sample/point 426 in cells 518 and 1597
+** INFO   : find_flowcells_kdtree: sample/point 427 in cells 518 and 1598
+** INFO   : find_flowcells_kdtree: sample/point 428 in cells 518 and 1599
+** INFO   : find_flowcells_kdtree: sample/point 429 in cells 518 and 1600
+** INFO   : find_flowcells_kdtree: sample/point 430 in cells 518 and 1601
+** INFO   : find_flowcells_kdtree: sample/point 431 in cells 531 and 1602
+** INFO   : find_flowcells_kdtree: sample/point 432 in cells 531 and 1603
+** INFO   : find_flowcells_kdtree: sample/point 433 in cells 531 and 1604
+** INFO   : find_flowcells_kdtree: sample/point 434 in cells 531 and 1605
+** INFO   : find_flowcells_kdtree: sample/point 435 in cells 542 and 1606
+** INFO   : find_flowcells_kdtree: sample/point 436 in cells 532 and 1607
+** INFO   : find_flowcells_kdtree: sample/point 437 in cells 532 and 1608
+** INFO   : find_flowcells_kdtree: sample/point 438 in cells 532 and 1609
+** INFO   : find_flowcells_kdtree: sample/point 439 in cells 532 and 1610
+** INFO   : find_flowcells_kdtree: sample/point 440 in cells 519 and 1611
+** INFO   : find_flowcells_kdtree: sample/point 441 in cells 519 and 1612
+** INFO   : find_flowcells_kdtree: sample/point 442 in cells 519 and 1613
+** INFO   : find_flowcells_kdtree: sample/point 443 in cells 519 and 1614
+** INFO   : find_flowcells_kdtree: sample/point 444 in cells 506 and 1615
+** INFO   : find_flowcells_kdtree: sample/point 445 in cells 506 and 1616
+** INFO   : find_flowcells_kdtree: sample/point 446 in cells 506 and 1617
+** INFO   : find_flowcells_kdtree: sample/point 447 in cells 506 and 1618
+** INFO   : find_flowcells_kdtree: sample/point 448 in cells 506 and 1619
+** INFO   : find_flowcells_kdtree: sample/point 449 in cells 506 and 1620
+** INFO   : find_flowcells_kdtree: sample/point 450 in cells 506 and 1621
+** INFO   : find_flowcells_kdtree: sample/point 451 in cells 492 and 1622
+** INFO   : find_flowcells_kdtree: sample/point 450 in cells 506 and 1622
+** INFO   : find_flowcells_kdtree: sample/point 452 in cells 492 and 1622
+** INFO   : find_flowcells_kdtree: sample/point 452 in cells 492 and 1623
+** INFO   : find_flowcells_kdtree: sample/point 453 in cells 507 and 1624
+** INFO   : find_flowcells_kdtree: sample/point 454 in cells 507 and 1625
+** INFO   : find_flowcells_kdtree: sample/point 455 in cells 507 and 1626
+** INFO   : find_flowcells_kdtree: sample/point 456 in cells 507 and 1627
+** INFO   : find_flowcells_kdtree: sample/point 457 in cells 507 and 1628
+** INFO   : find_flowcells_kdtree: sample/point 458 in cells 507 and 1629
+** INFO   : find_flowcells_kdtree: sample/point 459 in cells 521 and 1630
+** INFO   : find_flowcells_kdtree: sample/point 460 in cells 508 and 1631
+** INFO   : find_flowcells_kdtree: sample/point 461 in cells 508 and 1632
+** INFO   : find_flowcells_kdtree: sample/point 462 in cells 508 and 1633
+** INFO   : find_flowcells_kdtree: sample/point 463 in cells 508 and 1634
+** INFO   : find_flowcells_kdtree: sample/point 464 in cells 522 and 1635
+** INFO   : find_flowcells_kdtree: sample/point 465 in cells 522 and 1636
+** INFO   : find_flowcells_kdtree: sample/point 466 in cells 522 and 1637
+** INFO   : find_flowcells_kdtree: sample/point 467 in cells 522 and 1638
+** INFO   : find_flowcells_kdtree: sample/point 468 in cells 522 and 1639
+** INFO   : find_flowcells_kdtree: sample/point 469 in cells 522 and 1640
+** INFO   : find_flowcells_kdtree: sample/point 470 in cells 509 and 1641
+** INFO   : find_flowcells_kdtree: sample/point 471 in cells 509 and 1642
+** INFO   : find_flowcells_kdtree: sample/point 472 in cells 515 and 1643
+** INFO   : find_flowcells_kdtree: sample/point 473 in cells 515 and 1644
+** INFO   : find_flowcells_kdtree: sample/point 474 in cells 515 and 1645
+** INFO   : find_flowcells_kdtree: sample/point 475 in cells 515 and 1646
+** INFO   : find_flowcells_kdtree: sample/point 476 in cells 515 and 1647
+** INFO   : find_flowcells_kdtree: sample/point 477 in cells 515 and 1648
+** INFO   : find_flowcells_kdtree: sample/point 478 in cells 515 and 1649
+** INFO   : find_flowcells_kdtree: sample/point 479 in cells 514 and 1650
+** INFO   : find_flowcells_kdtree: sample/point 480 in cells 514 and 1651
+** INFO   : find_flowcells_kdtree: sample/point 481 in cells 514 and 1652
+** INFO   : find_flowcells_kdtree: sample/point 482 in cells 514 and 1653
+** INFO   : find_flowcells_kdtree: sample/point 483 in cells 514 and 1654
+** INFO   : find_flowcells_kdtree: sample/point 484 in cells 514 and 1655
+** INFO   : find_flowcells_kdtree: sample/point 485 in cells 514 and 1656
+** INFO   : find_flowcells_kdtree: sample/point 486 in cells 500 and 1657
+** INFO   : find_flowcells_kdtree: sample/point 487 in cells 500 and 1658
+** INFO   : find_flowcells_kdtree: sample/point 488 in cells 500 and 1659
+** INFO   : find_flowcells_kdtree: sample/point 489 in cells 500 and 1660
+** INFO   : find_flowcells_kdtree: sample/point 490 in cells 500 and 1660
+** INFO   : find_flowcells_kdtree: sample/point 488 in cells 500 and 1660
+** INFO   : find_flowcells_kdtree: sample/point 490 in cells 500 and 1661
+** INFO   : find_flowcells_kdtree: sample/point 491 in cells 500 and 1662
+** INFO   : find_flowcells_kdtree: sample/point 492 in cells 500 and 1663
+** INFO   : find_flowcells_kdtree: sample/point 493 in cells 500 and 1664
+** INFO   : find_flowcells_kdtree: sample/point 494 in cells 485 and 1665
+** INFO   : find_flowcells_kdtree: sample/point 495 in cells 485 and 1666
+** INFO   : find_flowcells_kdtree: sample/point 496 in cells 485 and 1667
+** INFO   : find_flowcells_kdtree: sample/point 497 in cells 485 and 1668
+** INFO   : find_flowcells_kdtree: sample/point 498 in cells 485 and 1669
+** INFO   : find_flowcells_kdtree: sample/point 499 in cells 485 and 1670
+** INFO   : find_flowcells_kdtree: sample/point 500 in cells 485 and 1671
+** INFO   : find_flowcells_kdtree: sample/point 501 in cells 471 and 1672
+** INFO   : find_flowcells_kdtree: sample/point 502 in cells 471 and 1673
+** INFO   : find_flowcells_kdtree: sample/point 503 in cells 471 and 1674
+** INFO   : find_flowcells_kdtree: sample/point 504 in cells 471 and 1675
+** INFO   : find_flowcells_kdtree: sample/point 505 in cells 471 and 1676
+** INFO   : find_flowcells_kdtree: sample/point 506 in cells 471 and 1677
+** INFO   : find_flowcells_kdtree: sample/point 507 in cells 457 and 1678
+** INFO   : find_flowcells_kdtree: sample/point 508 in cells 442 and 1679
+** INFO   : find_flowcells_kdtree: sample/point 509 in cells 442 and 1680
+** INFO   : find_flowcells_kdtree: sample/point 510 in cells 456 and 1681
+** INFO   : find_flowcells_kdtree: sample/point 511 in cells 456 and 1682
+** INFO   : find_flowcells_kdtree: sample/point 512 in cells 456 and 1683
+** INFO   : find_flowcells_kdtree: sample/point 513 in cells 456 and 1684
+** INFO   : find_flowcells_kdtree: sample/point 514 in cells 456 and 1685
+** INFO   : find_flowcells_kdtree: sample/point 515 in cells 441 and 1685
+** INFO   : find_flowcells_kdtree: sample/point 513 in cells 456 and 1685
+** INFO   : find_flowcells_kdtree: sample/point 515 in cells 441 and 1686
+** INFO   : find_flowcells_kdtree: sample/point 514 in cells 456 and 1686
+** INFO   : find_flowcells_kdtree: sample/point 516 in cells 441 and 1686
+** INFO   : find_flowcells_kdtree: sample/point 516 in cells 441 and 1687
+** INFO   : find_flowcells_kdtree: sample/point 517 in cells 441 and 1688
+** INFO   : find_flowcells_kdtree: sample/point 518 in cells 441 and 1689
+** INFO   : find_flowcells_kdtree: sample/point 519 in cells 441 and 1690
+** INFO   : find_flowcells_kdtree: sample/point 520 in cells 441 and 1691
+** INFO   : find_flowcells_kdtree: sample/point 521 in cells 441 and 1692
+** INFO   : find_flowcells_kdtree: sample/point 522 in cells 426 and 1693
+** INFO   : find_flowcells_kdtree: sample/point 523 in cells 522 and 1694
+** INFO   : find_flowcells_kdtree: sample/point 524 in cells 522 and 1695
+** INFO   : find_flowcells_kdtree: sample/point 525 in cells 522 and 1696
+** INFO   : find_flowcells_kdtree: sample/point 526 in cells 522 and 1697
+** INFO   : find_flowcells_kdtree: sample/point 527 in cells 528 and 1698
+** INFO   : find_flowcells_kdtree: sample/point 528 in cells 528 and 1699
+** INFO   : find_flowcells_kdtree: sample/point 529 in cells 528 and 1700
+** INFO   : find_flowcells_kdtree: sample/point 530 in cells 528 and 1701
+** INFO   : find_flowcells_kdtree: sample/point 531 in cells 515 and 1702
+** INFO   : find_flowcells_kdtree: sample/point 532 in cells 515 and 1703
+** INFO   : find_flowcells_kdtree: sample/point 533 in cells 527 and 1704
+** INFO   : find_flowcells_kdtree: sample/point 534 in cells 527 and 1705
+** INFO   : find_flowcells_kdtree: sample/point 535 in cells 527 and 1705
+** INFO   : find_flowcells_kdtree: sample/point 533 in cells 527 and 1705
+** INFO   : find_flowcells_kdtree: sample/point 535 in cells 527 and 1706
+** INFO   : find_flowcells_kdtree: sample/point 536 in cells 527 and 1707
+** INFO   : find_flowcells_kdtree: sample/point 537 in cells 527 and 1708
+** INFO   : find_flowcells_kdtree: sample/point 538 in cells 536 and 1709
+** INFO   : find_flowcells_kdtree: sample/point 539 in cells 536 and 1710
+** INFO   : find_flowcells_kdtree: sample/point 540 in cells 536 and 1711
+** INFO   : find_flowcells_kdtree: sample/point 541 in cells 536 and 1712
+** INFO   : find_flowcells_kdtree: sample/point 542 in cells 536 and 1713
+** INFO   : find_flowcells_kdtree: sample/point 543 in cells 525 and 1714
+** INFO   : find_flowcells_kdtree: sample/point 544 in cells 512 and 1715
+** INFO   : find_flowcells_kdtree: sample/point 545 in cells 512 and 1716
+** INFO   : find_flowcells_kdtree: sample/point 569 in cells 512 and 1716
+** INFO   : find_flowcells_kdtree: sample/point 546 in cells 512 and 1717
+** INFO   : find_flowcells_kdtree: sample/point 547 in cells 512 and 1718
+** INFO   : find_flowcells_kdtree: sample/point 548 in cells 512 and 1719
+** INFO   : find_flowcells_kdtree: sample/point 549 in cells 512 and 1720
+** INFO   : find_flowcells_kdtree: sample/point 550 in cells 499 and 1721
+** INFO   : find_flowcells_kdtree: sample/point 551 in cells 499 and 1722
+** INFO   : find_flowcells_kdtree: sample/point 552 in cells 499 and 1723
+** INFO   : find_flowcells_kdtree: sample/point 553 in cells 484 and 1724
+** INFO   : find_flowcells_kdtree: sample/point 554 in cells 484 and 1725
+** INFO   : find_flowcells_kdtree: sample/point 555 in cells 484 and 1726
+** INFO   : find_flowcells_kdtree: sample/point 556 in cells 484 and 1727
+** INFO   : find_flowcells_kdtree: sample/point 557 in cells 484 and 1728
+** INFO   : find_flowcells_kdtree: sample/point 558 in cells 484 and 1729
+** INFO   : find_flowcells_kdtree: sample/point 559 in cells 484 and 1730
+** INFO   : find_flowcells_kdtree: sample/point 560 in cells 469 and 1731
+** INFO   : find_flowcells_kdtree: sample/point 559 in cells 484 and 1731
+** INFO   : find_flowcells_kdtree: sample/point 561 in cells 469 and 1732
+** INFO   : find_flowcells_kdtree: sample/point 562 in cells 469 and 1733
+** INFO   : find_flowcells_kdtree: sample/point 563 in cells 454 and 1734
+** INFO   : find_flowcells_kdtree: sample/point 564 in cells 454 and 1735
+** INFO   : find_flowcells_kdtree: sample/point 565 in cells 454 and 1736
+** INFO   : find_flowcells_kdtree: sample/point 566 in cells 454 and 1737
+** INFO   : find_flowcells_kdtree: sample/point 567 in cells 454 and 1738
+** INFO   : find_flowcells_kdtree: sample/point 568 in cells 439 and 1739
+** INFO   : find_flowcells_kdtree: sample/point 569 in cells 512 and 1740
+** INFO   : find_flowcells_kdtree: sample/point 545 in cells 512 and 1740
+** INFO   : find_flowcells_kdtree: sample/point 570 in cells 512 and 1741
+** INFO   : find_flowcells_kdtree: sample/point 571 in cells 512 and 1742
+** INFO   : find_flowcells_kdtree: sample/point 572 in cells 499 and 1743
+** INFO   : find_flowcells_kdtree: sample/point 573 in cells 499 and 1744
+** INFO   : find_flowcells_kdtree: sample/point 574 in cells 499 and 1745
+** INFO   : find_flowcells_kdtree: sample/point 575 in cells 499 and 1746
+** INFO   : find_flowcells_kdtree: sample/point 576 in cells 499 and 1747
+** INFO   : find_flowcells_kdtree: sample/point 577 in cells 483 and 1748
+** INFO   : find_flowcells_kdtree: sample/point 578 in cells 475 and 1749
+** INFO   : find_flowcells_kdtree: sample/point 579 in cells 475 and 1750
+** INFO   : find_flowcells_kdtree: sample/point 580 in cells 489 and 1751
+** INFO   : find_flowcells_kdtree: sample/point 581 in cells 489 and 1752
+** INFO   : find_flowcells_kdtree: sample/point 582 in cells 489 and 1753
+** INFO   : find_flowcells_kdtree: sample/point 583 in cells 489 and 1754
+** INFO   : find_flowcells_kdtree: sample/point 584 in cells 489 and 1755
+** INFO   : find_flowcells_kdtree: sample/point 585 in cells 489 and 1756
+** INFO   : find_flowcells_kdtree: sample/point 586 in cells 489 and 1757
+** INFO   : find_flowcells_kdtree: sample/point 587 in cells 503 and 1758
+** INFO   : find_flowcells_kdtree: sample/point 588 in cells 503 and 1759
+** INFO   : find_flowcells_kdtree: sample/point 589 in cells 503 and 1760
+** INFO   : find_flowcells_kdtree: sample/point 590 in cells 503 and 1761
+** INFO   : find_flowcells_kdtree: sample/point 591 in cells 503 and 1762
+** INFO   : find_flowcells_kdtree: sample/point 592 in cells 503 and 1763
+** INFO   : find_flowcells_kdtree: sample/point 593 in cells 503 and 1764
+** INFO   : find_flowcells_kdtree: sample/point 594 in cells 516 and 1765
+** INFO   : find_flowcells_kdtree: sample/point 595 in cells 516 and 1766
+** INFO   : find_flowcells_kdtree: sample/point 596 in cells 516 and 1767
+** INFO   : find_flowcells_kdtree: sample/point 597 in cells 529 and 1768
+** INFO   : find_flowcells_kdtree: sample/point 598 in cells 529 and 1769
+** INFO   : find_flowcells_kdtree: sample/point 599 in cells 529 and 1770
+** INFO   : find_flowcells_kdtree: sample/point 600 in cells 529 and 1771
+** INFO   : find_flowcells_kdtree: sample/point 601 in cells 540 and 1772
+** INFO   : find_flowcells_kdtree: sample/point 602 in cells 540 and 1773
+** INFO   : find_flowcells_kdtree: sample/point 603 in cells 540 and 1774
+** INFO   : find_flowcells_kdtree: sample/point 604 in cells 540 and 1775
+** INFO   : find_flowcells_kdtree: sample/point 605 in cells 540 and 1776
+** INFO   : find_flowcells_kdtree: sample/point 606 in cells 550 and 1777
+** INFO   : find_flowcells_kdtree: sample/point 607 in cells 550 and 1778
+** INFO   : find_flowcells_kdtree: sample/point 608 in cells 550 and 1779
+** INFO   : find_flowcells_kdtree: sample/point 609 in cells 554 and 1780
+** INFO   : find_flowcells_kdtree: sample/point 610 in cells 554 and 1781
+** INFO   : find_flowcells_kdtree: sample/point 611 in cells 554 and 1782
+** INFO   : find_flowcells_kdtree: sample/point 612 in cells 554 and 1783
+** INFO   : find_flowcells_kdtree: sample/point 613 in cells 554 and 1784
+** INFO   : find_flowcells_kdtree: sample/point 614 in cells 554 and 1785
+** INFO   : find_flowcells_kdtree: sample/point 615 in cells 561 and 1786
+** INFO   : find_flowcells_kdtree: sample/point 616 in cells 561 and 1787
+** INFO   : find_flowcells_kdtree: sample/point 617 in cells 561 and 1788
+** INFO   : find_flowcells_kdtree: sample/point 618 in cells 561 and 1789
+** INFO   : find_flowcells_kdtree: sample/point 619 in cells 567 and 1790
+** INFO   : find_flowcells_kdtree: sample/point 620 in cells 567 and 1791
+** INFO   : find_flowcells_kdtree: sample/point 621 in cells 572 and 1792
+** INFO   : find_flowcells_kdtree: sample/point 622 in cells 572 and 1793
+** INFO   : find_flowcells_kdtree: sample/point 623 in cells 572 and 1794
+** INFO   : find_flowcells_kdtree: sample/point 624 in cells 578 and 1795
+** INFO   : find_flowcells_kdtree: sample/point 625 in cells 578 and 1796
+** INFO   : find_flowcells_kdtree: sample/point 626 in cells 578 and 1797
+** INFO   : find_flowcells_kdtree: sample/point 627 in cells 578 and 1798
+** INFO   : find_flowcells_kdtree: sample/point 628 in cells 578 and 1799
+** INFO   : find_flowcells_kdtree: sample/point 629 in cells 583 and 1800
+** INFO   : find_flowcells_kdtree: sample/point 630 in cells 583 and 1801
+** INFO   : find_flowcells_kdtree: sample/point 631 in cells 583 and 1802
+** INFO   : find_flowcells_kdtree: sample/point 632 in cells 583 and 1803
+** INFO   : find_flowcells_kdtree: sample/point 633 in cells 586 and 1804
+** INFO   : find_flowcells_kdtree: sample/point 634 in cells 586 and 1805
+** INFO   : find_flowcells_kdtree: sample/point 635 in cells 590 and 1806
+** INFO   : find_flowcells_kdtree: sample/point 636 in cells 590 and 1807
+** INFO   : find_flowcells_kdtree: sample/point 637 in cells 590 and 1808
+** INFO   : find_flowcells_kdtree: sample/point 638 in cells 590 and 1809
+** INFO   : find_flowcells_kdtree: sample/point 639 in cells 590 and 1810
+** INFO   : find_flowcells_kdtree: sample/point 640 in cells 594 and 1810
+** INFO   : find_flowcells_kdtree: sample/point 638 in cells 590 and 1810
+** INFO   : find_flowcells_kdtree: sample/point 640 in cells 594 and 1811
+** INFO   : find_flowcells_kdtree: sample/point 641 in cells 594 and 1812
+** INFO   : find_flowcells_kdtree: sample/point 642 in cells 594 and 1813
+** INFO   : find_flowcells_kdtree: sample/point 643 in cells 594 and 1814
+** INFO   : find_flowcells_kdtree: sample/point 644 in cells 596 and 1815
+** INFO   : find_flowcells_kdtree: sample/point 645 in cells 596 and 1815
+** INFO   : find_flowcells_kdtree: sample/point 643 in cells 594 and 1815
+** INFO   : find_flowcells_kdtree: sample/point 645 in cells 596 and 1816
+** INFO   : find_flowcells_kdtree: sample/point 646 in cells 599 and 1817
+** INFO   : find_flowcells_kdtree: sample/point 647 in cells 599 and 1818
+** INFO   : find_flowcells_kdtree: sample/point 648 in cells 599 and 1819
+** INFO   : find_flowcells_kdtree: sample/point 649 in cells 599 and 1820
+** INFO   : find_flowcells_kdtree: sample/point 650 in cells 599 and 1821
+** INFO   : find_flowcells_kdtree: sample/point 651 in cells 602 and 1822
+** INFO   : find_flowcells_kdtree: sample/point 652 in cells 602 and 1823
+** INFO   : find_flowcells_kdtree: sample/point 653 in cells 602 and 1824
+** INFO   : find_flowcells_kdtree: sample/point 654 in cells 602 and 1825
+** INFO   : find_flowcells_kdtree: sample/point 655 in cells 605 and 1826
+** INFO   : find_flowcells_kdtree: sample/point 656 in cells 605 and 1827
+** INFO   : find_flowcells_kdtree: sample/point 657 in cells 608 and 1828
+** INFO   : find_flowcells_kdtree: sample/point 658 in cells 608 and 1829
+** INFO   : find_flowcells_kdtree: sample/point 659 in cells 608 and 1830
+** INFO   : find_flowcells_kdtree: sample/point 660 in cells 608 and 1831
+** INFO   : find_flowcells_kdtree: sample/point 661 in cells 608 and 1832
+** INFO   : find_flowcells_kdtree: sample/point 662 in cells 608 and 1833
+** INFO   : find_flowcells_kdtree: sample/point 663 in cells 612 and 1834
+** INFO   : find_flowcells_kdtree: sample/point 664 in cells 612 and 1835
+** INFO   : find_flowcells_kdtree: sample/point 665 in cells 615 and 1836
+** INFO   : find_flowcells_kdtree: sample/point 666 in cells 615 and 1837
+** INFO   : find_flowcells_kdtree: sample/point 667 in cells 615 and 1838
+** INFO   : find_flowcells_kdtree: sample/point 668 in cells 615 and 1839
+** INFO   : find_flowcells_kdtree: sample/point 669 in cells 620 and 1840
+** INFO   : find_flowcells_kdtree: sample/point 670 in cells 620 and 1841
+** INFO   : find_flowcells_kdtree: sample/point 671 in cells 620 and 1842
+** INFO   : find_flowcells_kdtree: sample/point 672 in cells 620 and 1843
+** INFO   : find_flowcells_kdtree: sample/point 673 in cells 625 and 1844
+** INFO   : find_flowcells_kdtree: sample/point 674 in cells 625 and 1845
+** INFO   : find_flowcells_kdtree: sample/point 675 in cells 625 and 1846
+** INFO   : find_flowcells_kdtree: sample/point 676 in cells 625 and 1847
+** INFO   : find_flowcells_kdtree: sample/point 677 in cells 621 and 1848
+** INFO   : find_flowcells_kdtree: sample/point 678 in cells 621 and 1849
+** INFO   : find_flowcells_kdtree: sample/point 679 in cells 621 and 1850
+** INFO   : find_flowcells_kdtree: sample/point 680 in cells 626 and 1850
+** INFO   : find_flowcells_kdtree: sample/point 678 in cells 621 and 1850
+** INFO   : find_flowcells_kdtree: sample/point 680 in cells 626 and 1851
+** INFO   : find_flowcells_kdtree: sample/point 681 in cells 626 and 1851
+** INFO   : find_flowcells_kdtree: sample/point 679 in cells 621 and 1851
+** INFO   : find_flowcells_kdtree: sample/point 681 in cells 626 and 1852
+** INFO   : find_flowcells_kdtree: sample/point 682 in cells 626 and 1853
+** INFO   : find_flowcells_kdtree: sample/point 683 in cells 626 and 1854
+** INFO   : find_flowcells_kdtree: sample/point 684 in cells 626 and 1855
+** INFO   : find_flowcells_kdtree: sample/point 685 in cells 631 and 1856
+** INFO   : find_flowcells_kdtree: sample/point 686 in cells 631 and 1857
+** INFO   : find_flowcells_kdtree: sample/point 687 in cells 631 and 1858
+** INFO   : find_flowcells_kdtree: sample/point 688 in cells 631 and 1859
+** INFO   : find_flowcells_kdtree: sample/point 689 in cells 631 and 1860
+** INFO   : find_flowcells_kdtree: sample/point 690 in cells 631 and 1861
+** INFO   : find_flowcells_kdtree: sample/point 691 in cells 636 and 1862
+** INFO   : find_flowcells_kdtree: sample/point 692 in cells 643 and 1863
+** INFO   : find_flowcells_kdtree: sample/point 693 in cells 643 and 1864
+** INFO   : find_flowcells_kdtree: sample/point 694 in cells 643 and 1865
+** INFO   : find_flowcells_kdtree: sample/point 695 in cells 643 and 1866
+** INFO   : find_flowcells_kdtree: sample/point 696 in cells 643 and 1867
+** INFO   : find_flowcells_kdtree: sample/point 697 in cells 651 and 1868
+** INFO   : find_flowcells_kdtree: sample/point 698 in cells 651 and 1869
+** INFO   : find_flowcells_kdtree: sample/point 699 in cells 651 and 1870
+** INFO   : find_flowcells_kdtree: sample/point 700 in cells 651 and 1871
+** INFO   : find_flowcells_kdtree: sample/point 701 in cells 651 and 1872
+** INFO   : find_flowcells_kdtree: sample/point 702 in cells 660 and 1873
+** INFO   : find_flowcells_kdtree: sample/point 703 in cells 660 and 1874
+** INFO   : find_flowcells_kdtree: sample/point 704 in cells 660 and 1875
+** INFO   : find_flowcells_kdtree: sample/point 705 in cells 660 and 1876
+** INFO   : find_flowcells_kdtree: sample/point 706 in cells 660 and 1877
+** INFO   : find_flowcells_kdtree: sample/point 707 in cells 669 and 1878
+** INFO   : find_flowcells_kdtree: sample/point 708 in cells 669 and 1879
+** INFO   : find_flowcells_kdtree: sample/point 709 in cells 669 and 1880
+** INFO   : find_flowcells_kdtree: sample/point 710 in cells 678 and 1881
+** INFO   : find_flowcells_kdtree: sample/point 711 in cells 678 and 1882
+** INFO   : find_flowcells_kdtree: sample/point 712 in cells 688 and 1883
+** INFO   : find_flowcells_kdtree: sample/point 713 in cells 688 and 1884
+** INFO   : find_flowcells_kdtree: sample/point 714 in cells 688 and 1885
+** INFO   : find_flowcells_kdtree: sample/point 715 in cells 688 and 1886
+** INFO   : find_flowcells_kdtree: sample/point 716 in cells 688 and 1887
+** INFO   : find_flowcells_kdtree: sample/point 717 in cells 700 and 1888
+** INFO   : find_flowcells_kdtree: sample/point 718 in cells 700 and 1889
+** INFO   : find_flowcells_kdtree: sample/point 719 in cells 700 and 1890
+** INFO   : find_flowcells_kdtree: sample/point 720 in cells 700 and 1891
+** INFO   : find_flowcells_kdtree: sample/point 721 in cells 712 and 1892
+** INFO   : find_flowcells_kdtree: sample/point 722 in cells 712 and 1893
+** INFO   : find_flowcells_kdtree: sample/point 723 in cells 712 and 1894
+** INFO   : find_flowcells_kdtree: sample/point 724 in cells 712 and 1895
+** INFO   : find_flowcells_kdtree: sample/point 725 in cells 712 and 1896
+** INFO   : find_flowcells_kdtree: sample/point 726 in cells 724 and 1897
+** INFO   : find_flowcells_kdtree: sample/point 727 in cells 724 and 1898
+** INFO   : find_flowcells_kdtree: sample/point 728 in cells 724 and 1899
+** INFO   : find_flowcells_kdtree: sample/point 729 in cells 724 and 1900
+** INFO   : find_flowcells_kdtree: sample/point 730 in cells 736 and 1901
+** INFO   : find_flowcells_kdtree: sample/point 731 in cells 736 and 1902
+** INFO   : find_flowcells_kdtree: sample/point 732 in cells 736 and 1903
+** INFO   : find_flowcells_kdtree: sample/point 733 in cells 736 and 1904
+** INFO   : find_flowcells_kdtree: sample/point 734 in cells 748 and 1905
+** INFO   : find_flowcells_kdtree: sample/point 735 in cells 748 and 1906
+** INFO   : find_flowcells_kdtree: sample/point 818 in cells 748 and 1906
+** INFO   : find_flowcells_kdtree: sample/point 736 in cells 748 and 1907
+** INFO   : find_flowcells_kdtree: sample/point 737 in cells 748 and 1908
+** INFO   : find_flowcells_kdtree: sample/point 738 in cells 748 and 1909
+** INFO   : find_flowcells_kdtree: sample/point 739 in cells 760 and 1910
+** INFO   : find_flowcells_kdtree: sample/point 740 in cells 760 and 1911
+** INFO   : find_flowcells_kdtree: sample/point 741 in cells 760 and 1912
+** INFO   : find_flowcells_kdtree: sample/point 742 in cells 749 and 1913
+** INFO   : find_flowcells_kdtree: sample/point 743 in cells 749 and 1914
+** INFO   : find_flowcells_kdtree: sample/point 744 in cells 749 and 1915
+** INFO   : find_flowcells_kdtree: sample/point 745 in cells 749 and 1916
+** INFO   : find_flowcells_kdtree: sample/point 746 in cells 749 and 1917
+** INFO   : find_flowcells_kdtree: sample/point 747 in cells 749 and 1918
+** INFO   : find_flowcells_kdtree: sample/point 748 in cells 749 and 1919
+** INFO   : find_flowcells_kdtree: sample/point 749 in cells 749 and 1920
+** INFO   : find_flowcells_kdtree: sample/point 750 in cells 738 and 1921
+** INFO   : find_flowcells_kdtree: sample/point 751 in cells 738 and 1922
+** INFO   : find_flowcells_kdtree: sample/point 752 in cells 738 and 1923
+** INFO   : find_flowcells_kdtree: sample/point 753 in cells 738 and 1924
+** INFO   : find_flowcells_kdtree: sample/point 754 in cells 738 and 1925
+** INFO   : find_flowcells_kdtree: sample/point 755 in cells 738 and 1926
+** INFO   : find_flowcells_kdtree: sample/point 756 in cells 738 and 1927
+** INFO   : find_flowcells_kdtree: sample/point 757 in cells 739 and 1928
+** INFO   : find_flowcells_kdtree: sample/point 758 in cells 739 and 1929
+** INFO   : find_flowcells_kdtree: sample/point 759 in cells 739 and 1930
+** INFO   : find_flowcells_kdtree: sample/point 760 in cells 739 and 1931
+** INFO   : find_flowcells_kdtree: sample/point 761 in cells 739 and 1932
+** INFO   : find_flowcells_kdtree: sample/point 762 in cells 727 and 1933
+** INFO   : find_flowcells_kdtree: sample/point 763 in cells 727 and 1934
+** INFO   : find_flowcells_kdtree: sample/point 764 in cells 727 and 1935
+** INFO   : find_flowcells_kdtree: sample/point 765 in cells 716 and 1936
+** INFO   : find_flowcells_kdtree: sample/point 766 in cells 716 and 1937
+** INFO   : find_flowcells_kdtree: sample/point 767 in cells 716 and 1938
+** INFO   : find_flowcells_kdtree: sample/point 768 in cells 716 and 1939
+** INFO   : find_flowcells_kdtree: sample/point 769 in cells 716 and 1940
+** INFO   : find_flowcells_kdtree: sample/point 770 in cells 716 and 1941
+** INFO   : find_flowcells_kdtree: sample/point 771 in cells 716 and 1942
+** INFO   : find_flowcells_kdtree: sample/point 772 in cells 705 and 1943
+** INFO   : find_flowcells_kdtree: sample/point 773 in cells 705 and 1944
+** INFO   : find_flowcells_kdtree: sample/point 774 in cells 705 and 1945
+** INFO   : find_flowcells_kdtree: sample/point 775 in cells 705 and 1946
+** INFO   : find_flowcells_kdtree: sample/point 776 in cells 705 and 1947
+** INFO   : find_flowcells_kdtree: sample/point 777 in cells 717 and 1948
+** INFO   : find_flowcells_kdtree: sample/point 778 in cells 717 and 1949
+** INFO   : find_flowcells_kdtree: sample/point 779 in cells 717 and 1950
+** INFO   : find_flowcells_kdtree: sample/point 780 in cells 706 and 1951
+** INFO   : find_flowcells_kdtree: sample/point 781 in cells 706 and 1952
+** INFO   : find_flowcells_kdtree: sample/point 782 in cells 706 and 1953
+** INFO   : find_flowcells_kdtree: sample/point 783 in cells 718 and 1954
+** INFO   : find_flowcells_kdtree: sample/point 784 in cells 718 and 1955
+** INFO   : find_flowcells_kdtree: sample/point 785 in cells 718 and 1956
+** INFO   : find_flowcells_kdtree: sample/point 786 in cells 718 and 1957
+** INFO   : find_flowcells_kdtree: sample/point 787 in cells 730 and 1958
+** INFO   : find_flowcells_kdtree: sample/point 786 in cells 718 and 1958
+** INFO   : find_flowcells_kdtree: sample/point 788 in cells 730 and 1958
+** INFO   : find_flowcells_kdtree: sample/point 788 in cells 730 and 1959
+** INFO   : find_flowcells_kdtree: sample/point 789 in cells 730 and 1960
+** INFO   : find_flowcells_kdtree: sample/point 790 in cells 730 and 1961
+** INFO   : find_flowcells_kdtree: sample/point 791 in cells 742 and 1962
+** INFO   : find_flowcells_kdtree: sample/point 792 in cells 742 and 1963
+** INFO   : find_flowcells_kdtree: sample/point 793 in cells 742 and 1964
+** INFO   : find_flowcells_kdtree: sample/point 794 in cells 742 and 1965
+** INFO   : find_flowcells_kdtree: sample/point 795 in cells 742 and 1966
+** INFO   : find_flowcells_kdtree: sample/point 796 in cells 742 and 1967
+** INFO   : find_flowcells_kdtree: sample/point 797 in cells 754 and 1968
+** INFO   : find_flowcells_kdtree: sample/point 798 in cells 754 and 1969
+** INFO   : find_flowcells_kdtree: sample/point 799 in cells 743 and 1970
+** INFO   : find_flowcells_kdtree: sample/point 800 in cells 743 and 1971
+** INFO   : find_flowcells_kdtree: sample/point 801 in cells 743 and 1972
+** INFO   : find_flowcells_kdtree: sample/point 802 in cells 743 and 1973
+** INFO   : find_flowcells_kdtree: sample/point 803 in cells 755 and 1974
+** INFO   : find_flowcells_kdtree: sample/point 804 in cells 755 and 1975
+** INFO   : find_flowcells_kdtree: sample/point 805 in cells 755 and 1976
+** INFO   : find_flowcells_kdtree: sample/point 806 in cells 743 and 1977
+** INFO   : find_flowcells_kdtree: sample/point 807 in cells 743 and 1978
+** INFO   : find_flowcells_kdtree: sample/point 808 in cells 744 and 1979
+** INFO   : find_flowcells_kdtree: sample/point 809 in cells 744 and 1980
+** INFO   : find_flowcells_kdtree: sample/point 808 in cells 744 and 1980
+** INFO   : find_flowcells_kdtree: sample/point 810 in cells 744 and 1980
+** INFO   : find_flowcells_kdtree: sample/point 810 in cells 744 and 1981
+** INFO   : find_flowcells_kdtree: sample/point 811 in cells 744 and 1982
+** INFO   : find_flowcells_kdtree: sample/point 812 in cells 744 and 1983
+** INFO   : find_flowcells_kdtree: sample/point 813 in cells 756 and 1983
+** INFO   : find_flowcells_kdtree: sample/point 813 in cells 756 and 1984
+** INFO   : find_flowcells_kdtree: sample/point 814 in cells 756 and 1985
+** INFO   : find_flowcells_kdtree: sample/point 815 in cells 756 and 1986
+** INFO   : find_flowcells_kdtree: sample/point 816 in cells 756 and 1987
+** INFO   : find_flowcells_kdtree: sample/point 817 in cells 756 and 1988
+** INFO   : find_flowcells_kdtree: sample/point 818 in cells 748 and 1989
+** INFO   : find_flowcells_kdtree: sample/point 735 in cells 748 and 1989
+** INFO   : find_flowcells_kdtree: sample/point 819 in cells 748 and 1990
+** INFO   : find_flowcells_kdtree: sample/point 820 in cells 748 and 1991
+** INFO   : find_flowcells_kdtree: sample/point 821 in cells 748 and 1992
+** INFO   : find_flowcells_kdtree: sample/point 822 in cells 760 and 1993
+** INFO   : find_flowcells_kdtree: sample/point 823 in cells 760 and 1994
+** INFO   : find_flowcells_kdtree: sample/point 824 in cells 760 and 1995
+** INFO   : find_flowcells_kdtree: sample/point 825 in cells 760 and 1996
+** INFO   : find_flowcells_kdtree: sample/point 826 in cells 760 and 1997
+** INFO   : find_flowcells_kdtree: sample/point 827 in cells 783 and 1998
+** INFO   : find_flowcells_kdtree: sample/point 828 in cells 783 and 1999
+** INFO   : find_flowcells_kdtree: sample/point 829 in cells 783 and 2000
+** INFO   : find_flowcells_kdtree: sample/point 830 in cells 783 and 2001
+** INFO   : find_flowcells_kdtree: sample/point 831 in cells 795 and 2002
+** INFO   : find_flowcells_kdtree: sample/point 832 in cells 795 and 2003
+** INFO   : find_flowcells_kdtree: sample/point 833 in cells 795 and 2004
+** INFO   : find_flowcells_kdtree: sample/point 834 in cells 795 and 2005
+** INFO   : find_flowcells_kdtree: sample/point 835 in cells 795 and 2006
+** INFO   : find_flowcells_kdtree: sample/point 836 in cells 807 and 2007
+** INFO   : find_flowcells_kdtree: sample/point 837 in cells 807 and 2008
+** INFO   : find_flowcells_kdtree: sample/point 838 in cells 807 and 2009
+** INFO   : find_flowcells_kdtree: sample/point 839 in cells 807 and 2010
+** INFO   : find_flowcells_kdtree: sample/point 840 in cells 807 and 2011
+** INFO   : find_flowcells_kdtree: sample/point 841 in cells 830 and 2012
+** INFO   : find_flowcells_kdtree: sample/point 842 in cells 830 and 2013
+** INFO   : find_flowcells_kdtree: sample/point 843 in cells 830 and 2014
+** INFO   : find_flowcells_kdtree: sample/point 844 in cells 830 and 2015
+** INFO   : find_flowcells_kdtree: sample/point 845 in cells 830 and 2016
+** INFO   : find_flowcells_kdtree: sample/point 846 in cells 841 and 2017
+** INFO   : find_flowcells_kdtree: sample/point 847 in cells 841 and 2018
+** INFO   : find_flowcells_kdtree: sample/point 848 in cells 841 and 2019
+** INFO   : find_flowcells_kdtree: sample/point 849 in cells 841 and 2020
+** INFO   : find_flowcells_kdtree: sample/point 850 in cells 841 and 2021
+** INFO   : find_flowcells_kdtree: sample/point 851 in cells 852 and 2022
+** INFO   : find_flowcells_kdtree: sample/point 852 in cells 852 and 2023
+** INFO   : find_flowcells_kdtree: sample/point 853 in cells 852 and 2024
+** INFO   : find_flowcells_kdtree: sample/point 854 in cells 852 and 2025
+** INFO   : find_flowcells_kdtree: sample/point 855 in cells 863 and 2026
+** INFO   : find_flowcells_kdtree: sample/point 856 in cells 863 and 2027
+** INFO   : find_flowcells_kdtree: sample/point 857 in cells 863 and 2028
+** INFO   : find_flowcells_kdtree: sample/point 858 in cells 863 and 2029
+** INFO   : find_flowcells_kdtree: sample/point 859 in cells 863 and 2030
+** INFO   : find_flowcells_kdtree: sample/point 860 in cells 863 and 2031
+** INFO   : find_flowcells_kdtree: sample/point 861 in cells 853 and 2032
+** INFO   : find_flowcells_kdtree: sample/point 862 in cells 864 and 2033
+** INFO   : find_flowcells_kdtree: sample/point 863 in cells 864 and 2034
+** INFO   : find_flowcells_kdtree: sample/point 864 in cells 864 and 2035
+** INFO   : find_flowcells_kdtree: sample/point 865 in cells 864 and 2036
+** INFO   : find_flowcells_kdtree: sample/point 866 in cells 864 and 2037
+** INFO   : find_flowcells_kdtree: sample/point 867 in cells 875 and 2038
+** INFO   : find_flowcells_kdtree: sample/point 868 in cells 875 and 2039
+** INFO   : find_flowcells_kdtree: sample/point 869 in cells 875 and 2040
+** INFO   : find_flowcells_kdtree: sample/point 870 in cells 875 and 2041
+** INFO   : find_flowcells_kdtree: sample/point 871 in cells 875 and 2042
+** INFO   : find_flowcells_kdtree: sample/point 872 in cells 865 and 2043
+** INFO   : find_flowcells_kdtree: sample/point 873 in cells 865 and 2043
+** INFO   : find_flowcells_kdtree: sample/point 871 in cells 875 and 2043
+** INFO   : find_flowcells_kdtree: sample/point 873 in cells 865 and 2044
+** INFO   : find_flowcells_kdtree: sample/point 872 in cells 865 and 2044
+** INFO   : find_flowcells_kdtree: sample/point 874 in cells 865 and 2044
+** INFO   : find_flowcells_kdtree: sample/point 874 in cells 865 and 2045
+** INFO   : find_flowcells_kdtree: sample/point 875 in cells 865 and 2046
+** INFO   : find_flowcells_kdtree: sample/point 876 in cells 865 and 2046
+** INFO   : find_flowcells_kdtree: sample/point 874 in cells 865 and 2046
+** INFO   : find_flowcells_kdtree: sample/point 876 in cells 865 and 2047
+** INFO   : find_flowcells_kdtree: sample/point 877 in cells 865 and 2048
+** INFO   : find_flowcells_kdtree: sample/point 878 in cells 876 and 2049
+** INFO   : find_flowcells_kdtree: sample/point 879 in cells 876 and 2050
+** INFO   : find_flowcells_kdtree: sample/point 880 in cells 866 and 2051
+** INFO   : find_flowcells_kdtree: sample/point 881 in cells 866 and 2052
+** INFO   : find_flowcells_kdtree: sample/point 882 in cells 866 and 2053
+** INFO   : find_flowcells_kdtree: sample/point 883 in cells 866 and 2054
+** INFO   : find_flowcells_kdtree: sample/point 884 in cells 866 and 2055
+** INFO   : find_flowcells_kdtree: sample/point 885 in cells 877 and 2056
+** INFO   : find_flowcells_kdtree: sample/point 886 in cells 877 and 2057
+** INFO   : find_flowcells_kdtree: sample/point 887 in cells 877 and 2058
+** INFO   : find_flowcells_kdtree: sample/point 888 in cells 868 and 2059
+** INFO   : find_flowcells_kdtree: sample/point 889 in cells 868 and 2060
+** INFO   : find_flowcells_kdtree: sample/point 890 in cells 868 and 2061
+** INFO   : find_flowcells_kdtree: sample/point 891 in cells 868 and 2062
+** INFO   : find_flowcells_kdtree: sample/point 892 in cells 868 and 2063
+** INFO   : find_flowcells_kdtree: sample/point 893 in cells 868 and 2064
+** INFO   : find_flowcells_kdtree: sample/point 894 in cells 868 and 2065
+** INFO   : find_flowcells_kdtree: sample/point 895 in cells 868 and 2066
+** INFO   : find_flowcells_kdtree: sample/point 896 in cells 858 and 2067
+** INFO   : find_flowcells_kdtree: sample/point 897 in cells 858 and 2068
+** INFO   : find_flowcells_kdtree: sample/point 898 in cells 858 and 2068
+** INFO   : find_flowcells_kdtree: sample/point 896 in cells 858 and 2068
+** INFO   : find_flowcells_kdtree: sample/point 898 in cells 858 and 2069
+** INFO   : find_flowcells_kdtree: sample/point 899 in cells 858 and 2069
+** INFO   : find_flowcells_kdtree: sample/point 897 in cells 858 and 2069
+** INFO   : find_flowcells_kdtree: sample/point 899 in cells 858 and 2070
+** INFO   : find_flowcells_kdtree: sample/point 900 in cells 858 and 2071
+** INFO   : find_flowcells_kdtree: sample/point 901 in cells 858 and 2072
+** INFO   : find_flowcells_kdtree: sample/point 902 in cells 870 and 2073
+** INFO   : find_flowcells_kdtree: sample/point 903 in cells 859 and 2074
+** INFO   : find_flowcells_kdtree: sample/point 904 in cells 859 and 2075
+** INFO   : find_flowcells_kdtree: sample/point 905 in cells 859 and 2076
+** INFO   : find_flowcells_kdtree: sample/point 906 in cells 859 and 2077
+** INFO   : find_flowcells_kdtree: sample/point 907 in cells 859 and 2078
+** INFO   : find_flowcells_kdtree: sample/point 908 in cells 859 and 2079
+** INFO   : find_flowcells_kdtree: sample/point 909 in cells 859 and 2080
+** INFO   : find_flowcells_kdtree: sample/point 910 in cells 848 and 2081
+** INFO   : find_flowcells_kdtree: sample/point 911 in cells 848 and 2082
+** INFO   : find_flowcells_kdtree: sample/point 912 in cells 848 and 2083
+** INFO   : find_flowcells_kdtree: sample/point 913 in cells 848 and 2084
+** INFO   : find_flowcells_kdtree: sample/point 914 in cells 848 and 2085
+** INFO   : find_flowcells_kdtree: sample/point 915 in cells 848 and 2086
+** INFO   : find_flowcells_kdtree: sample/point 916 in cells 848 and 2087
+** INFO   : find_flowcells_kdtree: sample/point 917 in cells 838 and 2088
+** INFO   : find_flowcells_kdtree: sample/point 918 in cells 838 and 2089
+** INFO   : find_flowcells_kdtree: sample/point 919 in cells 838 and 2090
+** INFO   : find_flowcells_kdtree: sample/point 920 in cells 838 and 2091
+** INFO   : find_flowcells_kdtree: sample/point 921 in cells 849 and 2092
+** INFO   : find_flowcells_kdtree: sample/point 922 in cells 678 and 2093
+** INFO   : find_flowcells_kdtree: sample/point 923 in cells 678 and 2094
+** INFO   : find_flowcells_kdtree: sample/point 924 in cells 678 and 2095
+** INFO   : find_flowcells_kdtree: sample/point 925 in cells 678 and 2096
+** INFO   : find_flowcells_kdtree: sample/point 926 in cells 678 and 2097
+** INFO   : find_flowcells_kdtree: sample/point 927 in cells 678 and 2098
+** INFO   : find_flowcells_kdtree: sample/point 928 in cells 687 and 2099
+** INFO   : find_flowcells_kdtree: sample/point 929 in cells 687 and 2100
+** INFO   : find_flowcells_kdtree: sample/point 930 in cells 699 and 2101
+** INFO   : find_flowcells_kdtree: sample/point 931 in cells 699 and 2102
+** INFO   : find_flowcells_kdtree: sample/point 932 in cells 699 and 2103
+** INFO   : find_flowcells_kdtree: sample/point 933 in cells 699 and 2104
+** INFO   : find_flowcells_kdtree: sample/point 934 in cells 699 and 2105
+** INFO   : find_flowcells_kdtree: sample/point 935 in cells 699 and 2106
+** INFO   : find_flowcells_kdtree: sample/point 936 in cells 711 and 2107
+** INFO   : find_flowcells_kdtree: sample/point 937 in cells 711 and 2108
+** INFO   : find_flowcells_kdtree: sample/point 938 in cells 722 and 2109
+** INFO   : find_flowcells_kdtree: sample/point 939 in cells 722 and 2110
+** INFO   : find_flowcells_kdtree: sample/point 940 in cells 722 and 2111
+** INFO   : find_flowcells_kdtree: sample/point 941 in cells 722 and 2112
+** INFO   : find_flowcells_kdtree: sample/point 942 in cells 734 and 2113
+** INFO   : find_flowcells_kdtree: sample/point 943 in cells 734 and 2114
+** INFO   : find_flowcells_kdtree: sample/point 944 in cells 734 and 2115
+** INFO   : find_flowcells_kdtree: sample/point 945 in cells 734 and 2116
+** INFO   : find_flowcells_kdtree: sample/point 946 in cells 734 and 2117
+** INFO   : find_flowcells_kdtree: sample/point 947 in cells 746 and 2118
+** INFO   : find_flowcells_kdtree: sample/point 948 in cells 746 and 2119
+** INFO   : find_flowcells_kdtree: sample/point 949 in cells 746 and 2120
+** INFO   : find_flowcells_kdtree: sample/point 950 in cells 746 and 2121
+** INFO   : find_flowcells_kdtree: sample/point 951 in cells 758 and 2122
+** INFO   : find_flowcells_kdtree: sample/point 952 in cells 758 and 2123
+** INFO   : find_flowcells_kdtree: sample/point 953 in cells 758 and 2124
+** INFO   : find_flowcells_kdtree: sample/point 954 in cells 758 and 2125
+** INFO   : find_flowcells_kdtree: sample/point 955 in cells 758 and 2126
+** INFO   : find_flowcells_kdtree: sample/point 956 in cells 770 and 2127
+** INFO   : find_flowcells_kdtree: sample/point 957 in cells 770 and 2128
+** INFO   : find_flowcells_kdtree: sample/point 958 in cells 770 and 2129
+** INFO   : find_flowcells_kdtree: sample/point 959 in cells 770 and 2130
+** INFO   : find_flowcells_kdtree: sample/point 960 in cells 770 and 2131
+** INFO   : find_flowcells_kdtree: sample/point 961 in cells 782 and 2132
+** INFO   : find_flowcells_kdtree: sample/point 962 in cells 771 and 2133
+** INFO   : find_flowcells_kdtree: sample/point 963 in cells 771 and 2134
+** INFO   : find_flowcells_kdtree: sample/point 964 in cells 771 and 2135
+** INFO   : find_flowcells_kdtree: sample/point 965 in cells 783 and 2136
+** INFO   : find_flowcells_kdtree: sample/point 966 in cells 783 and 2137
+** INFO   : find_flowcells_kdtree: sample/point 967 in cells 794 and 2138
+** INFO   : find_flowcells_kdtree: sample/point 968 in cells 794 and 2139
+** INFO   : find_flowcells_kdtree: sample/point 969 in cells 794 and 2140
+** INFO   : find_flowcells_kdtree: sample/point 970 in cells 806 and 2141
+** INFO   : find_flowcells_kdtree: sample/point 971 in cells 806 and 2142
+** INFO   : find_flowcells_kdtree: sample/point 972 in cells 806 and 2143
+** INFO   : find_flowcells_kdtree: sample/point 973 in cells 806 and 2144
+** INFO   : find_flowcells_kdtree: sample/point 974 in cells 806 and 2145
+** INFO   : find_flowcells_kdtree: sample/point 975 in cells 806 and 2146
+** INFO   : find_flowcells_kdtree: sample/point 976 in cells 818 and 2147
+** INFO   : find_flowcells_kdtree: sample/point 977 in cells 828 and 2148
+** INFO   : find_flowcells_kdtree: sample/point 978 in cells 828 and 2149
+** INFO   : find_flowcells_kdtree: sample/point 979 in cells 828 and 2150
+** INFO   : find_flowcells_kdtree: sample/point 980 in cells 828 and 2151
+** INFO   : find_flowcells_kdtree: sample/point 981 in cells 840 and 2152
+** INFO   : find_flowcells_kdtree: sample/point 982 in cells 840 and 2153
+** INFO   : find_flowcells_kdtree: sample/point 983 in cells 840 and 2154
+** INFO   : find_flowcells_kdtree: sample/point 984 in cells 840 and 2155
+** INFO   : find_flowcells_kdtree: sample/point 985 in cells 851 and 2156
+** INFO   : find_flowcells_kdtree: sample/point 986 in cells 851 and 2157
+** INFO   : find_flowcells_kdtree: sample/point 987 in cells 851 and 2158
+** INFO   : find_flowcells_kdtree: sample/point 988 in cells 851 and 2159
+** INFO   : find_flowcells_kdtree: sample/point 989 in cells 851 and 2160
+** INFO   : find_flowcells_kdtree: sample/point 990 in cells 851 and 2161
+** INFO   : find_flowcells_kdtree: sample/point 991 in cells 862 and 2162
+** INFO   : find_flowcells_kdtree: sample/point 992 in cells 862 and 2163
+** INFO   : find_flowcells_kdtree: sample/point 993 in cells 862 and 2164
+** INFO   : find_flowcells_kdtree: sample/point 994 in cells 862 and 2165
+** INFO   : find_flowcells_kdtree: sample/point 995 in cells 873 and 2166
+** INFO   : find_flowcells_kdtree: sample/point 996 in cells 873 and 2167
+** INFO   : find_flowcells_kdtree: sample/point 997 in cells 873 and 2168
+** INFO   : find_flowcells_kdtree: sample/point 998 in cells 873 and 2169
+** INFO   : find_flowcells_kdtree: sample/point 999 in cells 883 and 2170
+** INFO   : find_flowcells_kdtree: sample/point 1000 in cells 883 and 2171
+** INFO   : find_flowcells_kdtree: sample/point 1001 in cells 883 and 2172
+** INFO   : find_flowcells_kdtree: sample/point 1002 in cells 883 and 2173
+** INFO   : find_flowcells_kdtree: sample/point 1003 in cells 883 and 2174
+** INFO   : find_flowcells_kdtree: sample/point 1004 in cells 892 and 2175
+** INFO   : find_flowcells_kdtree: sample/point 1005 in cells 892 and 2176
+** INFO   : find_flowcells_kdtree: sample/point 1006 in cells 892 and 2177
+** INFO   : find_flowcells_kdtree: sample/point 1007 in cells 892 and 2178
+** INFO   : find_flowcells_kdtree: sample/point 1008 in cells 892 and 2179
+** INFO   : find_flowcells_kdtree: sample/point 1009 in cells 892 and 2180
+** INFO   : find_flowcells_kdtree: sample/point 1010 in cells 901 and 2181
+** INFO   : find_flowcells_kdtree: sample/point 1011 in cells 901 and 2181
+** INFO   : find_flowcells_kdtree: sample/point 1009 in cells 892 and 2181
+** INFO   : find_flowcells_kdtree: sample/point 1011 in cells 901 and 2182
+** INFO   : find_flowcells_kdtree: sample/point 1010 in cells 901 and 2182
+** INFO   : find_flowcells_kdtree: sample/point 1012 in cells 901 and 2183
+** INFO   : find_flowcells_kdtree: sample/point 1013 in cells 901 and 2184
+** INFO   : find_flowcells_kdtree: sample/point 1014 in cells 901 and 2185
+** INFO   : find_flowcells_kdtree: sample/point 1015 in cells 910 and 2185
+** INFO   : find_flowcells_kdtree: sample/point 1015 in cells 910 and 2186
+** INFO   : find_flowcells_kdtree: sample/point 1014 in cells 901 and 2186
+** INFO   : find_flowcells_kdtree: sample/point 1016 in cells 910 and 2187
+** INFO   : find_flowcells_kdtree: sample/point 1017 in cells 917 and 2188
+** INFO   : find_flowcells_kdtree: sample/point 1018 in cells 917 and 2189
+** INFO   : find_flowcells_kdtree: sample/point 1019 in cells 917 and 2190
+** INFO   : find_flowcells_kdtree: sample/point 1020 in cells 917 and 2191
+** INFO   : find_flowcells_kdtree: sample/point 1021 in cells 917 and 2192
+** INFO   : find_flowcells_kdtree: sample/point 1022 in cells 917 and 2193
+** INFO   : find_flowcells_kdtree: sample/point 1023 in cells 917 and 2194
+** INFO   : find_flowcells_kdtree: sample/point 1024 in cells 925 and 2195
+** INFO   : find_flowcells_kdtree: sample/point 1025 in cells 925 and 2196
+** INFO   : find_flowcells_kdtree: sample/point 1026 in cells 925 and 2197
+** INFO   : find_flowcells_kdtree: sample/point 1027 in cells 925 and 2198
+** INFO   : find_flowcells_kdtree: sample/point 1028 in cells 925 and 2199
+** INFO   : find_flowcells_kdtree: sample/point 1029 in cells 934 and 2200
+** INFO   : find_flowcells_kdtree: sample/point 1030 in cells 934 and 2201
+** INFO   : find_flowcells_kdtree: sample/point 1031 in cells 934 and 2202
+** INFO   : find_flowcells_kdtree: sample/point 1032 in cells 934 and 2203
+** INFO   : find_flowcells_kdtree: sample/point 1033 in cells 943 and 2204
+** INFO   : find_flowcells_kdtree: sample/point 1034 in cells 943 and 2205
+** INFO   : find_flowcells_kdtree: sample/point 1035 in cells 943 and 2206
+** INFO   : find_flowcells_kdtree: sample/point 1036 in cells 943 and 2207
+** INFO   : find_flowcells_kdtree: sample/point 1037 in cells 943 and 2208
+** INFO   : find_flowcells_kdtree: sample/point 1038 in cells 952 and 2209
+** INFO   : find_flowcells_kdtree: sample/point 1039 in cells 943 and 2210
+** INFO   : find_flowcells_kdtree: sample/point 1040 in cells 935 and 2211
+** INFO   : find_flowcells_kdtree: sample/point 1041 in cells 944 and 2212
+** INFO   : find_flowcells_kdtree: sample/point 1042 in cells 944 and 2213
+** INFO   : find_flowcells_kdtree: sample/point 1043 in cells 944 and 2214
+** INFO   : find_flowcells_kdtree: sample/point 1044 in cells 944 and 2215
+** INFO   : find_flowcells_kdtree: sample/point 1045 in cells 944 and 2216
+** INFO   : find_flowcells_kdtree: sample/point 1046 in cells 944 and 2217
+** INFO   : find_flowcells_kdtree: sample/point 1047 in cells 944 and 2218
+** INFO   : find_flowcells_kdtree: sample/point 1048 in cells 953 and 2219
+** INFO   : find_flowcells_kdtree: sample/point 1049 in cells 945 and 2220
+** INFO   : find_flowcells_kdtree: sample/point 1050 in cells 945 and 2221
+** INFO   : find_flowcells_kdtree: sample/point 1051 in cells 945 and 2222
+** INFO   : find_flowcells_kdtree: sample/point 1052 in cells 945 and 2223
+** INFO   : find_flowcells_kdtree: sample/point 1053 in cells 954 and 2224
+** INFO   : find_flowcells_kdtree: sample/point 1054 in cells 954 and 2225
+** INFO   : find_flowcells_kdtree: sample/point 1055 in cells 954 and 2226
+** INFO   : find_flowcells_kdtree: sample/point 1056 in cells 954 and 2227
+** INFO   : find_flowcells_kdtree: sample/point 1057 in cells 954 and 2228
+** INFO   : find_flowcells_kdtree: sample/point 1058 in cells 954 and 2229
+** INFO   : find_flowcells_kdtree: sample/point 1059 in cells 954 and 2230
+** INFO   : find_flowcells_kdtree: sample/point 1060 in cells 946 and 2231
+** INFO   : find_flowcells_kdtree: sample/point 1059 in cells 954 and 2231
+** INFO   : find_flowcells_kdtree: sample/point 1061 in cells 946 and 2231
+** INFO   : find_flowcells_kdtree: sample/point 1061 in cells 946 and 2232
+** INFO   : find_flowcells_kdtree: sample/point 1062 in cells 955 and 2232
+** INFO   : find_flowcells_kdtree: sample/point 1060 in cells 946 and 2232
+** INFO   : find_flowcells_kdtree: sample/point 1062 in cells 955 and 2233
+** INFO   : find_flowcells_kdtree: sample/point 1063 in cells 955 and 2234
+** INFO   : find_flowcells_kdtree: sample/point 1064 in cells 955 and 2235
+** INFO   : find_flowcells_kdtree: sample/point 1065 in cells 955 and 2236
+** INFO   : find_flowcells_kdtree: sample/point 1066 in cells 955 and 2237
+** INFO   : find_flowcells_kdtree: sample/point 1067 in cells 955 and 2238
+** INFO   : find_flowcells_kdtree: sample/point 1068 in cells 947 and 2239
+** INFO   : find_flowcells_kdtree: sample/point 1069 in cells 947 and 2240
+** INFO   : find_flowcells_kdtree: sample/point 1070 in cells 947 and 2241
+** INFO   : find_flowcells_kdtree: sample/point 1071 in cells 947 and 2241
+** INFO   : find_flowcells_kdtree: sample/point 1069 in cells 947 and 2241
+** INFO   : find_flowcells_kdtree: sample/point 1071 in cells 947 and 2242
+** INFO   : find_flowcells_kdtree: sample/point 1072 in cells 947 and 2243
+** INFO   : find_flowcells_kdtree: sample/point 1073 in cells 947 and 2244
+** INFO   : find_flowcells_kdtree: sample/point 1074 in cells 956 and 2245
+** INFO   : find_flowcells_kdtree: sample/point 1075 in cells 950 and 2246
+** INFO   : find_flowcells_kdtree: sample/point 1076 in cells 950 and 2247
+** INFO   : find_flowcells_kdtree: sample/point 1077 in cells 950 and 2248
+** INFO   : find_flowcells_kdtree: sample/point 1078 in cells 950 and 2249
+** INFO   : find_flowcells_kdtree: sample/point 1079 in cells 950 and 2250
+** INFO   : find_flowcells_kdtree: sample/point 1080 in cells 959 and 2251
+** INFO   : find_flowcells_kdtree: sample/point 1081 in cells 959 and 2252
+** INFO   : find_flowcells_kdtree: sample/point 1082 in cells 959 and 2252
+** INFO   : find_flowcells_kdtree: sample/point 1080 in cells 959 and 2252
+** INFO   : find_flowcells_kdtree: sample/point 1082 in cells 959 and 2253
+** INFO   : find_flowcells_kdtree: sample/point 1083 in cells 959 and 2254
+** INFO   : find_flowcells_kdtree: sample/point 1084 in cells 968 and 2255
+** INFO   : find_flowcells_kdtree: sample/point 1085 in cells 968 and 2256
+** INFO   : find_flowcells_kdtree: sample/point 1086 in cells 968 and 2257
+** INFO   : find_flowcells_kdtree: sample/point 1087 in cells 968 and 2258
+** INFO   : find_flowcells_kdtree: sample/point 1088 in cells 968 and 2259
+** INFO   : find_flowcells_kdtree: sample/point 1089 in cells 978 and 2260
+** INFO   : find_flowcells_kdtree: sample/point 1090 in cells 978 and 2261
+** INFO   : find_flowcells_kdtree: sample/point 1091 in cells 978 and 2262
+** INFO   : find_flowcells_kdtree: sample/point 1092 in cells 978 and 2262
+** INFO   : find_flowcells_kdtree: sample/point 1090 in cells 978 and 2262
+** INFO   : find_flowcells_kdtree: sample/point 1092 in cells 978 and 2263
+** INFO   : find_flowcells_kdtree: sample/point 1093 in cells 989 and 2264
+** INFO   : find_flowcells_kdtree: sample/point 1094 in cells 989 and 2265
+** INFO   : find_flowcells_kdtree: sample/point 1095 in cells 989 and 2266
+** INFO   : find_flowcells_kdtree: sample/point 1096 in cells 989 and 2267
+** INFO   : find_flowcells_kdtree: sample/point 1097 in cells 977 and 2268
+** INFO   : find_flowcells_kdtree: sample/point 1098 in cells 977 and 2269
+** INFO   : find_flowcells_kdtree: sample/point 1099 in cells 977 and 2270
+** INFO   : find_flowcells_kdtree: sample/point 1100 in cells 977 and 2271
+** INFO   : find_flowcells_kdtree: sample/point 1101 in cells 977 and 2271
+** INFO   : find_flowcells_kdtree: sample/point 1099 in cells 977 and 2271
+** INFO   : find_flowcells_kdtree: sample/point 1101 in cells 977 and 2272
+** INFO   : find_flowcells_kdtree: sample/point 1102 in cells 977 and 2273
+** INFO   : find_flowcells_kdtree: sample/point 1103 in cells 977 and 2274
+** INFO   : find_flowcells_kdtree: sample/point 1104 in cells 981 and 2275
+** INFO   : find_flowcells_kdtree: sample/point 1105 in cells 981 and 2276
+** INFO   : find_flowcells_kdtree: sample/point 1106 in cells 981 and 2277
+** INFO   : find_flowcells_kdtree: sample/point 1107 in cells 969 and 2278
+** INFO   : find_flowcells_kdtree: sample/point 1108 in cells 943 and 2279
+** INFO   : find_flowcells_kdtree: sample/point 1109 in cells 943 and 2280
+** INFO   : find_flowcells_kdtree: sample/point 1110 in cells 943 and 2281
+** INFO   : find_flowcells_kdtree: sample/point 1111 in cells 943 and 2282
+** INFO   : find_flowcells_kdtree: sample/point 1112 in cells 951 and 2283
+** INFO   : find_flowcells_kdtree: sample/point 1113 in cells 951 and 2284
+** INFO   : find_flowcells_kdtree: sample/point 1114 in cells 960 and 2285
+** INFO   : find_flowcells_kdtree: sample/point 1115 in cells 960 and 2286
+** INFO   : find_flowcells_kdtree: sample/point 1116 in cells 960 and 2287
+** INFO   : find_flowcells_kdtree: sample/point 1117 in cells 960 and 2288
+** INFO   : find_flowcells_kdtree: sample/point 1118 in cells 960 and 2289
+** INFO   : find_flowcells_kdtree: sample/point 1119 in cells 960 and 2290
+** INFO   : find_flowcells_kdtree: sample/point 1120 in cells 971 and 2291
+** INFO   : find_flowcells_kdtree: sample/point 1121 in cells 971 and 2292
+** INFO   : find_flowcells_kdtree: sample/point 1122 in cells 971 and 2293
+** INFO   : find_flowcells_kdtree: sample/point 1123 in cells 971 and 2294
+** INFO   : find_flowcells_kdtree: sample/point 1124 in cells 983 and 2295
+** INFO   : find_flowcells_kdtree: sample/point 1125 in cells 983 and 2296
+** INFO   : find_flowcells_kdtree: sample/point 1126 in cells 983 and 2297
+** INFO   : find_flowcells_kdtree: sample/point 1127 in cells 983 and 2298
+** INFO   : find_flowcells_kdtree: sample/point 1128 in cells 993 and 2299
+** INFO   : find_flowcells_kdtree: sample/point 1127 in cells 983 and 2299
+** INFO   : find_flowcells_kdtree: sample/point 1129 in cells 993 and 2299
+** INFO   : find_flowcells_kdtree: sample/point 1129 in cells 993 and 2300
+** INFO   : find_flowcells_kdtree: sample/point 1130 in cells 993 and 2301
+** INFO   : find_flowcells_kdtree: sample/point 1131 in cells 993 and 2302
+** INFO   : find_flowcells_kdtree: sample/point 1132 in cells 993 and 2303
+** INFO   : find_flowcells_kdtree: sample/point 1133 in cells 993 and 2304
+** INFO   : find_flowcells_kdtree: sample/point 1134 in cells 993 and 2305
+** INFO   : find_flowcells_kdtree: sample/point 1135 in cells 993 and 2306
+** INFO   : find_flowcells_kdtree: sample/point 1136 in cells 990 and 2307
+** INFO   : find_flowcells_kdtree: sample/point 1137 in cells 990 and 2308
+** INFO   : find_flowcells_kdtree: sample/point 1138 in cells 1001 and 2309
+** INFO   : find_flowcells_kdtree: sample/point 1139 in cells 1001 and 2310
+** INFO   : find_flowcells_kdtree: sample/point 1140 in cells 1001 and 2311
+** INFO   : find_flowcells_kdtree: sample/point 1141 in cells 1001 and 2312
+** INFO   : find_flowcells_kdtree: sample/point 1142 in cells 1001 and 2313
+** INFO   : find_flowcells_kdtree: sample/point 1143 in cells 1001 and 2314
+** INFO   : find_flowcells_kdtree: sample/point 1144 in cells 1011 and 2314
+** INFO   : find_flowcells_kdtree: sample/point 1142 in cells 1001 and 2314
+** INFO   : find_flowcells_kdtree: sample/point 1144 in cells 1011 and 2315
+** INFO   : find_flowcells_kdtree: sample/point 1145 in cells 1011 and 2316
+** INFO   : find_flowcells_kdtree: sample/point 1146 in cells 1011 and 2317
+** INFO   : find_flowcells_kdtree: sample/point 1147 in cells 1011 and 2318
+** INFO   : find_flowcells_kdtree: sample/point 1148 in cells 1020 and 2319
+** INFO   : find_flowcells_kdtree: sample/point 1149 in cells 1020 and 2320
+** INFO   : find_flowcells_kdtree: sample/point 1150 in cells 1020 and 2321
+** INFO   : find_flowcells_kdtree: sample/point 1151 in cells 1028 and 2321
+** INFO   : find_flowcells_kdtree: sample/point 1149 in cells 1020 and 2321
+** INFO   : find_flowcells_kdtree: sample/point 1151 in cells 1028 and 2322
+** INFO   : find_flowcells_kdtree: sample/point 1152 in cells 1028 and 2323
+** INFO   : find_flowcells_kdtree: sample/point 1153 in cells 1028 and 2324
+** INFO   : find_flowcells_kdtree: sample/point 1154 in cells 1036 and 2325
+** INFO   : find_flowcells_kdtree: sample/point 1155 in cells 1036 and 2326
+** INFO   : find_flowcells_kdtree: sample/point 1156 in cells 1036 and 2327
+** INFO   : find_flowcells_kdtree: sample/point 1157 in cells 1036 and 2328
+** INFO   : find_flowcells_kdtree: sample/point 1158 in cells 1044 and 2329
+** INFO   : find_flowcells_kdtree: sample/point 1159 in cells 1044 and 2330
+** INFO   : find_flowcells_kdtree: sample/point 1160 in cells 1036 and 2331
+** INFO   : find_flowcells_kdtree: sample/point 1161 in cells 1029 and 2332
+** INFO   : find_flowcells_kdtree: sample/point 1162 in cells 1029 and 2333
+** INFO   : find_flowcells_kdtree: sample/point 1163 in cells 1037 and 2334
+** INFO   : find_flowcells_kdtree: sample/point 1164 in cells 1037 and 2335
+** INFO   : find_flowcells_kdtree: sample/point 1165 in cells 1037 and 2336
+** INFO   : find_flowcells_kdtree: sample/point 1166 in cells 1037 and 2337
+** INFO   : find_flowcells_kdtree: sample/point 1167 in cells 1037 and 2338
+** INFO   : find_flowcells_kdtree: sample/point 1168 in cells 1032 and 2339
+** INFO   : find_flowcells_kdtree: sample/point 1169 in cells 1032 and 2340
+** INFO   : find_flowcells_kdtree: sample/point 1170 in cells 1032 and 2341
+** INFO   : find_flowcells_kdtree: sample/point 1171 in cells 1032 and 2342
+** INFO   : find_flowcells_kdtree: sample/point 1172 in cells 1032 and 2343
+** INFO   : find_flowcells_kdtree: sample/point 1173 in cells 1032 and 2344
+** INFO   : find_flowcells_kdtree: sample/point 1174 in cells 1032 and 2345
+** INFO   : find_flowcells_kdtree: sample/point 1175 in cells 1024 and 2346
+** INFO   : find_flowcells_kdtree: sample/point 1176 in cells 1024 and 2347
+** INFO   : find_flowcells_kdtree: sample/point 1177 in cells 1024 and 2348
+** INFO   : find_flowcells_kdtree: sample/point 1178 in cells 1024 and 2349
+** INFO   : find_flowcells_kdtree: sample/point 1179 in cells 1024 and 2350
+** INFO   : find_flowcells_kdtree: sample/point 1180 in cells 1024 and 2351
+** INFO   : find_flowcells_kdtree: sample/point 1181 in cells 1024 and 2352
+** INFO   : find_flowcells_kdtree: sample/point 1182 in cells 1016 and 2353
+** INFO   : find_flowcells_kdtree: sample/point 1183 in cells 1016 and 2354
+** INFO   : find_flowcells_kdtree: sample/point 1184 in cells 1016 and 2355
+** INFO   : find_flowcells_kdtree: sample/point 1185 in cells 1016 and 2355
+** INFO   : find_flowcells_kdtree: sample/point 1183 in cells 1016 and 2355
+** INFO   : find_flowcells_kdtree: sample/point 1185 in cells 1016 and 2356
+** INFO   : find_flowcells_kdtree: sample/point 1186 in cells 1016 and 2356
+** INFO   : find_flowcells_kdtree: sample/point 1184 in cells 1016 and 2356
+** INFO   : find_flowcells_kdtree: sample/point 1186 in cells 1016 and 2357
+** INFO   : find_flowcells_kdtree: sample/point 1187 in cells 1016 and 2358
+** INFO   : find_flowcells_kdtree: sample/point 1188 in cells 1016 and 2359
+** INFO   : find_flowcells_kdtree: sample/point 1189 in cells 1025 and 2360
+** INFO   : find_flowcells_kdtree: sample/point 1190 in cells 1025 and 2361
+** INFO   : find_flowcells_kdtree: sample/point 1191 in cells 1025 and 2362
+** INFO   : find_flowcells_kdtree: sample/point 1192 in cells 1025 and 2363
+** INFO   : find_flowcells_kdtree: sample/point 1193 in cells 1025 and 2364
+** INFO   : find_flowcells_kdtree: sample/point 1194 in cells 1034 and 2365
+** INFO   : find_flowcells_kdtree: sample/point 1195 in cells 1044 and 2366
+** INFO   : find_flowcells_kdtree: sample/point 1196 in cells 1044 and 2367
+** INFO   : find_flowcells_kdtree: sample/point 1197 in cells 1044 and 2368
+** INFO   : find_flowcells_kdtree: sample/point 1198 in cells 1044 and 2369
+** INFO   : find_flowcells_kdtree: sample/point 1199 in cells 1052 and 2370
+** INFO   : find_flowcells_kdtree: sample/point 1200 in cells 1052 and 2371
+** INFO   : find_flowcells_kdtree: sample/point 1201 in cells 1052 and 2372
+** INFO   : find_flowcells_kdtree: sample/point 1202 in cells 1052 and 2373
+** INFO   : find_flowcells_kdtree: sample/point 1203 in cells 1059 and 2374
+** INFO   : find_flowcells_kdtree: sample/point 1204 in cells 1059 and 2375
+** INFO   : find_flowcells_kdtree: sample/point 1205 in cells 1067 and 2376
+** INFO   : find_flowcells_kdtree: sample/point 1206 in cells 1067 and 2377
+** INFO   : find_flowcells_kdtree: sample/point 1207 in cells 1067 and 2378
+** INFO   : find_flowcells_kdtree: sample/point 1208 in cells 1067 and 2379
+** INFO   : find_flowcells_kdtree: sample/point 1209 in cells 1076 and 2380
+** INFO   : find_flowcells_kdtree: sample/point 1210 in cells 1076 and 2381
+** INFO   : find_flowcells_kdtree: sample/point 1211 in cells 1076 and 2382
+** INFO   : find_flowcells_kdtree: sample/point 1212 in cells 1068 and 2383
+** INFO   : find_flowcells_kdtree: sample/point 1213 in cells 1068 and 2384
+** INFO   : find_flowcells_kdtree: sample/point 1214 in cells 1068 and 2385
+** INFO   : find_flowcells_kdtree: sample/point 1215 in cells 1077 and 2386
+** INFO   : find_flowcells_kdtree: sample/point 1216 in cells 1077 and 2387
+** INFO   : find_flowcells_kdtree: sample/point 1217 in cells 1077 and 2388
+** INFO   : find_flowcells_kdtree: sample/point 1218 in cells 1077 and 2389
+** INFO   : find_flowcells_kdtree: sample/point 1219 in cells 1077 and 2390
+** INFO   : find_flowcells_kdtree: sample/point 1220 in cells 1069 and 2391
+** INFO   : find_flowcells_kdtree: sample/point 1221 in cells 1069 and 2392
+** INFO   : find_flowcells_kdtree: sample/point 1222 in cells 1069 and 2393
+** INFO   : find_flowcells_kdtree: sample/point 1223 in cells 1069 and 2394
+** INFO   : find_flowcells_kdtree: sample/point 1224 in cells 1069 and 2394
+** INFO   : find_flowcells_kdtree: sample/point 1222 in cells 1069 and 2394
+** INFO   : find_flowcells_kdtree: sample/point 1224 in cells 1069 and 2395
+** INFO   : find_flowcells_kdtree: sample/point 1225 in cells 1078 and 2396
+** INFO   : find_flowcells_kdtree: sample/point 1226 in cells 1076 and 2397
+** INFO   : find_flowcells_kdtree: sample/point 1227 in cells 1076 and 2398
+** INFO   : find_flowcells_kdtree: sample/point 1228 in cells 1076 and 2399
+** INFO   : find_flowcells_kdtree: sample/point 1229 in cells 1076 and 2400
+** INFO   : find_flowcells_kdtree: sample/point 1230 in cells 1076 and 2401
+** INFO   : find_flowcells_kdtree: sample/point 1231 in cells 1076 and 2402
+** INFO   : find_flowcells_kdtree: sample/point 1232 in cells 1086 and 2403
+** INFO   : find_flowcells_kdtree: sample/point 1233 in cells 1086 and 2404
+** INFO   : find_flowcells_kdtree: sample/point 1234 in cells 1095 and 2405
+** INFO   : find_flowcells_kdtree: sample/point 1235 in cells 1095 and 2406
+** INFO   : find_flowcells_kdtree: sample/point 1236 in cells 1095 and 2407
+** INFO   : find_flowcells_kdtree: sample/point 1237 in cells 1095 and 2408
+** INFO   : find_flowcells_kdtree: sample/point 1238 in cells 1095 and 2409
+** INFO   : find_flowcells_kdtree: sample/point 1239 in cells 1095 and 2410
+** INFO   : find_flowcells_kdtree: sample/point 1240 in cells 1095 and 2411
+** INFO   : find_flowcells_kdtree: sample/point 1241 in cells 1104 and 2412
+** INFO   : find_flowcells_kdtree: sample/point 1242 in cells 1104 and 2413
+** INFO   : find_flowcells_kdtree: sample/point 1243 in cells 1094 and 2414
+** INFO   : find_flowcells_kdtree: sample/point 1244 in cells 1094 and 2415
+** INFO   : find_flowcells_kdtree: sample/point 1245 in cells 1104 and 2416
+** INFO   : find_flowcells_kdtree: sample/point 1246 in cells 1104 and 2417
+** INFO   : find_flowcells_kdtree: sample/point 1247 in cells 1104 and 2418
+** INFO   : find_flowcells_kdtree: sample/point 1248 in cells 1104 and 2419
+** INFO   : find_flowcells_kdtree: sample/point 1249 in cells 1112 and 2420
+** INFO   : find_flowcells_kdtree: sample/point 1250 in cells 1112 and 2421
+** INFO   : find_flowcells_kdtree: sample/point 1251 in cells 1112 and 2422
+** INFO   : find_flowcells_kdtree: sample/point 1252 in cells 1112 and 2423
+** INFO   : find_flowcells_kdtree: sample/point 1253 in cells 1112 and 2424
+** INFO   : find_flowcells_kdtree: sample/point 1254 in cells 1112 and 2425
+** INFO   : find_flowcells_kdtree: sample/point 1255 in cells 1112 and 2426
+** INFO   : find_flowcells_kdtree: sample/point 1256 in cells 1120 and 2427
+** INFO   : find_flowcells_kdtree: sample/point 1257 in cells 1120 and 2428
+** INFO   : find_flowcells_kdtree: sample/point 1258 in cells 1120 and 2429
+** INFO   : find_flowcells_kdtree: sample/point 1259 in cells 1120 and 2430
+** INFO   : find_flowcells_kdtree: sample/point 1260 in cells 1120 and 2431
+** INFO   : find_flowcells_kdtree: sample/point 1261 in cells 1120 and 2432
+** INFO   : find_flowcells_kdtree: sample/point 1262 in cells 1120 and 2433
+** INFO   : find_flowcells_kdtree: sample/point 1263 in cells 1128 and 2434
+** INFO   : find_flowcells_kdtree: sample/point 1264 in cells 1128 and 2435
+** INFO   : find_flowcells_kdtree: sample/point 1265 in cells 1128 and 2436
+** INFO   : find_flowcells_kdtree: sample/point 1266 in cells 1128 and 2437
+** INFO   : find_flowcells_kdtree: sample/point 1267 in cells 1128 and 2438
+** INFO   : find_flowcells_kdtree: sample/point 1268 in cells 1128 and 2439
+** INFO   : find_flowcells_kdtree: sample/point 1269 in cells 1128 and 2440
+** INFO   : find_flowcells_kdtree: sample/point 1270 in cells 1136 and 2441
+** INFO   : find_flowcells_kdtree: sample/point 1271 in cells 1136 and 2442
+** INFO   : find_flowcells_kdtree: sample/point 1272 in cells 1136 and 2443
+** INFO   : find_flowcells_kdtree: sample/point 1273 in cells 1136 and 2444
+** INFO   : find_flowcells_kdtree: sample/point 1274 in cells 1136 and 2445
+** INFO   : find_flowcells_kdtree: sample/point 1275 in cells 1136 and 2446
+** INFO   : find_flowcells_kdtree: sample/point 1276 in cells 1136 and 2447
+** INFO   : find_flowcells_kdtree: sample/point 1277 in cells 1136 and 2448
+** INFO   : find_flowcells_kdtree: sample/point 1278 in cells 1144 and 2449
+** INFO   : find_flowcells_kdtree: sample/point 1279 in cells 1135 and 2450
+** INFO   : find_flowcells_kdtree: sample/point 1280 in cells 1135 and 2451
+** INFO   : find_flowcells_kdtree: sample/point 1281 in cells 1135 and 2452
+** INFO   : find_flowcells_kdtree: sample/point 1282 in cells 1135 and 2453
+** INFO   : find_flowcells_kdtree: sample/point 1281 in cells 1135 and 2453
+** INFO   : find_flowcells_kdtree: sample/point 1283 in cells 1135 and 2453
+** INFO   : find_flowcells_kdtree: sample/point 1283 in cells 1135 and 2454
+** INFO   : find_flowcells_kdtree: sample/point 1284 in cells 1135 and 2455
+** INFO   : find_flowcells_kdtree: sample/point 1285 in cells 1143 and 2456
+** INFO   : find_flowcells_kdtree: sample/point 1286 in cells 1143 and 2457
+** INFO   : find_flowcells_kdtree: sample/point 1287 in cells 1143 and 2458
+** INFO   : find_flowcells_kdtree: sample/point 1288 in cells 1143 and 2459
+** INFO   : find_flowcells_kdtree: sample/point 1289 in cells 1143 and 2460
+** INFO   : find_flowcells_kdtree: sample/point 1290 in cells 1143 and 2461
+** INFO   : find_flowcells_kdtree: sample/point 1291 in cells 1143 and 2462
+** INFO   : find_flowcells_kdtree: sample/point 1292 in cells 1150 and 2463
+** INFO   : find_flowcells_kdtree: sample/point 1293 in cells 1150 and 2464
+** INFO   : find_flowcells_kdtree: sample/point 1294 in cells 1150 and 2465
+** INFO   : find_flowcells_kdtree: sample/point 1295 in cells 1150 and 2466
+** INFO   : find_flowcells_kdtree: sample/point 1296 in cells 1150 and 2467
+** INFO   : find_flowcells_kdtree: sample/point 1297 in cells 1150 and 2468
+** INFO   : find_flowcells_kdtree: sample/point 1298 in cells 1150 and 2469
+** INFO   : find_flowcells_kdtree: sample/point 1299 in cells 1156 and 2470
+** INFO   : find_flowcells_kdtree: sample/point 1300 in cells 1156 and 2471
+** INFO   : find_flowcells_kdtree: sample/point 1301 in cells 1156 and 2472
+** INFO   : find_flowcells_kdtree: sample/point 1302 in cells 1156 and 2473
+** INFO   : find_flowcells_kdtree: sample/point 1303 in cells 1156 and 2474
+** INFO   : find_flowcells_kdtree: sample/point 1304 in cells 1156 and 2475
+** INFO   : find_flowcells_kdtree: sample/point 1303 in cells 1156 and 2475
+** INFO   : find_flowcells_kdtree: sample/point 1305 in cells 1156 and 2475
+** INFO   : find_flowcells_kdtree: sample/point 1305 in cells 1156 and 2476
+** INFO   : find_flowcells_kdtree: sample/point 1304 in cells 1156 and 2476
+** INFO   : find_flowcells_kdtree: sample/point 1306 in cells 1161 and 2476
+** INFO   : find_flowcells_kdtree: sample/point 1306 in cells 1161 and 2477
+** INFO   : find_flowcells_kdtree: sample/point 1307 in cells 1161 and 2477
+** INFO   : find_flowcells_kdtree: sample/point 1305 in cells 1156 and 2477
+** INFO   : find_flowcells_kdtree: sample/point 1307 in cells 1161 and 2478
+** INFO   : find_flowcells_kdtree: sample/point 1306 in cells 1161 and 2478
+** INFO   : find_flowcells_kdtree: sample/point 1308 in cells 1161 and 2478
+** INFO   : find_flowcells_kdtree: sample/point 1308 in cells 1161 and 2479
+** INFO   : find_flowcells_kdtree: sample/point 1309 in cells 1161 and 2480
+** INFO   : find_flowcells_kdtree: sample/point 1310 in cells 1155 and 2480
+** INFO   : find_flowcells_kdtree: sample/point 1308 in cells 1161 and 2480
+** INFO   : find_flowcells_kdtree: sample/point 1310 in cells 1155 and 2481
+** INFO   : find_flowcells_kdtree: sample/point 1309 in cells 1161 and 2481
+** INFO   : find_flowcells_kdtree: sample/point 1311 in cells 1155 and 2481
+** INFO   : find_flowcells_kdtree: sample/point 1311 in cells 1155 and 2482
+** INFO   : find_flowcells_kdtree: sample/point 1312 in cells 1155 and 2483
+** INFO   : find_flowcells_kdtree: sample/point 1313 in cells 1155 and 2484
+** INFO   : find_flowcells_kdtree: sample/point 219 in cells 219 and 2486
+** INFO   : find_flowcells_kdtree: sample/point 1315 in cells 219 and 2486
+** INFO   : find_flowcells_kdtree: sample/point 1316 in cells 219 and 2487
+** INFO   : find_flowcells_kdtree: sample/point 1317 in cells 219 and 2488
+** INFO   : find_flowcells_kdtree: sample/point 1318 in cells 219 and 2489
+** INFO   : find_flowcells_kdtree: sample/point 1319 in cells 219 and 2490
+** INFO   : find_flowcells_kdtree: sample/point 1320 in cells 219 and 2491
+** INFO   : find_flowcells_kdtree: sample/point 1321 in cells 219 and 2492
+** INFO   : find_flowcells_kdtree: sample/point 1322 in cells 232 and 2493
+** INFO   : find_flowcells_kdtree: sample/point 1323 in cells 232 and 2494
+** INFO   : find_flowcells_kdtree: sample/point 1324 in cells 232 and 2495
+** INFO   : find_flowcells_kdtree: sample/point 1325 in cells 218 and 2496
+** INFO   : find_flowcells_kdtree: sample/point 1326 in cells 218 and 2497
+** INFO   : find_flowcells_kdtree: sample/point 1325 in cells 218 and 2497
+** INFO   : find_flowcells_kdtree: sample/point 1327 in cells 218 and 2497
+** INFO   : find_flowcells_kdtree: sample/point 1327 in cells 218 and 2498
+** INFO   : find_flowcells_kdtree: sample/point 1326 in cells 218 and 2498
+** INFO   : find_flowcells_kdtree: sample/point 1328 in cells 218 and 2498
+** INFO   : find_flowcells_kdtree: sample/point 1328 in cells 218 and 2499
+** INFO   : find_flowcells_kdtree: sample/point 1329 in cells 228 and 2500
+** INFO   : find_flowcells_kdtree: sample/point 1330 in cells 228 and 2501
+** INFO   : find_flowcells_kdtree: sample/point 1331 in cells 228 and 2502
+** INFO   : find_flowcells_kdtree: sample/point 1332 in cells 228 and 2503
+** INFO   : find_flowcells_kdtree: sample/point 1333 in cells 228 and 2504
+** INFO   : find_flowcells_kdtree: sample/point 1334 in cells 228 and 2505
+** INFO   : find_flowcells_kdtree: sample/point 1335 in cells 228 and 2506
+** INFO   : find_flowcells_kdtree: sample/point 1336 in cells 215 and 2507
+** INFO   : find_flowcells_kdtree: sample/point 1337 in cells 215 and 2508
+** INFO   : find_flowcells_kdtree: sample/point 1338 in cells 215 and 2509
+** INFO   : find_flowcells_kdtree: sample/point 1339 in cells 215 and 2510
+** INFO   : find_flowcells_kdtree: sample/point 1340 in cells 215 and 2511
+** INFO   : find_flowcells_kdtree: sample/point 1341 in cells 215 and 2512
+** INFO   : find_flowcells_kdtree: sample/point 1342 in cells 215 and 2513
+** INFO   : find_flowcells_kdtree: sample/point 1343 in cells 203 and 2514
+** INFO   : find_flowcells_kdtree: sample/point 1344 in cells 203 and 2515
+** INFO   : find_flowcells_kdtree: sample/point 1345 in cells 203 and 2516
+** INFO   : find_flowcells_kdtree: sample/point 1346 in cells 203 and 2517
+** INFO   : find_flowcells_kdtree: sample/point 1347 in cells 203 and 2518
+** INFO   : find_flowcells_kdtree: sample/point 1348 in cells 203 and 2519
+** INFO   : find_flowcells_kdtree: sample/point 1349 in cells 203 and 2520
+** INFO   : find_flowcells_kdtree: sample/point 1350 in cells 203 and 2521
+** INFO   : find_flowcells_kdtree: sample/point 1351 in cells 190 and 2522
+** INFO   : find_flowcells_kdtree: sample/point 1352 in cells 190 and 2523
+** INFO   : find_flowcells_kdtree: sample/point 1353 in cells 190 and 2524
+** INFO   : find_flowcells_kdtree: sample/point 1354 in cells 190 and 2525
+** INFO   : find_flowcells_kdtree: sample/point 1355 in cells 190 and 2526
+** INFO   : find_flowcells_kdtree: sample/point 1356 in cells 190 and 2527
+** INFO   : find_flowcells_kdtree: sample/point 1357 in cells 190 and 2528
+** INFO   : find_flowcells_kdtree: sample/point 1358 in cells 178 and 2529
+** INFO   : find_flowcells_kdtree: sample/point 1359 in cells 178 and 2530
+** INFO   : find_flowcells_kdtree: sample/point 1360 in cells 178 and 2531
+** INFO   : find_flowcells_kdtree: sample/point 1361 in cells 178 and 2532
+** INFO   : find_flowcells_kdtree: sample/point 1362 in cells 178 and 2533
+** INFO   : find_flowcells_kdtree: sample/point 1363 in cells 178 and 2534
+** INFO   : find_flowcells_kdtree: sample/point 1364 in cells 178 and 2535
+** INFO   : find_flowcells_kdtree: sample/point 1365 in cells 111 and 2536
+** INFO   : find_flowcells_kdtree: sample/point 185 in cells 111 and 2536
+** INFO   : find_flowcells_kdtree: sample/point 1366 in cells 111 and 2537
+** INFO   : find_flowcells_kdtree: sample/point 1367 in cells 111 and 2538
+** INFO   : find_flowcells_kdtree: sample/point 1368 in cells 111 and 2539
+** INFO   : find_flowcells_kdtree: sample/point 1369 in cells 111 and 2540
+** INFO   : find_flowcells_kdtree: sample/point 1370 in cells 111 and 2541
+** INFO   : find_flowcells_kdtree: sample/point 1371 in cells 122 and 2542
+** INFO   : find_flowcells_kdtree: sample/point 1372 in cells 122 and 2543
+** INFO   : find_flowcells_kdtree: sample/point 1373 in cells 122 and 2544
+** INFO   : find_flowcells_kdtree: sample/point 1374 in cells 122 and 2545
+** INFO   : find_flowcells_kdtree: sample/point 1375 in cells 122 and 2546
+** INFO   : find_flowcells_kdtree: sample/point 1376 in cells 122 and 2547
+** INFO   : find_flowcells_kdtree: sample/point 1377 in cells 122 and 2548
+** INFO   : find_flowcells_kdtree: sample/point 1378 in cells 122 and 2549
+** INFO   : find_flowcells_kdtree: sample/point 1379 in cells 121 and 2550
+** INFO   : find_flowcells_kdtree: sample/point 1380 in cells 121 and 2551
+** INFO   : find_flowcells_kdtree: sample/point 1381 in cells 121 and 2552
+** INFO   : find_flowcells_kdtree: sample/point 1382 in cells 121 and 2553
+** INFO   : find_flowcells_kdtree: sample/point 1383 in cells 121 and 2554
+** INFO   : find_flowcells_kdtree: sample/point 1384 in cells 121 and 2555
+** INFO   : find_flowcells_kdtree: sample/point 1385 in cells 121 and 2556
+** INFO   : find_flowcells_kdtree: sample/point 1386 in cells 121 and 2557
+** INFO   : find_flowcells_kdtree: sample/point 1387 in cells 131 and 2557
+** INFO   : find_flowcells_kdtree: sample/point 1387 in cells 131 and 2558
+** INFO   : find_flowcells_kdtree: sample/point 1388 in cells 120 and 2559
+** INFO   : find_flowcells_kdtree: sample/point 1389 in cells 120 and 2560
+** INFO   : find_flowcells_kdtree: sample/point 1390 in cells 120 and 2561
+** INFO   : find_flowcells_kdtree: sample/point 1391 in cells 120 and 2562
+** INFO   : find_flowcells_kdtree: sample/point 1392 in cells 120 and 2563
+** INFO   : find_flowcells_kdtree: sample/point 1391 in cells 120 and 2563
+** INFO   : find_flowcells_kdtree: sample/point 1393 in cells 120 and 2563
+** INFO   : find_flowcells_kdtree: sample/point 1393 in cells 120 and 2564
+** INFO   : find_flowcells_kdtree: sample/point 1394 in cells 120 and 2565
+** INFO   : find_flowcells_kdtree: sample/point 1395 in cells 130 and 2566
+** INFO   : find_flowcells_kdtree: sample/point 1396 in cells 130 and 2567
+** INFO   : find_flowcells_kdtree: sample/point 1397 in cells 130 and 2568
+** INFO   : find_flowcells_kdtree: sample/point 1398 in cells 130 and 2569
+** INFO   : find_flowcells_kdtree: sample/point 1399 in cells 130 and 2570
+** INFO   : find_flowcells_kdtree: sample/point 1400 in cells 130 and 2571
+** INFO   : find_flowcells_kdtree: sample/point 1401 in cells 130 and 2572
+** INFO   : find_flowcells_kdtree: sample/point 1402 in cells 138 and 2573
+** INFO   : find_flowcells_kdtree: sample/point 1403 in cells 138 and 2574
+** INFO   : find_flowcells_kdtree: sample/point 1404 in cells 138 and 2575
+** INFO   : find_flowcells_kdtree: sample/point 1405 in cells 138 and 2576
+** INFO   : find_flowcells_kdtree: sample/point 1406 in cells 128 and 2577
+** INFO   : find_flowcells_kdtree: sample/point 1407 in cells 128 and 2578
+** INFO   : find_flowcells_kdtree: sample/point 1408 in cells 128 and 2579
+** INFO   : find_flowcells_kdtree: sample/point 1409 in cells 128 and 2580
+** INFO   : find_flowcells_kdtree: sample/point 1408 in cells 128 and 2580
+** INFO   : find_flowcells_kdtree: sample/point 1410 in cells 118 and 2580
+** INFO   : find_flowcells_kdtree: sample/point 1410 in cells 118 and 2581
+** INFO   : find_flowcells_kdtree: sample/point 1411 in cells 118 and 2582
+** INFO   : find_flowcells_kdtree: sample/point 1412 in cells 118 and 2583
+** INFO   : find_flowcells_kdtree: sample/point 1413 in cells 106 and 2584
+** INFO   : find_flowcells_kdtree: sample/point 1414 in cells 106 and 2585
+** INFO   : find_flowcells_kdtree: sample/point 1415 in cells 106 and 2586
+** INFO   : find_flowcells_kdtree: sample/point 1416 in cells 106 and 2587
+** INFO   : find_flowcells_kdtree: sample/point 1417 in cells 106 and 2588
+** INFO   : find_flowcells_kdtree: sample/point 1418 in cells 106 and 2589
+** INFO   : find_flowcells_kdtree: sample/point 1419 in cells 118 and 2590
+** INFO   : find_flowcells_kdtree: sample/point 1420 in cells 118 and 2591
+** INFO   : find_flowcells_kdtree: sample/point 1421 in cells 118 and 2592
+** INFO   : find_flowcells_kdtree: sample/point 1422 in cells 118 and 2593
+** INFO   : find_flowcells_kdtree: sample/point 1423 in cells 118 and 2594
+** INFO   : done in      0.01100 sec.
+** INFO   : Delete kdtree...
+** DEBUG  :           14  4.6839998E-03 banf(mxban)
+** DEBUG  :           14  4.6839998E-03 nban(4,mxban)
+** DEBUG  :           14  4.6839998E-03 rr(mxban), nr(mxban)
+** DEBUG  :           14  4.6839998E-03 banh (mxban)
+** DEBUG  :           14  4.6839998E-03 nbanh(4,mxban)
+** INFO   : Done initializing flow model geometry.
+** DEBUG  :           14  5.2000000E-03 s0  (ndx) , s1  (ndx)
+** DEBUG  :           14  5.2000000E-03 a0  (ndx) , a1  (ndx)
+** DEBUG  :           14  5.2000000E-03 hs  (ndx) , s00 (ndx)
+** DEBUG  :           14  2.6000000E-03 cfs (ndx)
+** DEBUG  :           14  2.6000000E-03 kbot (ndx)
+** DEBUG  :           14  2.6000000E-03 ktop (ndx)
+** DEBUG  :           14  2.6000000E-03 ktop0(ndx)
+** DEBUG  :           14  2.6000000E-03 kmxn (ndx)
+** DEBUG  :           14  4.9839998E-03 Lbot (Lnx)
+** DEBUG  :           14  4.9839998E-03 Ltop (Lnx)
+** DEBUG  :           14  4.9839998E-03 kmxL (Lnx)
+** DEBUG  :           14  4.9839998E-03 ustb  (lnx)
+** DEBUG  :           14  4.9839998E-03 ustw  (lnx)
+** DEBUG  :           14  2.6000000E-03 laydefnr(ndx)
+** DEBUG  :           14  2.6000000E-03 rho (ndkx)
+** DEBUG  :           14  5.2000000E-03 ucx (ndkx) , ucy (ndkx)
+** DEBUG  :           14  2.6000000E-03 workx (ndkx)
+** DEBUG  :           14  2.6000000E-03 worky (ndkx)
+** DEBUG  :           14  4.9839998E-03 work0 (0:max(kmx,1),max(ndx,lnx))
+** DEBUG  :           14  4.9839998E-03 work1 (max(kmx,1),max(ndx,lnx))
+** DEBUG  :           15  5.2000000E-03 uqcx(ndkx) , uqcy(ndkx)
+** DEBUG  :           15  5.2000000E-03 ucxq(ndkx) , ucyq(ndkx)
+** DEBUG  :           15  5.2000000E-03 qin (ndkx) , vih (ndkx)
+** DEBUG  :           15  5.2000000E-03 dvxc(ndkx) , dvyc(ndkx)
+** DEBUG  :           15  2.6000000E-03 cfli(ndkx)
+** DEBUG  :           15  2.6000000E-03 squ (ndkx)
+** DEBUG  :           15  2.6000000E-03 sqi (ndkx)
+** DEBUG  :           15  2.6000000E-03 sq  (ndkx)
+** DEBUG  :           15  2.6000000E-03 vol0(ndkx)
+** DEBUG  :           15  2.6000000E-03 vol1(ndkx)
+** DEBUG  :           15  2.6000000E-03 volerror(ndkx)
+** DEBUG  :           15  4.9839998E-03 voldhu(ndx)
+** DEBUG  :           15  2.6000000E-03 tidep (1,ndx)
+** DEBUG  :           15  2.6000000E-03 sqa(ndkx)
+** DEBUG  :           15  4.9839998E-03 cfuhi(lnx)
+** DEBUG  :           15  2.6000000E-03 frcu (lnx)
+** DEBUG  :           15  2.6000000E-03 frcu_bkp (lnx)
+** DEBUG  :           15  2.6000000E-03 ifrcutp(lnx)
+** DEBUG  :           15  4.9839998E-03 wdsu  (lnx)
+** DEBUG  :           15  2.6000000E-03 frculin (lnx)
+** DEBUG  :           15  4.9839998E-03 u0   (lnkx)
+** DEBUG  :           15  4.9839998E-03 u1   (lnkx)
+** DEBUG  :           15  4.9839998E-03 q1   (lnkx)
+** DEBUG  :           15  4.9839998E-03 qa   (lnkx)
+** DEBUG  :           15  4.9839998E-03 v    (lnkx)
+** DEBUG  :           15  4.9839998E-03 ucxu (lnkx)
+** DEBUG  :           15  4.9839998E-03 ucyu (lnkx)
+** DEBUG  :           15  4.9839998E-03 hu   (lnkx)
+** DEBUG  :           15  4.9839998E-03 huvli(lnkx)
+** DEBUG  :           15  4.9839998E-03 au   (lnkx)
+** DEBUG  :           15  4.9839998E-03 viu  (lnkx)
+** DEBUG  :           15  4.9839998E-03 cflj (lnkx)
+** DEBUG  :           16  4.9839998E-03 tetaj(lnkx)
+** DEBUG  :           16  4.9839998E-03 suu  (lnkx)
+** DEBUG  :           16  4.9839998E-03 advi (lnkx)
+** DEBUG  :           16  4.9839998E-03 adve (lnkx)
+** DEBUG  :           16  4.9839998E-03 plotlin(max(lnkx,ndkx))
+** DEBUG  :           16  2.6000000E-03 numlimdt(ndx)
+** DEBUG  :           16  2.6000000E-03 bb   (ndx )
+** DEBUG  :           16  2.6000000E-03 dd   (ndx )
+** DEBUG  :           16  2.6000000E-03 fu   (lnkx)
+** DEBUG  :           16  2.6000000E-03 ru   (lnkx)
+** INFO   : Building kdtree...
+** INFO   : done
+** INFO   : Finding crossed flowlinks...
+** INFO   : done
+** INFO   : Delete kdtree...
+** DEBUG  :           16  4.9839998E-03 fcori(lnx)
+** INFO   : Start initializing external forcings...
+** INFO   : External Forcing or Initialising 'waterlevelbnd' from file 'downstreamBC.pli'.
+** INFO   : External Forcing or Initialising 'dischargebnd' from file 'BfG_Tangermuende.pli'.
+** INFO   : Closed file : boundary_info_Elbe_fine.ext
+** INFO   : No wind, so waves is switched off
+** INFO   : Done initializing external forcings.
+** DEBUG  :           16  4.9839998E-03 klnup(6,lnx)
+** DEBUG  :           16  4.9839998E-03 slnup(6,lnx)
+** DEBUG  :           16  2.6000000E-03 ij(nodtot)
+** DEBUG  :           16  2.6000000E-03 nodbr2(nodtot)
+** DEBUG  :           16  2.6000000E-03 nbrstk(nodtot)
+** DEBUG  :           16  2.6000000E-03 nodstk(nodtot)
+** DEBUG  :           16  2.6000000E-03 noel(nodtot)
+** DEBUG  :           16  2.6000000E-03 noel0(nodtot)
+** DEBUG  :           16  2.6000000E-03 ia(nodtot)
+** DEBUG  :           16  2.6000000E-03 row(nodtot)
+** DEBUG  :           16  4.9839998E-03 lv2(lintot)
+** DEBUG  :           16  2.6000000E-03 jagauss(nodtot)
+** DEBUG  :           16  9.5039997E-03 ccr(0:ijstck)
+** DEBUG  :           16  9.5039997E-03 bbl(0:ijstck)
+** DEBUG  :           17  5.2000000E-03 bbr(nodtot), ddr(nodtot)
+** DEBUG  :           17  1.3000000E-02 d0(nodtot), zkr(nodtot),pk(0:nodtot), apk(nodtot), rk(nodtot)
+** INFO   : nogauss , nocg :           1962           638
+** DEBUG  :           17  3.6401998E-02 iao(nn+1)
+** DEBUG  :           17  1.5985999E-02 ao(na)
+** DEBUG  :           17  3.8279999E-02 wk(nwk)
+** INFO   : Building kdtree...
+** INFO   : done
+** INFO   : Finding crossed flowlinks...
+** INFO   : done
+** INFO   : Delete kdtree...
+** INFO   : Modelinit finished   at: 11:37:02, 19-02-2018
+** INFO   : ** Model initialization was successful **
+** INFO   : * Active Model definition:
+# Generated on 11:37:02, 19-02-2018
+# Deltares, D-Flow FM Version 1.1.264.52751, Oct 10 2017, 11:29:05
+
+[model]
+Program                           = D-Flow FM
+Version                           = 1.1.264.52751
+MDUFormatVersion                  = 1.05                # File format version (do not edit this)
+AutoStart                         = 2                   # Autostart simulation after loading MDU (0: no, 1: autostart, 2: autostartstop)
+
+[geometry]
+NetFile                           = elbe4vu_net.nc      # Unstructured grid file *_net.nc
+BedlevelFile                      =                     # Bedlevels points file e.g. *.xyz, only needed for bedlevtype not equal 3
+DryPointsFile                     =                     # Dry points file *.xyz (third column dummy z values), or dry areas polygon file *.pol (third column 1/-1: inside/outside)
+WaterLevIniFile                   =                     # Initial water levels sample file *.xyz
+LandBoundaryFile                  =                     # Land boundaries file *.ldb, used for visualization
+ThinDamFile                       =                     # Polyline file *_thd.pli, containing thin dams
+FixedWeirFile                     =                     # Polyline file *_fxw.pliz, containing fixed weirs with rows x, y, crest level, left ground level, right ground level
+Gulliesfile                       =                     # Polyline file *_gul.pliz, containing lowest bed level along talweg x, y, z level
+VertplizFile                      =                     # Vertical layering file *_vlay.pliz with rows x, y, Z, first Z, nr of layers, second Z, layer type
+ProflocFile                       = Hydrography_Elbe_1d_minDis_profloc.xyz# Channel profile location file *_proflocation.xyz with rows x, y, z, profile number ref
+ProfdefFile                       = Hydrography_Elbe_1d_minDis_profFile.txt# Channel profile definition file *_profdefinition.def with definition for all profile numbers
+ProfdefxyzFile                    =                     # Channel profile definition file _profdefinition.def with definition for all profile numbers
+Uniformwidth1D                    = 2.                  # Uniform width for channel profiles not specified by profloc
+Uniformheight1D                   = 3.                  # Uniform height for channel profiles not specified by profloc
+StructureFile                     =                     # File *.ini containing list of structures (pumps, weirs, gates and general structures)
+ManholeFile                       =                     # File *.ini containing manholes
+PipeFile                          =                     # File *.pliz containing pipe-based 'culverts'
+ShipdefFile                       =                     # File *.shd containing ship definitions
+WaterLevIni                       = 0.                  # Initial water level at missing s0 values
+BedlevUni                         = -5.                 # Uniform bed level used at missing z values if BedlevType > 2
+BedlevType                        = 6                   # Bathymetry specification
+                                                        # 1: at cell centers (from BathymetryFile)
+                                                        # 2: at faces (from BathymetryFile)
+                                                        # 3: at nodes, face levels mean of node values
+                                                        # 4: at nodes, face levels min. of node values
+                                                        # 5: at nodes, face levels max. of node values
+                                                        # 6: at nodes, face levels max. of cell-center values
+Blmeanbelow                       = -999.               # If not -999d0, below this level the cell center bed level is the mean of surrouding net nodes
+Blminabove                        = -999.               # If not -999d0, above this level the cell center bed level is the min. of surrouding net nodes
+PartitionFile                     =                     # Domain partition polygon file *_part.pol for parallel run
+AngLat                            = 0.                  # Angle of latitude S-N (deg), 0: no Coriolis
+AngLon                            = 0.                  # Angle of longitude E-W (deg), 0: Greenwich, used in solar heat flux computation.
+Conveyance2D                      = -1                  # -1: R=HU,0: R=H, 1: R=A/P, 2: K=analytic-1D conv, 3: K=analytic-2D conv
+Slotw2D                           = 0.                  # -
+Sillheightmin                     = 0.5                 # Weir treatment only if both sills larger than this value (m)
+Makeorthocenters                  = 0                   # Switch from circumcentres to orthocentres in geominit (i>=1: number of iterations, 0: do not use)
+Dcenterinside                     = 1.                  # Limit cell center (1.0: in cell, 0.0: on c/g)
+Bamin                             = 1.d-6               # Minimum grid cell area, in combination with cut cells
+OpenBoundaryTolerance             = 3.                  # Search tolerance factor between boundary polyline and grid cells, in cell size units
+RenumberFlowNodes                 = 1                   # Renumber the flow nodes (1: yes, 0: no)
+Kmx                               = 0                   # Maximum number of vertical layers
+Layertype                         = 1                   # Vertical layer type (1: all sigma, 2: all z, 3: use VertplizFile)
+Numtopsig                         = 0                   # Number of sigma layers in top of z-layer model
+SigmaGrowthFactor                 = 1.                  # Layer thickness growth factor from bed up
+StretchType                       = 0                   # Type of layer stretching, 0 = uniform, 1 = user defined, 2 = fixed level double exponential
+
+[numerics]
+CFLMax                            = 0.7                 # Maximum Courant number
+Lincontin                         = 0                   # Default 0; Set to 1 for linearizing d(Hu)/dx; link to AdvecType
+AdvecType                         = 33                  # Advection type (0: none, 1: Wenneker, 2: Wenneker q(uio-u), 3: Perot q(uio-u), 4: Perot q(ui-u), 5: Perot q(ui-u) without itself)
+TimeStepType                      = 2                   # Time step handling (0: only transport, 1: transport + velocity update, 2: full implicit step-reduce, 3: step-Jacobi, 4: explicit)
+Icoriolistype                     = 5                   # 0=No, 1=yes, if jsferic then spatially varying, if icoriolistype==6 then constant (anglat)
+Limtyphu                          = 0                   # Limiter type for waterdepth in continuity eqn. (0: none, 1: minmod, 2: van Leer, 3: Kooren, 4: monotone central)
+Limtypmom                         = 4                   # Limiter type for cell center advection velocity (0: none, 1: minmod, 2: van Leer, 3: Kooren, 4: monotone central)
+Limtypsa                          = 4                   # Limiter type for salinity transport (0: none, 1: minmod, 2: van Leer, 3: Kooren, 4: monotone central)
+TransportMethod                   = 1                   # Transport method (0: Herman's method, 1: transport module)
+TransportTimestepping             = 1                   # Timestepping method in Transport module, 0 = global, 1 = local (default)
+Vertadvtypsal                     = 5                   # Vertical advection type for salinity (0: none, 1: upwind explicit, 2: central explicit, 3: upwind implicit, 4: central implicit, 5: central implicit but upwind for neg. stratif., 6: higher order explicit, no Forester)
+Vertadvtyptem                     = 6                   # Vertical advection type for temperature (0: none, 1: upwind explicit, 2: central explicit, 3: upwind implicit, 4: central implicit, 5: central implicit but upwind for neg. stratif., 6: higher order explicit, no Forester)
+Cffacver                          = 0.                  # Factor for including (1-CFL) in HO term vertical   (0d0: no, 1d0: yes)
+Jarhoxu                           = 0                   # Inlcude density gradient in advection term (0: no, 1: yes, 2: Also in barotrop and baroclin pressure term)
+Horadvtypzlayer                   = 0                   # Horizontal advection treatment of z-layers (1: default, 2: sigma-like)
+Zlayeratubybob                    = 0                   # Lowest connected cells governed by bob instead of by bL L/R
+Icgsolver                         = 4                   # Solver type (1: sobekGS_OMP, 2: sobekGS_OMPthreadsafe, 3: sobekGS, 4: sobekGS + Saadilud, 5: parallel/global Saad, 6: parallel/Petsc, 7: parallel/GS)
+Maxdegree                         = 6                   # Maximum degree in Gauss elimination
+Noderivedtypes                    = 5                   # 0=use der. types. , 1 = less, 2 = lesser, 5 = also dealloc der. types
+FixedWeirScheme                   = 0                   # Fixed weir scheme (0: none, 1: compact stencil, 2: whole tile lifted, full subgrid weir + factor)
+FixedWeirContraction              = 1.                  # Fixed weir flow width contraction factor
+Fixedweirfrictscheme              = 1                   # Fixed weir friction scheme (0: friction based on hu, 1: friction based on subgrid weir friction scheme)
+Fixedweirtopwidth                 = 3.                  # Uniform width of the groyne part of fixed weirs
+Fixedweirtopfrictcoef             = -999.               # Uniform friction coefficient of the groyne part of fixed weirs
+Fixedweirtalud                    = 0.25                # Uniform talud slope of fixed weirs
+Izbndpos                          = 0                   # Position of z boundary (0: D3Dflow, 1: on net boundary, 2: on specifiend polyline)
+Tlfsmo                            = 0.                  # Fourier smoothing time (s) on water level boundaries
+Logprofatubndin                   = 1                   # ubnds inflow: 0=uniform U1, 1 = log U1, 2 = user3D
+Logprofkepsbndin                  = 1                   # inflow: 0=0 keps, 1 = log keps, 2 = user3D
+Slopedrop2D                       = 0.                  # Apply drop losses only if local bed slope > Slopedrop2D, (<=0: no drop losses)
+Drop3D                            = -999.               # Apply droplosses in 3D if z upwind below bob + 2/3 hu*drop3D
+Chkadvd                           = 0.1                 # Check advection terms if depth < chkadvdp, => less setbacks
+Trsh_u1Lb                         = 0.                  # 2D bedfriction in 3D below this threshold (m)
+Epshstem                          = 1.d-3               # Only compute heatflx + evap if depth > epshstem
+Zwsbtol                           = 0.                  # tolerance for zws(kb-1) at bed
+Keepzlayeringatbed                = 1                   #  bedlayerthickness = zlayerthickness at bed 0 or 1
+Teta0                             = 0.55                # Theta of time integration (0.5 < theta < 1)
+Qhrelax                           = 1.d-2               # Relaxation on Q-h open boundaries
+Jbasqbnddownwindhs                = 0                   # Water depth scheme at discharge boundaries (0: original hu, 1: downwind hs)
+cstbnd                            = 0                   # Delft-3D type velocity treatment near boundaries for small coastal models (1: yes, 0: no)
+Maxitverticalforestersal          = 100                 # Forester iterations for salinity (0: no vertical filter for salinity, > 0: max nr of iterations)
+Maxitverticalforestertem          = 0                   # Forester iterations for temperature (0: no vertical filter for temperature, > 0: max nr of iterations)
+Turbulencemodel                   = 3                   # Turbulence model (0: none, 1: constant, 2: algebraic, 3: k-epsilon, 4: k-tau)
+Turbulenceadvection               = 3                   # Turbulence advection (0: none, 3: horizontally explicit and vertically implicit)
+Eddyviscositybedfacmax            = 0.                  # Limit Eddyviscosity at bed )
+AntiCreep                         = 0                   # Include anti-creep calculation (0: no, 1: yes)
+Barocterm                         = 2                   # (original = 1, current = 2 )
+Maxwaterleveldiff                 = 0.                  # upper bound (in m) on water level changes (<= 0: no bounds). Run will abort when violated.
+Maxvelocitydiff                   = 0.                  # upper bound (in m/s) on velocity changes (<= 0: no bounds). Run will abort when violated.
+MinTimestepBreak                  = 0.                  # smallest allowed timestep (in s), checked on a sliding average of several timesteps. Run will abort when violated.
+Epshu                             = 1.d-4               # Threshold water depth for wet and dry cells
+SobekDFM_umin                     = 0.                  # Minimal velocity treshold for weir losses in Sobek-DFM coupling.
+SobekDFM_umin_method              = 0                   # Method for minimal velocity treshold for weir losses in Sobek-DFM coupling.
+SobekDFM_Minimal_1d2d_Embankment  = 1.d-2               # Minimal crest height of 1D2D SOBEK-DFM embankments.
+sobekDFM_relax                    = 0.1                 # Relaxation factor for SOBEK-DFM coupling algorithm.
+Vertadvtypmom                     = 3                   # vertical advection for u1: 0: No, 3: Upwind implicit, 4: Central implicit, 5: QUICK implicit., 6: centerbased upwind expl
+jaupwindsrc                       = 1                   # 1st-order upwind advection at sources/sinks (1) or higher-order (0)
+jasfer3D                          = 0                   # corrections for spherical coordinates
+vicouv_filter                     = 0.                  # artificial viscosity for filtering (m2/s)
+
+[physics]
+UnifFrictCoef                     = 7.000000000000001E-002# Uniform friction coefficient (0: no friction)
+UnifFrictType                     = 1                   # Uniform friction type (0: Chezy, 1: Manning, 2: White-Colebrook, 3: idem, WAQUA style)
+UnifFrictCoef1D                   = 4.d-2               # Uniform friction coefficient in 1D links (0: no friction)
+UnifFrictCoef1D2D                 = 2.3d-2              # Uniform friction coefficient in 1D links (0: no friction)
+UnifFrictCoefLin                  = 0.                  # Uniform linear friction coefficient for ocean models (m/s) (0: no friction)
+Umodlin                           = 1.                  # Linear friction umod, for ifrctyp=4,5,6
+Vicouv                            = 1.                  # Uniform horizontal eddy viscosity (m2/s)
+Dicouv                            = 1.                  # Uniform horizontal eddy diffusivity (m2/s)
+Vicoww                            = 5.d-5               # Uniform vertical eddy viscosity (m2/s)
+Dicoww                            = 5.d-5               # Uniform vertical eddy diffusivity (m2/s)
+Vicwminb                          = 0.                  # Minimum visc in prod and buoyancy term (m2/s)
+Xlozmidov                         = 0.                  # Ozmidov length scale (m), default=0.0, no contribution of internal waves to vertical diffusion
+Smagorinsky                       = 0.                  # Smagorinsky factor in horizontal turbulence, e.g. 0.15
+Elder                             = 0.                  # Elder factor in horizontal turbulence
+irov                              = 0                   # 0=free slip, 1 = partial slip using wall_ks
+wall_ks                           = 0.                  # Wall roughness type (0: free slip, 1: partial slip using wall_ks)
+Rhomean                           = 1000.               # Average water density (kg/m3)
+Idensform                         = 0                   # Density calulation (0: uniform, 1: Eckard, 2: Unesco, 3: baroclinic case)
+Ag                                = 9.81                # Gravitational acceleration
+TidalForcing                      = 0                   # Tidal forcing, if jsferic=1 (0: no, 1: yes)
+SelfAttractionLoading             = 0                   # Self attraction and loading (0=no, 1=yes, 2=only self attraction)
+Doodsonstart                      = 55.565              # TRIWAQ: 55.565, D3D: 57.555
+Doodsonstop                       = 375.575             # TRIWAQ: 375.575, D3D: 275.555
+Doodsoneps                        = 3.d-2               # TRIWAQ = 0.0  400 cmps , D3D = 0.03   60 cmps
+VillemonteCD1                     = 1.                  # Calibration coefficient for Villemonte. Default = 1.0.  NB. For Bloemberg data set 0.8 is recommended.
+VillemonteCD2                     = 10.                 # Calibration coefficient for Villemonte. Default = 10.0. NB. For Bloemberg data set 0.8 is recommended.
+Salinity                          = 0                   # Include salinity, (0=no, 1=yes)
+InitialSalinity                   = 0.                  # Uniform initial salinity concentration (ppt)
+Sal0abovezlev                     = -999.               # Vertical level (m) above which salinity is set 0
+DeltaSalinity                     = -999.               # for testcases
+Salimax                           = -999.               # Limit the salinity
+Salimin                           = 0.                  # Limit the salinity
+Backgroundsalinity                = 30.                 # Background salinity for eqn. of state (ppt)
+Backgroundwatertemperature        = 6.                  # Background water temperature for eqn. of state (deg C)
+Temperature                       = 0                   # Include temperature (0: no, 1: only transport, 3: excess model of D3D, 5: composite (ocean) model)
+InitialTemperature                = 6.                  # Uniform initial water temperature (degC)
+Secchidepth                       = 1.                  # Water clarity parameter (m)
+Stanton                           = -1.                 # Coefficient for convective heat flux, if negative, Ccon = abs(Stanton)*Cdwind
+Dalton                            = -1.                 # Coefficient for evaporative heat flux, if negative, Ceva = abs(Dalton)*Cdwind
+Tempmax                           = -999.               # Limit the temperature
+Tempmin                           = 0.                  # Limit the temperature
+Surftempsmofac                    = 0.                  # Hor . Smoothing factor for surface water in heatflx comp. (0.0-1.0), 0=no
+Soiltempthick                     = 0.1                 # Use soil temperature buffer if > 0, e.g. 0.2 (m)
+Heat_eachstep                     = 1                   # 1=heat each timestep, 0=heat each usertimestep
+SecondaryFlow                     = 0                   # Secondary flow (0: no, 1: yes)
+EffectSpiral                      = 0.                  # Weight factor of the spiral flow intensity on transport angle
+BetaSpiral                        = 0.                  # Weight factor of the spiral flow intensity on flow dispersion stresses
+
+[sediment]
+Sedimentmodelnr                   = 0                   # Sediment model nr, (0=no, 1=Krone, 2=SvR2007)
+SedFile                           =                     # Sediment characteristics file (*.sed)
+MorFile                           =                     # Morphology settings file (*.mor)
+Nr_of_sedfractions                = 0                   # Nr of sediment fractions, (specify the next parameters for each fraction)
+MxgrKrone                         = 0                   # Highest fraction index treated by Krone
+Seddenscoupling                   = 0                   # Sed rho coupling (0=no, 1 =yes
+
+[veg]
+Vegetationmodelnr                 = 0                   # Vegetation model nr, (0=no, 1=Baptist DFM)
+Clveg                             = 0.8                 # Stem distance factor, default 0.8 ()
+Cdveg                             = 0.7                 # Stem Cd coefficient , default 0.7 ()
+Cbveg                             = 0.                  # Stem stiffness coefficient , default 0.7 ()
+Rhoveg                            = 0.                  # Stem Rho, if > 0, -> bouyant stick procedure, default 0.0 ()
+Stemheightstd                     = 0.                  # Stem height standard deviation fraction, e.g. 0.1  ()
+Densvegminbap                     = 0.                  # Minimum vegetation density in Baptist formula  (1/m2)
+
+[wind]
+ICdtyp                            = 2                   # Wind drag coefficient type (1=Const; 2=Smith&Banke (2 pts); 3=S&B (3 pts); 4=Charnock 1955, 5=Whang 2005, 6=Wuest 2005, 7=Hersbach 2010 (2 pts)
+Cdbreakpoints                     = 6.3d-4 7.23d-3      # Wind drag coefficient break points
+Windspeedbreakpoints              = 0. 100.             # Wind speed break points (m/s)
+Relativewind                      = 0                   # Wind speed relative to top-layer water speed, 1=yes, 0 = no)
+Rhoair                            = 1.2                 # Air density (kg/m3)
+PavBnd                            = 0.                  # Average air pressure on open boundaries (N/m2) (only applied if > 0)
+Pavini                            = 0.                  # Average air pressure for initial water level correction (N/m2) (only applied if > 0)
+
+[grw]
+Infiltrationmodel                 = 0                   # 0=No grw, 1=infiltration=interceptionlayer, 2=infiltration=Infiltrationvelocity, 3=model unsaturated/saturated ( )
+Hinterceptionlayer                = 0.                  # Intercept this amount of rain (m)
+Infiltrationvelocity              = 0.                  # Infiltrationvelocity (m/s)
+Conductivity                      = 0.                  # non dimensionless K conductivity   saturated (m/s), Q = K*A*i (m3/s)
+h_aquiferuni                      = 20.                 # bgrw = bl - h_aquiferuni (m), if negative, bgrw = bgrwuni
+h_unsatini                        = 0.200000002980232   # initial level groundwater is bedlevel - h_unsatini (m), if negative, sgrw = sgrwini
+
+[waves]
+Wavemodelnr                       = 0                   # Wave model nr. (0: none, 1: fetch/depth limited hurdlestive, 2: Young-Verhagen, 3: SWAN, 4: wave group forcing, 5: uniform
+Wavenikuradse                     = 1.d-2               # Wave friction Nikuradse ks coefficient (m), used in Krone-Swart
+Rouwav                            = FR84                # Friction model for wave induced shear stress: FR84 (default) or: MS90, HT91, GM79, DS88, BK67, CJ85, OY88, VR04
+Gammax                            = 1.                  # Maximum wave height/water depth ratio
+
+[time]
+RefDate                           = 20000101            # Reference date (yyyymmdd)
+Tzone                             = 0.                  # Time zone assigned to input time series
+DtUser                            = 86400.              # Time interval (s) for external forcing update
+DtNodal                           = 0.                  # Time interval (s) for updating nodal factors in astronomical boundary conditions
+DtMax                             = 1200.               # Maximal computation timestep (s)
+Dtfacmax                          = 1.1                 # Max timestep increase factor ( )
+DtInit                            = 1.d-2               # Initial computation timestep (s)
+Timestepanalysis                  = 0                   # 0=no, 1=see file *.steps
+Tunit                             = S                   # Time unit for start/stop times (D, H, M or S)
+TStart                            = 0.                  # Start time w.r.t. RefDate (in TUnit)
+TStop                             = 347155200.          # Stop  time w.r.t. RefDate (in TUnit)
+
+[restart]
+RestartFile                       =                     # Restart netcdf-file, either *_rst.nc or *_map.nc
+RestartDateTime                   = yyyymmdd_HHMMSS     # Restart date and time (YYYYMMDDHHMMSS) when restarting from *_map.nc
+
+[external forcing]
+ExtForceFile                      = boundary_info_Elbe_fine.ext# Old format for external forcings file *.ext, link with tim/cmp-format boundary conditions specification
+ExtForceFileNew                   =                     # New format for external forcings file *.ext, link with bc-format boundary conditions specification
+Rainfall                          = 1                   # Include rainfall, (0=no, 1=yes)
+
+[trachytopes]
+TrtRou                            = N                   # Include alluvial and vegetation roughness (trachytopes) (Y: yes, N: no)
+TrtDef                            =                     # File (*.ttd) including trachytope definitions
+TrtL                              =                     # File (*.arl) including distribution of trachytope definitions
+DtTrt                             = 60.                 # Trachytope roughness update time interval (s)
+
+[calibration]
+UseCalibration                    = 0                   # Activate calibration factor friction multiplier (1 = yes, 0 = no)
+DefinitionFile                    =                     # File (*.cld) including calibration definitions
+AreaFile                          =                     # File (*.cll) including area distribution of calibration definitions
+
+[output]
+OutputDir                         =                     # Output directory of map-, his-, rst-, dat- and timings-files, default: DFM_OUTPUT_<modelname>. Set to . for current dir.
+FlowGeomFile                      =                     # Flow geometry NetCDF *_flowgeom.nc
+ObsFile                           =                     # Points file *.xyn with observation stations with rows x, y, station name
+CrsFile                           = NeuDarchauSMALLnWIDE_crs.pli# Polyline file *_crs.pli defining observation cross sections
+FouFile                           =                     # Fourier analysis input file *.fou
+HisFile                           =                     # HisFile name *_his.nc
+MapFile                           =                     # MapFile name *_map.nc
+HisInterval                       = 86400. 0. 347155200.# History output times, given as "interval" "start period" "end period" (s)
+XLSInterval                       = 0.                  # Interval (s) between XLS history
+MapInterval                       = 864000. 0. 347155200.# Map file output, given as "interval" "start period" "end period" (s)
+RstInterval                       = 0. 0. 347155200.    # Restart file output times, given as "interval" "start period" "end period" (s)
+S1incinterval                     = 0.                  # Interval (m) in incremental file for water levels S1
+WaqInterval                       = 0. 0. 347155200.    # DELWAQ output times, given as "interval" "start period" "end period" (s)
+StatsInterval                     = 0.                  # Screen step output interval in seconds simulation time, if negative in seconds wall clock time
+WriteBalancefile                  = 0                   # Write balance file (1: yes, 0: no)
+TimingsInterval                   = 0.                  # Timings statistics output interval
+TimeSplitInterval                 = 0X                  # Time splitting interval, after which a new output file is started. value+unit, e.g. '1 M', valid units: Y,M,D,h,m,s.
+MapFormat                         = 4                   # Map file format, 1: netCDF, 2: Tecplot, 3: netCFD and Tecplot, 4: NetCDF-UGRID
+Wrihis_balance                    = 1                   # Write mass balance totals to his file (1: yes, 0: no)
+Wrihis_sourcesink                 = 1                   # Write sources-sinks statistics to his file (1=yes, 0=no)
+Wrihis_structure_gen              = 1                   # Write general structure parameters to his file (1: yes, 0: no)
+Wrihis_structure_dam              = 1                   # Write dam parameters to his file (1: yes, 0: no)
+Wrihis_structure_pump             = 1                   # Write pump parameters to his file (1: yes, 0: no)
+Wrihis_structure_gate             = 1                   # Write gate parameters to his file (1: yes, 0: no)
+Wrihis_structure_weir             = 1                   # Write weir parameters to his file (1: yes, 0: no)
+Wrihis_turbulence                 = 1                   # Write k, eps and vicww to his file (1: yes, 0: no)
+Wrihis_wind                       = 1                   # Write wind velocities to his file (1: yes, 0: no)
+Wrihis_rain                       = 1                   # Write precipitation to his file (1: yes, 0: no)
+Wrihis_temperature                = 1                   # Write temperature to his file (1: yes, 0: no)
+Wrihis_heatflux                   = 0                   # Write heat flux to his file (1: yes, 0: no)
+Wrihis_salinity                   = 1                   # Write salinity to his file (1: yes, 0: no)
+Wrihis_density                    = 1                   # Write density to his file (1: yes, 0: no)
+Wrimap_waterlevel_s0              = 1                   # Write water levels for previous time step to map file (1: yes, 0: no)
+Wrimap_waterlevel_s1              = 1                   # Write water levels to map file (1: yes, 0: no)
+Wrimap_volume1                    = 0                   # Write volumes to map file (1: yes, 0: no)
+Wrimap_velocity_component_u0      = 0                   # Write velocity component for previous time step to map file (1: yes, 0: no)
+Wrimap_velocity_component_u1      = 0                   # Write velocity component to map file (1: yes, 0: no)
+Wrimap_velocity_vector            = 1                   # Write cell-center velocity vectors to map file (1: yes, 0: no)
+Wrimap_upward_velocity_component  = 0                   # Write upward velocity component on cell interfaces (1: yes, 0: no)
+Wrimap_density_rho                = 0                   # Write flow density to map file (1: yes, 0: no)
+Wrimap_horizontal_viscosity_viu   = 0                   # Write horizontal viscosity to map file (1: yes, 0: no)
+Wrimap_horizontal_diffusivity_diu = 0                   # Write horizontal diffusivity to map file (1: yes, 0: no)
+Wrimap_flow_flux_q1               = 0                   # Write flow flux to map file (1: yes, 0: no)
+Wrimap_spiral_flow                = 0                   # Write spiral flow to map file (1: yes, 0: no)
+Wrimap_numlimdt                   = 0                   # Write the number times a cell was Courant limiting to map file (1: yes, 0: no)
+Wrimap_taucurrent                 = 0                   # Write the shear stress to map file (1: yes, 0: no)
+Wrimap_chezy                      = 0                   # Write the chezy roughness to map file (1: yes, 0: no)
+Wrimap_turbulence                 = 0                   # Write vicww, k and eps to map file (1: yes, 0: no)
+Wrimap_wind                       = 0                   # Write wind velocities to map file (1: yes, 0: no)
+MapOutputTimeVector               =                     # File (*.mpt) containing fixed map output times (s) w.r.t. RefDate
+FullGridOutput                    = 0                   # Full grid output mode (0: compact, 1: full time-varying grid data)
+EulerVelocities                   = 0                   # Euler velocities output (0: GLM, 1: Euler velocities)
+Wrirst_bnd                        = 1                   # Write waterlevel, bedlevel and coordinates of boundaries to restart files
+Writepart_domain                  = 1                   # Write partition domain info. for postprocessing
+
+[particles]
+ParticlesFile                     = 
+AddTracer                         = 0                   # add tracer (1) or not (other)
+StartTime                         = 0.                  # starttime (if >0)
+TimeStep                          = 0.                  # time step (>0) or every computational time step
+** INFO   : **
+** INFO   : Start of the computation time loop
+** INFO   : Writing initial output to file(s)...
+** DEBUG  : Opened NetCDF file 'DFM_OUTPUT_DFM_Elbe_VU/DFM_Elbe_VU_his.nc' as #131072.
+** DEBUG  : Opened NetCDF file 'DFM_OUTPUT_DFM_Elbe_VU/DFM_Elbe_VU_map.nc' as #196608.
+** INFO   : Done writing initial output to file(s).
+** WARNING: ...
+** WARNING: Updating target failed, quantity='dischargebnd', item= 46
+** WARNING: Updating source failed, quantity='polytim_item', item=00034
+** WARNING: Updating target failed, quantity='polytim_item', item= 34
+** WARNING: Updating source failed, quantity='uniform_item', item=00040
+** WARNING: File end has been reached of: BfG_Tangermuende_0001.tim
+** WARNING: Error while updating boundary forcing at time=347068846.858
+** ERROR  :   Error found in EC-module

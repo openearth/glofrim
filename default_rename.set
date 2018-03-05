@@ -28,9 +28,9 @@ model_file      = input_flood.nam
 # either "DFM" for Delft3D Flexible Mesh or "LFP" for Lisflood-FP v5.9
 model_name = DFM
 # path where either mdu- or par-file is located
-model_dir       = test_Elbe/DFM_Elbe/
+model_dir       = test_Elbe/DFM_Elbe/delta/
 # either mdu- or par-file
-model_file      = Elbe_1way_1d2dFM_400m_3200m.mdu
+model_file      = DFM_Elbe_VU.mdu
 # needs only to be specified if model is not in spherical coordinates
 model_projection = epsg:32720
 
@@ -38,7 +38,7 @@ model_projection = epsg:32720
 # defining start/endtime of coupled run
 # Format: YYYY-MM-DD
 startTime = 2000-01-01
-endTime = 2000-01-10
+endTime = 2000-12-31
 # [seconds], only active when using s1-forcing in Delft3D FM
 update_step = 1800
 # set threshold above which a cell is considered 'inundated'

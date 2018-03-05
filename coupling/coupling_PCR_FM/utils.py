@@ -22,9 +22,8 @@ def set_values_in_array(vals, idx, update_vals):
 def determineSteps(d1, d2):
     """
     Computes numer of update steps based on start and endtime defined in PCR ini-file
+    Input: d1 = model start time, d2 = model end time; both in daytime format YYYY-MM-DD
     """
-    d1 = datetime.strptime(d1, "%Y-%m-%d")
-    d2 = datetime.strptime(d2, "%Y-%m-%d")
     return abs((d2 - d1).days)
 
 
