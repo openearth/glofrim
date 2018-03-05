@@ -164,7 +164,7 @@ RestartFile                       =                     # Restart netcdf-file, e
 RestartDateTime                   = 		       # Restart date and time (YYYYMMDDHHMMSS) when restarting from *_map.nc
 
 [external forcing]
-ExtForceFile                      = boundary_info_Elbe_fine.ext # Old format for external forcings file *.ext, link with tim/cmp-format boundary conditions specification
+ExtForceFile                      = boundary_info_Elbe_fine_1way.ext # Old format for external forcings file *.ext, link with tim/cmp-format boundary conditions specification
 ExtForceFileNew                   =                     # New format for external forcings file *.ext, link with bc-format boundary conditions specification
 Rainfall                          = 1                   # Include rainfall, (0=no, 1=yes)
 
