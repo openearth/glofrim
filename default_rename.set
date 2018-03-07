@@ -38,7 +38,7 @@ model_projection = epsg:32720
 # defining start/endtime of coupled run
 # Format: YYYY-MM-DD
 startTime = 2000-01-01
-endTime = 2000-12-31
+endTime = 2010-12-31
 # [seconds], only active when using s1-forcing in Delft3D FM
 update_step = 1800
 # set threshold above which a cell is considered 'inundated'

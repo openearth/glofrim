@@ -100,21 +100,21 @@ LBOUNDSL=".FALSE."                     # true for variable boundary sea level
 ##### Output Settings #################
 #TODO:THE OUTPUT DIRECTORY NAME SHOULD BE MODIFIED
 LOUTCDF=".FALSE."                     # true for netCDF output, false for plain binary output
-COUTDIR="./out/"                          # output directory 
+COUTDIR="./out"                          # output directory 
 mkdir $COUTDIR
 # output variables set "NONE" for no output
-CRIVOUTDIR="NONE"                     #   river discharge         [m3/s]
+CRIVOUTDIR="$COUTDIR"                     #   river discharge         [m3/s]
 CRIVSTODIR="NONE"                     #   river storage           [m3]
 CRIVVELDIR="NONE"                     #   river flow velocity     [m/s]
 CRIVDPHDIR="NONE"                 #   river water depth       [m]
 
 CFLDOUTDIR="NONE"                     #   floodplain discharge    [m3/s]
-CFLDSTODIR="NONE"                     #   floodplain storage      [m]
-CFLDDPHDIR="NONE"                 #   floodplain water depth  [m]
+CFLDSTODIR="$COUTDIR"                     #   floodplain storage      [m]
+CFLDDPHDIR="$COUTDIR"                 #   floodplain water depth  [m]
 CFLDAREDIR="NONE"                 #   flooded area            [m]
 CFLDFRCDIR="NONE"                 #   flooded area fraction   [m2/m2]
 
-CSFCELVDIR="NONE"                 #   water surface elevation [m]
+CSFCELVDIR="$COUTDIR"                 #   water surface elevation [m]
 COUTFLWDIR="$COUTDIR"                 #   total discharge (rivout+fldout)   [m3/s]
 CSTORGEDIR="NONE"                 #   total storage (rivsto+fldsto)     [m3]
 
