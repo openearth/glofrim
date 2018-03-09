@@ -8,15 +8,15 @@ RESTFREQ=0                          ! 0: yearly restart file, 1: daily restart f
 /
 &NSIMTIME
 ISYEAR=1990                      ! start year
-ISMON=1                             ! month
+ISMON=1                             ! month 
 ISDAY=1                             ! day        (assumed at 00UTC)
 IEYEAR=1991                      ! end year
 IEMON=1                             ! end
 IEDAY=1                             ! end        (assumed at 00UTC)
 /
 &NMAP
-LMAPCDF=.FALSE.                     ! true for netCDF map input
-CDIMINFO="./diminfo_30min.txt"              ! dimention info
+LMAPCDF=.false.                     ! true for netCDF map input
+CDIMINFO="./diminfo_1deg.txt"              ! dimention info
 CNEXTXY="./nextxy.bin"                ! downstream xy (river network map)
 CGRAREA="./grarea.bin"                ! unit-catchment area [m2]
 CELEVTN="./elevtn.bin"                ! base elevation      [m]
@@ -31,19 +31,18 @@ LDIKHGT=.FALSE.                  ! true for dike calculation
 CDIKHGT=""                ! dike height         [m]
 CRIVPARNC="NONE"                    ! * netCDF river width & depth
 /
-&NINPUT
+&NINPUT 
 LINTERP=.TRUE.                  ! true for runoff interpolation using input matrix
-LBMIROF=.TRUE.                 ! true for reading runoff via BMI
 LINPCDF=.FALSE.                  ! true for netCDF input
 CINPMAT="./inpmat-30min.bin"                ! input matrix file name
 CRUNOFFDIR=""             ! runoff input directory
 CRUNOFFPRE=""             ! runoff input prefix
 CRUNOFFSUF=""             ! runoff input suffix
-CRUNOFFCDF=""             ! * netCDF input runoff file name
+CRUNOFFCDF="/runoff1990.nc"             ! * netCDF input runoff file name
 CROFCDFVAR=""             ! * netCDF input runoff variable name
-SYEARIN=                    ! * for netCDF input start date (start of the initial time step)
-SMONIN=
-SDAYIN=
+SYEARIN=1989                    ! * for netCDF input start date (start of the initial time step)
+SMONIN=12
+SDAYIN=31
 LINTERPCDF=.FALSE.                  ! * true for netCDF input matrix
 LMEANSL=.FALSE.                  ! true for mean sea level
 CMEANSL=""                ! mean sea level
@@ -54,8 +53,8 @@ CBOUNDSUF=""            ! boundary sea level suffix
 /
 &NOUTPUT
 LOUTCDF=.FALSE.                  ! true for netCDF output
-COUTDIR="NONE"                ! output directory ("NONE" for no output)
-CRIVOUTDIR="NONE"          ! river discharge        [m3/s]
+COUTDIR="./out"                ! output directory ("NONE" for no output)
+CRIVOUTDIR="./out"          ! river discharge        [m3/s]
 CRIVSTODIR="NONE"          ! river storage          [m3]
 CRIVVELDIR="NONE"          ! river flow velocity    [m/s]
 CRIVDPHDIR="NONE"          ! river water depth      [m]
@@ -65,7 +64,7 @@ CFLDDPHDIR="NONE"          ! floodplain water depth [m]
 CFLDFRCDIR="NONE"          ! flooded area fraction  [m2/m2]
 CFLDAREDIR="NONE"          ! flooded area           [m2]
 CSFCELVDIR="NONE"          ! water surface elevation           [m]
-COUTFLWDIR="NONE"          ! total discharge (rivout+fldout)   [m3/s]
+COUTFLWDIR="./out"          ! total discharge (rivout+fldout)   [m3/s]
 CSTORGEDIR="NONE"          ! total storage   (rivsto+fldsto)   [m3]
 CPTHOUTDIR="NONE"          ! net bifurcation flow (grid-based) [m3/s]
 CPTHFLWDIR="NONE"          ! bifurcation flow (channel-based)  [m3/s]
@@ -75,7 +74,7 @@ LOUTVEC=.FALSE.                     ! for 1-D land-only output (small data size,
 &NCONF                              ! * NX, NY, NFLP, NXIN, NYIN, INPN, WEST, EAST, NORTH, SOUTH set by diminfo.txt
 DT=86400                              ! time step [sec]
 DTIN=86400                          ! input runoff time step [sec]
-DROFUNIT=1                  ! runoff unit conversion (1.D-3 when input [mm] is converted to [m3/m2]
+DROFUNIT=                  ! runoff unit conversion (1.D-3 when input [mm] is converted to [m3/m2]
 LADPSTP=.TRUE.                    ! true for adaptive time step
 LFLDOUT=.TRUE.                    ! true to activate floodplain discharge
 LPTHOUT=.FALSE.                    ! true to activate bifurcation channel flow

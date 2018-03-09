@@ -7,31 +7,31 @@
 ** INFO   : nr of openbnd cells   ( )  :                        5
 ** INFO   : nr of 1D-flownodes    ( )  :                     1423
 ** INFO   : model area            (m2) :         0.5849804706E+10
-** INFO   : model volume          (m3) :         0.5980351841E+10
+** INFO   : model volume          (m3) :         0.6085648157E+10
 ** INFO   : 
 ** INFO   : 
 ** INFO   : 
-** INFO   : simulation period     (s)  :      31536000.0000000000
-** INFO   : nr of timesteps       ( )  :        109500.0000000000
-** INFO   : average timestep      (s)  :           288.0000000000
-** INFO   : time inistep          (s)  :           256.3599999998
-** INFO   : time setumod          (s)  :            73.3100000008
-** INFO   : time furu             (s)  :            15.0470000000
-** INFO   : time solve            (s)  :           194.0910000003
-** INFO   : time setexternalforc. (s)  :             1.1620000000
-** INFO   : time setexternalfbnd. (s)  :             0.7380000000
-** INFO   : time steps            (s)  :           556.7280000001
+** INFO   : simulation period     (s)  :      94608000.0000000000
+** INFO   : nr of timesteps       ( )  :        328999.0000000000
+** INFO   : average timestep      (s)  :           287.5631840826
+** INFO   : time inistep          (s)  :           747.4999999972
+** INFO   : time setumod          (s)  :           207.0989999997
+** INFO   : time furu             (s)  :            43.6089999992
+** INFO   : time solve            (s)  :           557.1550000006
+** INFO   : time setexternalforc. (s)  :             1.9940000000
+** INFO   : time setexternalfbnd. (s)  :             1.9709999999
+** INFO   : time steps            (s)  :          1617.7690000000
 ** INFO   : time steps + plots    (s)  :             0.0000000000
-** INFO   : fraction solve/steps  ( )  :             0.3486280554
+** INFO   : fraction solve/steps  ( )  :             0.3443971296
 ** INFO   : total/(dnt*ndx)       (s)  :             0.0000000000
 ** INFO   : av nr of cont. it s1it( )  :             0.0000000000
-** INFO   : time transport [s]         :            16.1199999999
+** INFO   : time transport [s]         :            46.3970000006
 ** INFO   : time debug     [s]         :             0.0000000000
 ** INFO   : 
 ** INFO   : 
 ** INFO   : 
-** INFO   : Computation started  at: 13:25:55, 05-03-2018
-** INFO   : Computation finished at: 13:46:10, 05-03-2018
+** INFO   : Computation started  at: 11:56:29, 09-03-2018
+** INFO   : Computation finished at: 13:00:00, 09-03-2018
 ** INFO   : 
 ** INFO   : MPI    : no.
 ** INFO   : OpenMP : yes.         #threads max : 8
@@ -40,10 +40,10 @@
 ** INFO   : 
 ** INFO   : 
 ** INFO   : crosssection discharges (m3/s) :
-** INFO   :        640.462
-** INFO   :        267.946
-** INFO   :        -50.719
+** INFO   :        620.960
+** INFO   :        247.608
+** INFO   :       -240.014
 ** INFO   : crosssection areas (m2) :
-** INFO   :        486.082
-** INFO   :       4095.971
-** INFO   :        358.960
+** INFO   :        594.380
+** INFO   :       4058.538
+** INFO   :        431.567
