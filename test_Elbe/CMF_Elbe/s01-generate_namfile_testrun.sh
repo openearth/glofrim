@@ -102,7 +102,7 @@ LBOUNDSL=".FALSE."                     # true for variable boundary sea level
 #TODO:THE OUTPUT DIRECTORY NAME SHOULD BE MODIFIED
 LOUTCDF=".FALSE."                     # true for netCDF output, false for plain binary output
 COUTDIR="./out/"                          # output directory 
-mkdir $COUTDIR
+#mkdir $COUTDIR
 # output variables set "NONE" for no output
 CRIVOUTDIR="NONE"                     #   river discharge         [m3/s]
 CRIVSTODIR="NONE"                     #   river storage           [m3]

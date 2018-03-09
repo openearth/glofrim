@@ -613,7 +613,7 @@ class CMF_model(BMI_model_wrapper):
                             "IEDAY": "{:d}".format(end_date.day)
                             },
                         'NOUTPUT':
-                            {'COUTDIR': '"./out"'},
+                            {'COUTDIR': '"{}/out/"'.format(self.out_dir)},
                         }
         self.set_config(globalOptions)
 
