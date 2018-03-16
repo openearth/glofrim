@@ -41,8 +41,8 @@ NSP=1                                 #   spinup years
 #FMAP="${BASE}/map/elbe_15min" 
 FMAP="."
 
-CDIMINFO="${FMAP}/diminfo_1deg.txt"   #   dimention info (1deg, 0E->360E, 90N-90S)
-#CDIMINFO="${FMAP}/diminfo_30min.txt"   #   dimention info (30min, 0E->360E, 90S->90N), generate a new matrix in map dir if needed
+#CDIMINFO="${FMAP}/diminfo_1deg.txt"   #   dimention info (1deg, 0E->360E, 90N-90S)
+CDIMINFO="${FMAP}/diminfo_30min.txt"   #   dimention info (30min, 0E->360E, 90S->90N), generate a new matrix in map dir if needed
 
 CNEXTXY=${FMAP}/nextxy.bin            #   downstream xy (river network map)
 CGRAREA=${FMAP}/grarea.bin            #   unit-catchment area [m2]
@@ -64,8 +64,8 @@ LDIKHGT=".FALSE."                     #    true: input dike data
 ##### Input Runoff Forcing ################# input runoff resolution should be consistent with "inpmat.bin"
 LINTERP=".TRUE."                           #   true: runoff interpolation using inpmat, false: nearest point interpolation
 #
-CINPMAT=${FMAP}/inpmat-1deg.bin            #   runoff input matrix (1deg, 0E->360E, 90N-90S)     !! for sample bonary input
-#CINPMAT=${FMAP}/inpmat-30min.bin           #   runoff input matrix (30min, for PCR-GLOBWB)
+#CINPMAT=${FMAP}/inpmat-1deg.bin            #   runoff input matrix (1deg, 0E->360E, 90N-90S)     !! for sample bonary input
+CINPMAT=${FMAP}/inpmat-30min.bin           #   runoff input matrix (30min, for PCR-GLOBWB)
                                              #   generate a new matrix in map dir if needed
 
 LBMIROF=".TRUE."                           #   true: read runoff via BMI
@@ -85,7 +85,7 @@ LINPCDF=".FALSE."                          #   true: netCDF input file
 # SMONIN="set-by-shell"
 # SDAYIN="set-by-shell"
 
-DROFUNIT=1.D-3                             #   runoff unit conversion (1.D-3 when input [mm] is converted to [m3/m2])
+DROFUNIT=1                             #   runoff unit conversion (1.D-3 when input [mm] is converted to [m3/m2])
 
 ##### Mean sea level ##################
 LMEANSL=".FALSE."                      # true for mean sea level
