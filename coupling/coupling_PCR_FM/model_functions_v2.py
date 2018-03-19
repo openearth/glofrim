@@ -791,7 +791,8 @@ class CMF_model(BMI_model_wrapper):
         n_upstream = np.array([nextxy.find_upstream(r, c)[0].size for r,c in zip(rows, cols)])
         # create mask with 0) no coupling 1) couple runoff and 2) couple discharge
         coupled_mask = np.zeros(self.model_grid_shape)
-        coupled_mask[rows, cols] = np.where(n_upstream>=1, 2, 1)
+        #coupled_mask[rows, cols] = np.where(n_upstream>=1, 2, 1)
+        coupled_mask[rows, cols] = np.where(n_upstream<1, 2, 1)
         self.coupled_mask = coupled_mask
 
     def get_var(self, name, parse_missings=True, *args, **kwargs):
