@@ -369,7 +369,7 @@ class BMI_model_wrapper(object):
             area_frac.update(afs)
         self.coupled_area_frac = np.array([area_frac[i] for i in other.coupled_idx])
 
-        # get mask with 1) coupled runoof and 2) coupled discharge
+        # get mask with 1) coupled runoff and 2) coupled discharge
         self.get_coupled_grid_mask()
 
     def couple_grid_to_grid(self, other):
@@ -754,8 +754,8 @@ class CMF_model(BMI_model_wrapper):
 
         The mask contains 0-2 values meaning:
             0) no coupling
-            1) couple runoff and
-            2) couple discharge
+            1) couple runoff only
+            2) couple runoff and upstream discharge
 
         Arguments
         ----------
@@ -782,18 +782,22 @@ class CMF_model(BMI_model_wrapper):
         rows, cols = np.atleast_1d(rows), np.atleast_1d(cols)
         valid = np.logical_and(rows>0, cols>0) # row, cols with -1 are not ignored (coastal) basins in CMF
         rows, cols = rows[valid], cols[valid]
+        # mask of the coupled domain
+        coupled_domain_mask = np.zeros(self.model_grid_shape)
+        coupled_domain_mask[rows, cols] = 1
         # read drainage direction data and initialize nextxy object.
         nextxy_data = np.fromfile(fn_nextxy, dtype=np.int32).reshape(2, *self.model_grid_shape)
         nextxy = NextXY(nextxy_data, self.model_grid_transform, nodata=-9999, search_radius=4)
-        # deactivate routing for coupled cells
-        nextxy.r[:, rows[:, None], cols[:, None]] = -9
         # find number of upstream cells for each coupled cell
-        n_upstream = np.array([nextxy.find_upstream(r, c)[0].size for r,c in zip(rows, cols)])
+        n_upstream = np.array([nextxy.find_upstream(r, c, coupled_domain_mask)[0].size for r,c in zip(rows, cols)])
         # create mask with 0) no coupling 1) couple runoff and 2) couple discharge
         coupled_mask = np.zeros(self.model_grid_shape)
-        #coupled_mask[rows, cols] = np.where(n_upstream>=1, 2, 1)
-        coupled_mask[rows, cols] = np.where(n_upstream<1, 2, 1)
+        coupled_mask[rows, cols] = np.where(n_upstream==0, 2, 1)
         self.coupled_mask = coupled_mask
+        # a matrix of the number of upstream cells
+        upstream_matrix = np.ones(self.model_grid_shape) * -9999
+        upstream_matrix[rows, cols] = np.where(n_upstream>=0, n_upstream, -9999)
+        self.upstream_matrix = upstream_matrix
 
     def get_var(self, name, parse_missings=True, *args, **kwargs):
         var = super(CMF_model, self).get_var(name, parse_missings=parse_missings)

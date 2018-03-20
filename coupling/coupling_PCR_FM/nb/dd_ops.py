@@ -40,7 +40,7 @@ class DrainageDirection(object):
         return self.transform * (col, row)
 
     # drainage network functionality
-    def find_upstream(self, row, col, ignore_mask=False):
+    def find_upstream(self, row, col, domain_mask=None, ignore_mask=False):
         """Return indices of cells upstream from row, col.
 
         Note that multiple upstream cells can be found for one row, col index.
@@ -60,7 +60,7 @@ class DrainageDirection(object):
             column indices of upstream cells
         """
         row, col = np.atleast_1d(row), np.atleast_1d(col)
-        return self._nb_upstream_idx(row, col)
+        return self._nb_upstream_idx(row, col, domain_mask)
 
     def find_downstream(self, row, col, ignore_mask=False):
         """Return indices of cells downstream from row, col.
@@ -256,10 +256,19 @@ class NextXY(DrainageDirection):
         nextx, nexty = np.asarray(self.r[:, row[~is_outlet], col[~is_outlet]])
         return nexty, nextx
 
-    def _nb_upstream_idx(self, row, col):
+    def _nb_upstream_idx(self, row, col, domain_mask=None):
         """neighborhood upstream index"""
         xy = np.array([col, row]).reshape(2, len(row), 1)
-        return self.r.wdw_eq(row, col, xy, return_index=True)
+        row_upstream, col_upstream = [], [] 
+        row_tmp, col_tmp = self.r.wdw_eq(row, col, xy, return_index=True)
+        if domain_mask is not None:
+            for r, c in zip(row_tmp, col_tmp):
+                if domain_mask[r, c].astype(bool):
+                   row_upstream.append(r)
+                   col_upstream.append(c)
+        else:
+            row_upstream, col_upstream = row_tmp, col_tmp
+        return np.atleast_1d(row_upstream), np.atleast_1d(col_upstream)
 
     def _pit(self, row, col):
         """index pit predicate"""
