@@ -111,6 +111,7 @@ MAIN_day
 *.dSYM
 
 *.swp
+.DS_Store
 
 # personal envs
 paths.env
