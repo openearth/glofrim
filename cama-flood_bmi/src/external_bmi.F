@@ -26,6 +26,7 @@ module demo_model
   USE PARKIND1   ,ONLY: JPIM, JPRB, JPRM
   USE MOD_INPUT  ,ONLY: LOGNAM, NX, NY, DT, LOUTCDF
   USE MOD_INPUT  ,ONLY: LBMIROF, LBOUNDSL
+  USE MOD_INPUT  ,ONLY: COUTDIR
   USE MOD_TIME   ,ONLY: KSTEP,  NSTEPS, KYYYYMMDD, KHHMM, KMIN, KMINSTART, KYYYYMMDDP, KHHMMP, KMINP
   USE MOD_MAP    ,ONLY: NSEQMAX, NPTHOUT, NPTHLEV
   USE MOD_DIAG   ,ONLY: D2RIVINF, D2RIVDPH, D2RIVVEL, D2FLDINF, D2FLDDPH, D2FLDFRC, D2FLDARE,&
@@ -86,7 +87,8 @@ contains
     ! Variables
     character(kind=c_char), intent(in) :: c_configfile(*)
     character(len=strlen(c_configfile)) :: configfile
-
+    CHARACTER(LEN=4)      :: IYEAR
+    CHARACTER(LEN=256)    :: CLOGTXT
 
 
 #ifdef UseMPI
@@ -128,6 +130,11 @@ contains
        LOGNAM=12
        OPEN(LOGNAM,FILE=CLOGOUT,FORM='FORMATTED')
     ENDIF
+    
+    LOGNAM=12
+    WRITE(IYEAR, '(i4)') ISYEAR
+    CLOGTXT=TRIM(COUTDIR)//'run_'//TRIM(IYEAR)//'.log'
+    OPEN(LOGNAM, FILE=CLOGTXT, FORM='FORMATTED')
 
     ! *** 2. read input river map
     CALL INIT_MAP
