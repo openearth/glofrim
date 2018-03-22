@@ -60,7 +60,10 @@ class DrainageDirection(object):
             column indices of upstream cells
         """
         row, col = np.atleast_1d(row), np.atleast_1d(col)
-        return self._nb_upstream_idx(row, col, domain_mask)
+        if domain_mask is not None:
+            return self._nb_upstream_idx(row, col, domain_mask)
+        else:
+            return self._nb_upstream_idx(row, col)
 
     def find_downstream(self, row, col, ignore_mask=False):
         """Return indices of cells downstream from row, col.
