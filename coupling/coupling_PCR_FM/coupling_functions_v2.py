@@ -21,7 +21,7 @@ def get_CMF_delta_vol(CMF_bmi):
     delta_vol = tot_flux * CMF_bmi.options['dt'] # [m3/day]
     return delta_vol
 
-def set_CMF_forcing(PCR_bmi):
+def set_CMF_forcing(PCR_bmi, CMF_bmi):
     "coupling runoff between CMF and PCR model"
     runoff = np.copy(PCR_bmi.get_var('runoff')) # [m/day]
     runoff = np.where(np.isnan(runoff), 0, runoff)

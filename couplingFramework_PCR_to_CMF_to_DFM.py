@@ -60,7 +60,7 @@ PCR_in_dir = options['PCRpaths']['inputDirectoryPCR']
 PCR_out_dir = os.path.join(out_dir, 'PCR')
 
 PCR_bmi = PCR_model(PCR_config_fn, PCR_in_dir, PCR_out_dir,
-                            start_date, end_date,)
+                            start_date, end_date)
 
 # ---
 # CREATE CMF BMI OBJECT
@@ -124,7 +124,7 @@ PCR_bmi.initialize()
 tStart = datetime.now()
 for i in range(timeSteps):
     PCR_bmi.update()
-    coupling_functions_v2.set_CMF_forcing(PCR_bmi)
+    coupling_functions_v2.set_CMF_forcing(PCR_bmi, CMF_bmi)
     CMF_bmi.update()
     coupling_functions_v2.set_DFM_forcing(DFM_bmi, CMF_bmi)
     DFM_bmi.update()
