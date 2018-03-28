@@ -22,8 +22,8 @@ from coupling_PCR_FM.utils import config_to_dict, determineSteps
 # IMPORT MODEL SETTINGS FROM INI-FILE
 # ---
 
-argv1 = sys.argv[1]
-argv2 = sys.argv[2]
+argv1 = sys.argv[1] # settings file
+argv2 = sys.argv[2] # paths file
 
 # ---
 # PARSE CONTENT
