@@ -112,6 +112,10 @@ MAIN_day
 
 # personal envs
 modelPaths.env
+modelPaths_H6.env
+
+# settings
+couplingSettings_H6_AMA.set
 
 # CMF lib
 cama-flood_bmi/lib
