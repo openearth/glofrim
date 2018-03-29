@@ -119,3 +119,6 @@ couplingSettings_H6_AMA.set
 
 # CMF lib
 cama-flood_bmi/lib
+
+# AMA output
+AMA/
