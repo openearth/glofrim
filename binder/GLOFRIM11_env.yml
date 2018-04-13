@@ -1,0 +1,181 @@
+name: GLOFRIM11_env
+channels:
+- https://conda.binstar.org/conda-forge
+- defaults
+dependencies:
+- alabaster=0.7.10=py27_0
+- astroid=1.4.9=py27_0
+- attrs=17.4.0=py27_0
+- babel=2.4.0=py27_0
+- backports=1.0=py27_0
+- backports.shutil_get_terminal_size=1.0.0=py27h5bc021e_2
+- backports_abc=0.5=py27_0
+- basemap=1.0.7=np110py27_0
+- bleach=1.5.0=py27_0
+- cairo=1.14.8=0
+- certifi=2016.2.28=py27_0
+- chardet=3.0.4=py27_0
+- click=6.7=py27_0
+- cligj=0.2.0=py27_0
+- configparser=3.5.0=py27_0
+- curl=7.45.0=0
+- cycler=0.10.0=py27_0
+- dbus=1.10.20=0
+- decorator=4.1.2=py27_0
+- docutils=0.14=py27_0
+- entrypoints=0.2.3=py27_0
+- enum34=1.1.6=py27_0
+- expat=2.1.0=0
+- fiona=1.6.0=np110py27_0
+- fontconfig=2.12.1=3
+- freetype=2.5.5=2
+- functools32=3.2.3.2=py27_0
+- gdal=1.10.1=py27_0
+- geos=3.3.3=0
+- get_terminal_size=1.0.0=py27_0
+- glib=2.50.2=1
+- gst-plugins-base=1.8.0=0
+- gstreamer=1.8.0=0
+- harfbuzz=0.9.39=2
+- hdf4=4.2.12=1
+- hdf5=1.8.15.1=3
+- html5lib=0.9999999=py27_0
+- icu=54.1=0
+- imagesize=0.7.1=py27_0
+- ipykernel=4.6.1=py27_0
+- ipython=5.4.1=py27_2
+- ipython_genutils=0.2.0=py27_0
+- isort=4.2.15=py27_0
+- jedi=0.10.2=py27_2
+- jinja2=2.9.6=py27_0
+- jpeg=9b=0
+- jsonschema=2.6.0=py27_0
+- jupyter_client=5.1.0=py27_0
+- jupyter_core=4.3.0=py27_0
+- kealib=1.4.5=0
+- krb5=1.13.2=0
+- lazy-object-proxy=1.3.1=py27_0
+- libffi=3.2.1=1
+- libgcc=5.2.0=0
+- libgcc-ng=7.2.0=hdf63c60_3
+- libgdal=2.0.0=1
+- libgfortran=3.0.0=1
+- libiconv=1.14=0
+- libnetcdf=4.3.3.1=3
+- libpng=1.6.27=0
+- libsodium=1.0.10=0
+- libspatialindex=1.8.5=h20b78c2_2
+- libstdcxx-ng=7.2.0=hdf63c60_3
+- libxcb=1.12=1
+- libxml2=2.9.4=0
+- markupsafe=0.23=py27_2
+- matplotlib=1.5.1=np110py27_0
+- mistune=0.7.4=py27_0
+- mkl=11.3.3=0
+- mpich2=1.4.1p1=0
+- nbconvert=5.2.1=py27_0
+- nbformat=4.3.0=py27_0
+- ncurses=5.9=10
+- netcdf4=1.2.2=np110py27_0
+- numpy=1.10.4=py27_2
+- numpydoc=0.6.0=py27_0
+- openssl=1.0.2l=0
+- pandas=0.18.1=np110py27_0
+- pandocfilters=1.4.1=py27_0
+- pango=1.40.3=1
+- path.py=10.3.1=py27_0
+- pathlib2=2.3.0=py27_0
+- pcre=8.39=1
+- pep8=1.7.0=py27_0
+- pexpect=4.2.1=py27_0
+- pickleshare=0.7.4=py27_0
+- pip=9.0.1=py27_1
+- pixman=0.34.0=0
+- proj4=4.9.2=0
+- prompt_toolkit=1.0.14=py27_0
+- psutil=5.2.2=py27_0
+- ptyprocess=0.5.2=py27_0
+- pycairo=1.10.0=py27_0
+- pycodestyle=2.3.1=py27_0
+- pyflakes=1.5.0=py27_0
+- pygments=2.2.0=py27_0
+- pylint=1.6.4=py27_1
+- pyparsing=2.2.0=py27_0
+- pyproj=1.9.5.1=py27_0
+- pyqt=4.11.4=py27_4
+- python=2.7.13=0
+- python-dateutil=2.6.1=py27_0
+- pytz=2017.2=py27_0
+- pyzmq=16.0.2=py27_0
+- qt=4.8.7=4
+- qtawesome=0.4.4=py27_0
+- qtconsole=4.2.1=py27_0
+- qtpy=1.2.1=py27_0
+- readline=6.2=2
+- requests=2.14.2=py27_0
+- rope=0.9.4=py27_1
+- rtree=0.8.3=py27h5233db4_0
+- scandir=1.5=py27_0
+- scipy=0.17.1=np110py27_1
+- setuptools=27.2.0=py27_0
+- simplegeneric=0.8.1=py27_1
+- singledispatch=3.4.0.3=py27_0
+- sip=4.18=py27_0
+- six=1.10.0=py27_0
+- snowballstemmer=1.2.1=py27_0
+- sphinx=1.6.2=py27_0
+- sphinxcontrib=1.0=py27_0
+- sphinxcontrib-websupport=1.0.1=py27_0
+- spyder=3.2.0=py27_0
+- sqlite=3.13.0=0
+- ssl_match_hostname=3.4.0.2=py27_1
+- subprocess32=3.2.7=py27_0
+- testpath=0.3.1=py27_0
+- tk=8.5.18=0
+- tornado=4.5.1=py27_0
+- traitlets=4.3.2=py27_0
+- typing=3.6.1=py27_0
+- wcwidth=0.1.7=py27_0
+- wheel=0.29.0=py27_0
+- wrapt=1.10.10=py27_0
+- xerces-c=3.1.4=0
+- zeromq=4.1.5=0
+- zlib=1.2.11=0
+- esmf=7.0.0=6
+- esmpy=7.0.0=py27_1
+- mpich=3.2=4
+- netcdf-fortran=4.4.3=2
+- pip:
+  - affine==2.2.0
+  - backports-abc==0.5
+  - backports.shutil-get-terminal-size==1.0.0
+  - backports.ssl-match-hostname==3.4.0.2
+  - bmi==0.1
+  - click-plugins==1.0.3
+  - colorama==0.3.7
+  - coupling-pcr-fm (/u/hoch/SRC/coupling)==2.0dev r0
+  - coupling-pcr-fm-2way (/u/hoch/GLOFRIM2/glofrim/coupling)==2.0dev r0
+  - coupling-pcr-fm-g10 (/u/hoch/SRC/coupling)==2.0dev r0
+  - datetime==4.1.1
+  - docopt==0.6.1
+  - docopts==0.6.1
+  - faulthandler==2.4
+  - ipython-genutils==0.2.0
+  - jupyter-client==5.1.0
+  - jupyter-core==4.3.0
+  - logutils==0.3.3
+  - model (/u/hoch/programmes/PCR-GLOBWB2_BMI/PCR-GLOBWB)==0.1dev r0
+  - pcrglobwb-203-30min-1way-prefactored-1.0dev==r0
+  - pcrglobwb-203-30min-2way (/u/hoch/GLOFRIM2/glofrim/pcrglobwb_bmi_v203_2way)==1.0dev
+    r0
+  - pdb==0.1
+  - prompt-toolkit==1.0.14
+  - python-gnupg==0.3.9
+  - pyyaml==3.12
+  - rainbow-logging-handler==2.2.0
+  - rasterio==1.0a12
+  - snuggs==1.4.1
+  - spotpy==1.3.27
+  - zope.interface==4.3.2
+prefix: /u/hoch/.conda/envs/GLOFRIM11_env
+
