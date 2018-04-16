@@ -3,3 +3,5 @@ language: python
 python:
     - "2.7.14"
 
+install:
+  - pip install -r binder/requirements.txt
