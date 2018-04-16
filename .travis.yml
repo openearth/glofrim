@@ -4,4 +4,4 @@ python:
     - "2.7.14"
 
 install:
-  - pip install -r binder/requirements.txt
+  - pip install -r ./binder/requirements.txt
