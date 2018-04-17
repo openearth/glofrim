@@ -533,7 +533,11 @@ class PCR_model(BMI_model_wrapper):
         n_upstream = np.array([ldd.find_upstream(r, c)[0].size for r,c in zip(rows, cols)])
         # create mask with 0) no coupling 1) couple runoff and 2) couple discharge
         self.coupled_mask = np.zeros(self.model_grid_shape)
-        self.coupled_mask[rows, cols] = np.where(n_upstream>=1, 2, 1)
+        self.coupled_mask[rows, cols] = np.where(n_upstream==0, 2, 1)
+        # a matrix of the number of upstream cells
+        upstream_matrix = np.ones(self.model_grid_shape) * -9999
+        upstream_matrix[rows, cols] = np.where(n_upstream>=0, n_upstream, -9999)
+        self.upstream_matrix = upstream_matrix
 
     def deactivate_routing(self, coupled_indices=None):
         """Deactive LDD at indices by replacing the local ldd value with 5, the
