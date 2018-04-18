@@ -7,7 +7,7 @@
 import netCDF4
 from netCDF4 import Dataset
 import rasterio
-import os
+import os, sys
 from datetime import datetime
 import numpy as np
 import spotpy
