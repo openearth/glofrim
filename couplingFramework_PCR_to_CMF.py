@@ -97,7 +97,7 @@ PCR_bmi.initialize()
 # ---
 
 tStart = datetime.now()
-for i in range(timeSteps)
+for i in range(timeSteps):
     PCR_bmi.update()
     coupling_functions_v2.set_CMF_forcing(PCR_bmi, CMF_bmi)
     CMF_bmi.update()
