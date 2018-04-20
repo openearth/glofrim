@@ -345,12 +345,14 @@ class BMI_model_wrapper(object):
 
         logger.info('Coupling {} grid to {} 1D nodes.'.format(self.name, other.name))
         # get cell indices at 1D coordinates
-        cellidx, valid = self.model_2d_index(other.model_1d_coords)
+        cellidx = self.model_2d_index(other.model_1d_coords)
+        # take only cells within domain
+        # NOTE: in case of CMF this index may contain -1 values which should be ignored
+        nrows, ncols = self.model_grid_shape
         rows, cols = zip(*cellidx)
         rows, cols = np.atleast_1d(rows), np.atleast_1d(cols)
+        valid = np.logical_and.reduce((rows>=0,rows<nrows,cols>=0,cols<ncols))
         # set indices to easily exchange variables
-        if not np.all(valid):
-            logger.warning('1D nodes found outside of valid 2D domain')
         other.coupled_idx = other.model_1d_indices[valid]
         self.coupled_idx = (rows[valid], cols[valid]) # tuple of (row, col) arrays
         # create coupled 1-to-1 downstream-to-upstream indices dictionary
@@ -471,19 +473,14 @@ class PCR_model(BMI_model_wrapper):
         indices : list of tuples
           list of (row, col) index tuples
         """
-        import pcraster as pcr
+
         logger.info('Getting PCR model indices of xy coordinates.')
         if not hasattr(self, '_model_index'):
             self.get_model_grid()
         r, c = self._model_index(*zip(*xy), **kwargs)
         r = np.array(r).astype(int)
         c = np.array(c).astype(int)
-        # get valid cells (inside landmask)
-        nodata = self.options.get('landmask_mv', 255)
-        lm_map = pcr.readmap(str(self._fn_landmask))
-        lm_data = pcr.pcr2numpy(lm_map, nodata)
-        valid = lm_data[r, c] == 1
-        return zip(r, c), valid
+        return zip(r, c)
 
     def get_coupled_grid_mask(self, coupled_indices=None):
         """Derives a coupled grid mask wich can be use to read out corresponding
@@ -533,11 +530,7 @@ class PCR_model(BMI_model_wrapper):
         n_upstream = np.array([ldd.find_upstream(r, c)[0].size for r,c in zip(rows, cols)])
         # create mask with 0) no coupling 1) couple runoff and 2) couple discharge
         self.coupled_mask = np.zeros(self.model_grid_shape)
-        self.coupled_mask[rows, cols] = np.where(n_upstream==0, 2, 1)
-        # a matrix of the number of upstream cells
-        upstream_matrix = np.ones(self.model_grid_shape) * -9999
-        upstream_matrix[rows, cols] = np.where(n_upstream>=0, n_upstream, -9999)
-        self.upstream_matrix = upstream_matrix
+        self.coupled_mask[rows, cols] = np.where(n_upstream>=1, 2, 1)
 
     def deactivate_routing(self, coupled_indices=None):
         """Deactive LDD at indices by replacing the local ldd value with 5, the
@@ -746,21 +739,14 @@ class CMF_model(BMI_model_wrapper):
             ncount = ds.count
             if ncount != 2:
                 raise ValueError("{} file should have two layers".format(fn))
-            # python zero based index for high res CMF grid
+            nrows, ncols = ds.shape
             rows, cols = ds.index(*zip(*xy))
-            rows, cols = np.atleast_1d(rows).astype(int), np.atleast_1d(cols).astype(int)
-            # make sure indices are inside grid
-            nrows_hr, ncols_hr = ds.shape
-            inside = np.logical_and.reduce((rows>=0,rows<nrows_hr,cols>=0,cols<ncols_hr))
-            cmf_cols, cmf_rows = np.zeros_like(cols), np.zeros_like(rows)
-            # read low-res CMF fortran one-based index
-            cmf_cols[inside], cmf_rows[inside] = ds.read()[:, rows[inside, None], cols[inside, None]].squeeze()
             # go from fortran one-based to python zero-based indices
-            cmf_rows, cmf_cols = cmf_rows-1, cmf_cols-1
-        # check valid indices -> only cells within domain // row, col -1 values should be ignored
-        nrows, ncols = self.model_grid_shape
-        valid = np.logical_and.reduce((cmf_rows>=0,cmf_rows<nrows,cmf_cols>=0,cmf_cols<ncols))
-        return zip(cmf_rows, cmf_cols), valid
+            rows, cols = np.atleast_1d(rows).astype(int), np.atleast_1d(cols).astype(int)
+            valid = np.logical_and.reduce((rows>=0,rows<nrows,cols>=0,cols<ncols))
+            cmf_cols, cmf_rows = np.zeros_like(cols), np.zeros_like(rows)
+            cmf_cols[valid], cmf_rows[valid] = ds.read()[:, rows[valid, None], cols[valid, None]].squeeze()
+        return zip(cmf_rows-1, cmf_cols-1)
 
     def get_coupled_grid_mask(self, coupled_indices=None):
         """Derives a coupled grid mask wich can be use to read out corresponding
@@ -934,10 +920,7 @@ class DFM_model(BMI_model_wrapper):
         if not hasattr(self, 'model_2d_rtree'):
             self.get_model_2d_index()
         xy = [xy] if isinstance(xy, tuple) else xy
-        index = [list(self.model_2d_rtree.nearest(xy0, 1))[0] for xy0 in xy]
-        #TODO: assess validity based on e.g. max distance
-        valid = np.ones(len(index), dtype=bool)
-        return index, valid
+        return [list(self.model_2d_rtree.nearest(xy0, 1))[0] for xy0 in xy]
 
 
 # utils
