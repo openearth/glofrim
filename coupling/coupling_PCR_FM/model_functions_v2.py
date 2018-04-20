@@ -519,6 +519,9 @@ class PCR_model(BMI_model_wrapper):
         # get coupled indices
         rows, cols = zip(*coupled_indices)
         rows, cols = np.atleast_1d(rows), np.atleast_1d(cols)
+        # mask of the coupled domain
+        coupled_domain_mask = np.zeros(self.model_grid_shape)
+        coupled_domain_mask[rows, cols] = 1
         # read file with pcr readmap
         if not isfile(fn_ldd):
             raise IOError('ldd map file {} not found.'.format(fn_ldd))
@@ -530,7 +533,7 @@ class PCR_model(BMI_model_wrapper):
         # deactivate routing for coupled cells
         ldd.r[rows, cols] = 5
         # find number of upstream cells for each coupled cell
-        n_upstream = np.array([ldd.find_upstream(r, c)[0].size for r,c in zip(rows, cols)])
+        n_upstream = np.array([ldd.find_upstream(r, c, coupled_domain_mask)[0].size for r,c in zip(rows, cols)])
         # create mask with 0) no coupling 1) couple runoff and 2) couple discharge
         self.coupled_mask = np.zeros(self.model_grid_shape)
         self.coupled_mask[rows, cols] = np.where(n_upstream==0, 2, 1)

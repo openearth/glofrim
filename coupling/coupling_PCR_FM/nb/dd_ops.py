@@ -301,9 +301,18 @@ class LDD(DrainageDirection):
         """neighborhood downstream index"""
         return self.r.wdw_eq(row, col, self._ldd_ds, return_index=True)
 
-    def _nb_upstream_idx(self, row, col):
+    def _nb_upstream_idx(self, row, col, domain_mask=None):
         """neighborhood upstream index"""
-        return self.r.wdw_eq(row, col, self._ldd_us, return_index=True)
+        row_upstream, col_upstream = [], [] 
+        row_tmp, col_tmp = self.r.wdw_eq(row, col, self._ldd_us, return_index=True)
+        if domain_mask is not None:
+            for r, c in zip(row_tmp, col_tmp):
+                if domain_mask[r, c].astype(bool):
+                   row_upstream.append(r)
+                   col_upstream.append(c)
+        else:
+            row_upstream, col_upstream = row_tmp, col_tmp
+        return np.atleast_1d(row_upstream), np.atleast_1d(col_upstream)
 
     def _pit(self, row=None, col=None):
         """pit predicate"""
