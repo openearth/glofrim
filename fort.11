@@ -14,24 +14,24 @@
 ** INFO   : simulation period     (s)  :      63072000.0000000000
 ** INFO   : nr of timesteps       ( )  :        206857.0000000000
 ** INFO   : average timestep      (s)  :           304.9062879187
-** INFO   : time inistep          (s)  :           447.7220000014
-** INFO   : time setumod          (s)  :           128.0750000001
-** INFO   : time furu             (s)  :            24.9360000003
-** INFO   : time solve            (s)  :           322.4290000008
-** INFO   : time setexternalforc. (s)  :             1.3069999998
-** INFO   : time setexternalfbnd. (s)  :             1.2600000001
-** INFO   : time steps            (s)  :           952.9060000000
+** INFO   : time inistep          (s)  :           115.9950000002
+** INFO   : time setumod          (s)  :            23.0030000000
+** INFO   : time furu             (s)  :             4.8180000000
+** INFO   : time solve            (s)  :            59.8640000000
+** INFO   : time setexternalforc. (s)  :             0.1100000000
+** INFO   : time setexternalfbnd. (s)  :             0.6600000000
+** INFO   : time steps            (s)  :           215.2440000003
 ** INFO   : time steps + plots    (s)  :             0.0000000000
-** INFO   : fraction solve/steps  ( )  :             0.3383639100
+** INFO   : fraction solve/steps  ( )  :             0.2781215737
 ** INFO   : total/(dnt*ndx)       (s)  :             0.0000000000
 ** INFO   : av nr of cont. it s1it( )  :             0.0000000000
-** INFO   : time transport [s]         :            29.2929999991
+** INFO   : time transport [s]         :             2.3849999997
 ** INFO   : time debug     [s]         :             0.0000000000
 ** INFO   : 
 ** INFO   : 
 ** INFO   : 
-** INFO   : Computation started  at: 18:48:50, 22-03-2018
-** INFO   : Computation finished at: 19:28:38, 22-03-2018
+** INFO   : Computation started  at: 10:16:03, 29-03-2018
+** INFO   : Computation finished at: 10:34:57, 29-03-2018
 ** INFO   : 
 ** INFO   : MPI    : no.
 ** INFO   : OpenMP : yes.         #threads max : 8
