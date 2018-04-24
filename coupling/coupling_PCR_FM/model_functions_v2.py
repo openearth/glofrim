@@ -520,27 +520,31 @@ class PCR_model(BMI_model_wrapper):
         rows, cols = zip(*coupled_indices)
         rows, cols = np.atleast_1d(rows), np.atleast_1d(cols)
         # mask of the coupled domain
-        coupled_domain_mask = np.zeros(self.model_grid_shape)
-        coupled_domain_mask[rows, cols] = 1
+        coupled_mask = np.zeros(self.model_grid_shape)
+        coupled_mask[rows, cols] = 1
         # read file with pcr readmap
         if not isfile(fn_ldd):
             raise IOError('ldd map file {} not found.'.format(fn_ldd))
         lddmap = pcr.readmap(str(fn_ldd))
         nodata = self.options.get('landmask_mv', 255)
         ldd_data = pcr.pcr2numpy(lddmap, nodata)
-        # change nextxy coupled indices to pits == 5
         ldd = LDD(ldd_data, self.model_grid_transform, nodata=nodata)
-        # deactivate routing for coupled cells
-        ldd.r[rows, cols] = 5
-        # find number of upstream cells for each coupled cell
-        n_upstream = np.array([ldd.find_upstream(r, c, coupled_domain_mask)[0].size for r,c in zip(rows, cols)])
-        # create mask with 0) no coupling 1) couple runoff and 2) couple discharge
-        self.coupled_mask = np.zeros(self.model_grid_shape)
-        self.coupled_mask[rows, cols] = np.where(n_upstream==0, 2, 1)
-        # a matrix of the number of upstream cells
-        upstream_matrix = np.ones(self.model_grid_shape) * -9999
-        upstream_matrix[rows, cols] = np.where(n_upstream>=0, n_upstream, -9999)
-        self.upstream_matrix = upstream_matrix
+        # get uncoupled indices
+        uc_rows, uc_cols = np.where(np.logical_and(ldd_data != nodata, coupled_mask == 0))
+        uncoupled_indices = zip(uc_rows, uc_cols)
+        # find downstream for all uncoupled cells
+        ldd0 = np.array([[7, 8, 9], [4, 5, 6], [1, 2, 3]])
+        downstream_dict = {} 
+        for r, c in uncoupled_indices:
+            dr, dc = np.where(ldd0 == ldd_data[r, c])
+            r_ds, c_ds = r + int(dr) - 1, c + int(dc) - 1
+        # assign 2 to the cells in coupled_mask
+        # if downstream cell is within the coupled domain 
+            if coupled_mask[r_ds, c_ds] == 1: 
+                coupled_mask[r, c] = 2
+                downstream_dict[(r, c)] = (r_ds, c_ds)
+        self.coupled_mask = coupled_mask
+        self.downstream_dict = downstream_dict
 
     def deactivate_routing(self, coupled_indices=None):
         """Deactive LDD at indices by replacing the local ldd value with 5, the
@@ -767,7 +771,7 @@ class CMF_model(BMI_model_wrapper):
 
     def get_coupled_grid_mask(self, coupled_indices=None):
         """Derives a coupled grid mask wich can be use to read out corresponding
-        cells from the CMF mode.
+        cells from the CMF model.
 
         The mask contains 0-2 values meaning:
             0) no coupling
@@ -790,32 +794,37 @@ class CMF_model(BMI_model_wrapper):
         if not hasattr(self, 'model_grid_shape'):
             self.get_model_grid()
         logger.info('Creating mask for coupled CMF cells.')
-        # read input data
-        fn_nextxy = join(self.model_data_dir, 'nextxy.bin')
-        if not isfile(fn_nextxy):
-            raise IOError("nextxy.bin file not found at {}".format(fn_nextxy))
         # get coupled indices
         rows, cols = zip(*coupled_indices)
         rows, cols = np.atleast_1d(rows), np.atleast_1d(cols)
         valid = np.logical_and(rows>0, cols>0) # row, cols with -1 are not ignored (coastal) basins in CMF
         rows, cols = rows[valid], cols[valid]
         # mask of the coupled domain
-        coupled_domain_mask = np.zeros(self.model_grid_shape)
-        coupled_domain_mask[rows, cols] = 1
+        coupled_mask = np.zeros(self.model_grid_shape)
+        coupled_mask[rows, cols] = 1
+        # read input data
+        fn_nextxy = join(self.model_data_dir, 'nextxy.bin')
+        if not isfile(fn_nextxy):
+            raise IOError("nextxy.bin file not found at {}".format(fn_nextxy))
         # read drainage direction data and initialize nextxy object.
         nextxy_data = np.fromfile(fn_nextxy, dtype=np.int32).reshape(2, *self.model_grid_shape)
-        nextxy = NextXY(nextxy_data, self.model_grid_transform, nodata=-9999, search_radius=4)
-        # find number of upstream cells for each coupled cell
-        n_upstream = np.array([nextxy.find_upstream(r, c, coupled_domain_mask)[0].size for r,c in zip(rows, cols)])
-        # create mask with 0) no coupling 1) couple runoff and 2) couple discharge
-        coupled_mask = np.zeros(self.model_grid_shape)
-        coupled_mask[rows, cols] = np.where(n_upstream==0, 2, 1)
+        # get uncoupled indices
+        uc_rows, uc_cols = np.where(np.logical_and(nextxy_data[0] > 0, nextxy_data[1] > 0, coupled_mask == 0))
+        uncoupled_indices = zip(uc_rows, uc_cols)
+        # find downstream for all uncoupled cells
+        downstream_dict = {} 
+        for r, c in uncoupled_indices:
+            nextx, nexty = nextxy_data[:, r, c]
+        # convert indexing fortran-based to python-based
+            r_ds, c_ds = nexty - 1, nextx - 1 
+        # assign 2 to the cells in coupled_mask
+        # if downstream cell is within the coupled domain 
+            if coupled_mask[r_ds, c_ds] == 1 and coupled_mask[r, c] == 0: 
+                coupled_mask[r, c] = 2
+                downstream_dict[(r, c)] = (r_ds, c_ds)
         self.coupled_mask = coupled_mask
-        # a matrix of the number of upstream cells
-        upstream_matrix = np.ones(self.model_grid_shape) * -9999
-        upstream_matrix[rows, cols] = np.where(n_upstream>=0, n_upstream, -9999)
-        self.upstream_matrix = upstream_matrix
-
+        self.downstream_dict = downstream_dict
+        
     def get_var(self, name, parse_missings=True, *args, **kwargs):
         var = super(CMF_model, self).get_var(name, parse_missings=parse_missings)
         # return var with switched axis (fortran to python translation)

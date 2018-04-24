@@ -36,7 +36,7 @@ class MaskedWdwArray(np.ma.MaskedArray):
         Returns
         -------
         wdw : nd array
-            2d array with all values of the windows aroudn row (row), col (col)
+            2d array with all values of the windows around row (row), col (col)
         (row_wdw, col_wdw) : tuple of nd array
             row and column indices corresponding to wdw output
         """
