@@ -7,7 +7,7 @@
 import netCDF4
 from netCDF4 import Dataset
 import rasterio
-import os
+import os, sys
 from datetime import datetime
 import numpy as np
 import spotpy
@@ -47,7 +47,7 @@ timeSteps = determineSteps(start_date, end_date)
 
 cwd = os.getcwd() # note: this get changed by pcr initialization later on
 out_dir = options['PCRpaths']['outputDirectoryPCR']
-out_dir = out_dir + 'PCR2CMF2DFM/'
+out_dir = out_dir + 'PCR2CMF/'
 if not os.path.isdir(out_dir):
     os.mkdir(out_dir)
 
@@ -97,7 +97,7 @@ PCR_bmi.initialize()
 # ---
 
 tStart = datetime.now()
-for i in range(timeSteps)
+for i in range(timeSteps):
     PCR_bmi.update()
     coupling_functions_v2.set_CMF_forcing(PCR_bmi, CMF_bmi)
     CMF_bmi.update()
