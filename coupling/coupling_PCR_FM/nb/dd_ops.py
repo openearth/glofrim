@@ -76,11 +76,11 @@ class DrainageDirection(object):
     def dd_flux(self, state):
         if not hasattr(self, '_idx_ds_u'): self._set_dd()
         assert state.shape == self.shape[-2:]
-        state_1d = state[self._r, self._c]
+        state_1d = (state[self._r, self._c]).astype(np.float64) # errors occur with float32
         # group at confluence of streamflows
         flux = np.zeros_like(state)
         flux_1d = np.bincount(self._idx_ds, weights=state_1d,)[self._idx_ds_u]
-        assert state_1d.sum() == flux_1d.sum()
+        assert np.isclose(state_1d.sum(), flux_1d.sum(), rtol=1e-10)
         flux[self._r_ds_u, self._c_ds_u] = flux_1d
         return flux
 
@@ -303,14 +303,14 @@ class DrainageDirection(object):
         return np.ma.masked_equal(catchment, fill_value, copy=False)
 
     # plot 
-    def plot_dd(self, ax=None):
+    def plot_dd(self, ax=None, **kwargs):
         import matplotlib.pyplot as plt
         if not hasattr(self, '_idx_ds_u'): self._set_dd()
         if ax is None:
             fig = plt.figure(figsize=self.shape[-2:])
             ax = fig.add_subplot(111)
         ax.set_aspect('equal')
-        ax.quiver(self._c, self._r, self._c_ds-self._c, self._r-self._r_ds, units = 'xy', scale = 1)
+        ax.quiver(self._c, self._r, self._c_ds-self._c, self._r-self._r_ds, units = 'xy', scale = 1, **kwargs)
         ax.set_title('{} quiver'.format(self.type))
         return ax
 
