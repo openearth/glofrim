@@ -127,16 +127,6 @@ class BMI_model_wrapper(object):
         """
         self.model_config[sec].update(**{opt: value})
 
-    # set class options
-    # TODO: not sure this adds much and makes it less transparent. Should perhaps
-    # be replaced at some point
-    def set_options(self, **kwargs):
-        self.options.update({kw: arg for kw in kwargs})
-        if 'dt' in kwargs:
-            self._dt = self.options['dt']
-        if 'missing_value' in kwargs:
-            self._mv = self.options['missing_value']
-
     # model initialization
     def initialize(self):
         """Perform startup tasks for the model.
@@ -752,7 +742,7 @@ class CMF_model(BMI_model_wrapper):
         with rasterio.open(fn_catmxy, 'r', driver='GTiff') as ds:
             ncount = ds.count
             if ncount != 2:
-                raise ValueError("{} file should have two layers".format(fn))
+                raise ValueError("{} file should have two layers".format(fn_catmxy))
             # python zero based index for high res CMF grid
             rows, cols = ds.index(*zip(*xy))
             rows, cols = np.atleast_1d(rows).astype(int), np.atleast_1d(cols).astype(int)
@@ -889,7 +879,7 @@ class DFM_model(BMI_model_wrapper):
                 shutil.copy(fn, dst)
             elif isdir(fn):
                 if not isdir(join(dst, basename(fn))):
-                    mkdir(join(dst, basename(fn)))
+                    os.mkdir(join(dst, basename(fn)))
 
     ## model grid functionality
     def get_model_coords(self):
