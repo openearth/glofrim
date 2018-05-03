@@ -127,16 +127,6 @@ class BMI_model_wrapper(object):
         """
         self.model_config[sec].update(**{opt: value})
 
-    # set class options
-    # TODO: not sure this adds much and makes it less transparent. Should perhaps
-    # be replaced at some point
-    def set_options(self, **kwargs):
-        self.options.update({kw: arg for kw in kwargs})
-        if 'dt' in kwargs:
-            self._dt = self.options['dt']
-        if 'missing_value' in kwargs:
-            self._mv = self.options['missing_value']
-
     # model initialization
     def initialize(self):
         """Perform startup tasks for the model.
