@@ -127,16 +127,6 @@ class BMI_model_wrapper(object):
         """
         self.model_config[sec].update(**{opt: value})
 
-    # set class options
-    # TODO: not sure this adds much and makes it less transparent. Should perhaps
-    # be replaced at some point
-    def set_options(self, **kwargs):
-        self.options.update({kw: arg for kw in kwargs})
-        if 'dt' in kwargs:
-            self._dt = self.options['dt']
-        if 'missing_value' in kwargs:
-            self._mv = self.options['missing_value']
-
     # model initialization
     def initialize(self):
         """Perform startup tasks for the model.
@@ -165,7 +155,7 @@ class BMI_model_wrapper(object):
         Note that this is not implemented for every model."""
         if not hasattr(self.bmi, 'spinup'):
             raise NotImplementedError("Spin-up functionality not implemented")
-        self.bmi.spinup(*args, **kwargs)
+        self.bmi.spinup()
 
     # exchange states
     def get_var(self, name, parse_missings=True, mv=None):
@@ -368,7 +358,15 @@ class BMI_model_wrapper(object):
         self.coupled_area_frac = np.array([area_frac[i] for i in other.coupled_idx])
 
         # get mask with 1) coupled runoff and 2) coupled discharge
-        self.get_coupled_grid_mask()
+        rows, cols = zip(*self.coupled_dict.keys())
+        rows, cols = np.atleast_1d(rows), np.atleast_1d(cols)
+        rows_us, cols_us = self.dd.next_upstream(rows, cols) # find upstream cells where to couple discharge
+        # mask of the coupled domain
+        coupled_mask = np.zeros(self.model_grid_shape)
+        coupled_mask[rows_us, cols_us] = 2 # couple discharge to next downstream cell
+        coupled_mask[rows, cols] = 1 # couple runoff
+        self.coupled_mask = coupled_mask
+        pass
 
     def couple_grid_to_grid(self, other):
         """Couple external grid to internal model 2d grid.
@@ -415,7 +413,7 @@ class PCR_model(BMI_model_wrapper):
         # model and forcing data both in model_data_dir
         if forcing_data_dir is None:
             forcing_data_dir = model_data_dir
-        options = dict(dt=1, tscale=86400, # seconds per dt
+        options = dict(dt=1, tscale=86400., # seconds per dt
                         missing_value=missing_value, landmask_mv=landmask_mv)
         # initialize BMIWrapper for model
         super(PCR_model, self).__init__(pcr_bmi, config_fn, 'PCR', 'day',
@@ -443,6 +441,7 @@ class PCR_model(BMI_model_wrapper):
         model_grid_shape : tuple
             model number of rows and cols
         """
+        from nb.nb_io import read_dd_pcraster
         logger.info('Getting PCR model grid parameters.')
         fn_map = join(self.model_config['globalOptions']['inputDir'],
                       self.model_config['globalOptions']['landmask'])
@@ -457,6 +456,17 @@ class PCR_model(BMI_model_wrapper):
         self._fn_landmask = fn_map
         msg = 'Model bounds {:s}; width {}, height {}'
         logger.debug(msg.format(self.model_grid_bounds, *self.model_grid_shape))
+
+        # read file with pcr readmap
+        logger.info('Getting PCR LDD map.')
+        fn_ldd = self.model_config['routingOptions']['lddMap']
+        if not isabs(fn_ldd):
+            ddir = self.model_config['globalOptions']['inputDir']
+            fn_ldd = abspath(join(ddir, fn_ldd))
+        if not isfile(fn_ldd):
+            raise IOError('ldd map file {} not found.'.format(fn_ldd))
+        nodata = self.options.get('landmask_mv', 255)
+        self.dd = read_dd_pcraster(fn_ldd, self.model_grid_transform, nodata=nodata)
 
     def model_2d_index(self, xy, **kwargs):
         """Get PCR (row, col) indices of xy coordinates.
@@ -485,66 +495,6 @@ class PCR_model(BMI_model_wrapper):
         valid = lm_data[r, c] == 1
         return zip(r, c), valid
 
-    def get_coupled_grid_mask(self, coupled_indices=None):
-        """Derives a coupled grid mask wich can be use to read out corresponding
-        cells from the PCR model.
-
-        The mask contains 0-2 values meaning:
-            0) no coupling
-            1) couple runoff and
-            2) couple discharge
-
-        Arguments
-        ----------
-        coupled_indices : list of tuples, str
-          list with (row, col) tuples of low-res PCR model
-        """
-        import pcraster as pcr
-        from nb.dd_ops import LDD
-        if coupled_indices is None:
-            if not hasattr(self, 'coupled_dict'):
-                msg = 'The PCR model must be coupled before creating a ' + \
-                      'coupled grid mask '
-                raise AssertionError(msg)
-            coupled_indices = self.coupled_dict.keys()
-        # model_grid_shape attribute required to read data correctly
-        if not hasattr(self, 'model_grid_shape'):
-            self.get_model_grid()
-        logger.info('Creating mask for coupled PCR cells.')
-        # read input data
-        fn_ldd = self.model_config['routingOptions']['lddMap']
-        if not isabs(fn_ldd):
-            ddir = self.model_config['globalOptions']['inputDir']
-            fn_ldd = abspath(join(ddir, fn_ldd))
-        # get coupled indices
-        rows, cols = zip(*coupled_indices)
-        rows, cols = np.atleast_1d(rows), np.atleast_1d(cols)
-        # mask of the coupled domain
-        coupled_mask = np.zeros(self.model_grid_shape)
-        coupled_mask[rows, cols] = 1
-        # read file with pcr readmap
-        if not isfile(fn_ldd):
-            raise IOError('ldd map file {} not found.'.format(fn_ldd))
-        lddmap = pcr.readmap(str(fn_ldd))
-        nodata = self.options.get('landmask_mv', 255)
-        ldd_data = pcr.pcr2numpy(lddmap, nodata)
-        ldd = LDD(ldd_data, self.model_grid_transform, nodata=nodata)
-        # get uncoupled indices
-        uc_rows, uc_cols = np.where(np.logical_and(ldd_data != nodata, coupled_mask == 0))
-        uncoupled_indices = zip(uc_rows, uc_cols)
-        # find downstream for all uncoupled cells
-        ldd0 = np.array([[7, 8, 9], [4, 5, 6], [1, 2, 3]])
-        downstream_dict = {} 
-        for r, c in uncoupled_indices:
-            dr, dc = np.where(ldd0 == ldd_data[r, c])
-            r_ds, c_ds = r + int(dr) - 1, c + int(dc) - 1
-        # assign 2 to the cells in coupled_mask
-        # if downstream cell is within the coupled domain 
-            if coupled_mask[r_ds, c_ds] == 1: 
-                coupled_mask[r, c] = 2
-                downstream_dict[(r, c)] = (r_ds, c_ds)
-        self.coupled_mask = coupled_mask
-        self.downstream_dict = downstream_dict
 
     def deactivate_routing(self, coupled_indices=None):
         """Deactive LDD at indices by replacing the local ldd value with 5, the
@@ -595,6 +545,18 @@ class PCR_model(BMI_model_wrapper):
         # set tmp file in config
         ldd_options = {'routingOptions': {'lddMap': self._fn_ldd_tmp}}
         self.set_config(ldd_options)
+
+    def get_coupled_flux(self):
+        """Get summed runoff and upstream discharge at coupled cells"""
+        if not hasattr(self, 'coupled_mask'):
+            msg = 'The PCR model must be coupled before the total coupled flux can be calculated'
+            raise AssertionError(msg)
+        # get PCR runoff and discharge at masked cells
+        runoff = np.where(self.coupled_mask == 1,  self.get_var('runoff') * self.get_var('cellArea'), 0) # [m3/day] 
+        q_out = np.where(self.coupled_mask == 2,  self.get_var('discharge') * 86400., 0) # [m3/day] 
+        # sum runoff + discharge routed one cell downstream
+        tot_flux = runoff + self.dd.dd_flux(q_out)
+        return tot_flux * self.options['dt']
 
 class CMF_model(BMI_model_wrapper):
     def __init__(self, engine, config_fn,
@@ -707,6 +669,7 @@ class CMF_model(BMI_model_wrapper):
         model_grid_shape : tuple
             model number of rows and cols
         """
+        from nb.dd_ops import NextXY
 
         logger.info('Getting CMF model grid parameters.')
         fn_lsmask = join(self.model_data_dir, 'lsmask.tif')
@@ -721,6 +684,15 @@ class CMF_model(BMI_model_wrapper):
         self._fn_landmask = fn_lsmask
         msg = 'Model bounds {:s}; width {}, height {}'
         logger.debug(msg.format(self.model_grid_bounds, *self.model_grid_shape))
+
+        # read input data
+        logger.info('Getting CMF model drainage direction')
+        fn_nextxy = join(self.model_data_dir, 'nextxy.bin')
+        if not isfile(fn_nextxy):
+            raise IOError("nextxy.bin file not found at {}".format(fn_nextxy))
+        # read drainage direction data and initialize nextxy object.
+        nextxy_data = np.fromfile(fn_nextxy, dtype=np.int32).reshape(2, *self.model_grid_shape)
+        self.dd = NextXY(nextxy_data, transform=self.model_grid_transform, nodata=self._mv)
 
     def model_2d_index(self, xy, **kwargs):
         """Get CMF (row, col) indices at low resolution based on xy coordinates.
@@ -752,7 +724,7 @@ class CMF_model(BMI_model_wrapper):
         with rasterio.open(fn_catmxy, 'r', driver='GTiff') as ds:
             ncount = ds.count
             if ncount != 2:
-                raise ValueError("{} file should have two layers".format(fn))
+                raise ValueError("{} file should have two layers".format(fn_catmxy))
             # python zero based index for high res CMF grid
             rows, cols = ds.index(*zip(*xy))
             rows, cols = np.atleast_1d(rows).astype(int), np.atleast_1d(cols).astype(int)
@@ -768,62 +740,6 @@ class CMF_model(BMI_model_wrapper):
         nrows, ncols = self.model_grid_shape
         valid = np.logical_and.reduce((cmf_rows>=0,cmf_rows<nrows,cmf_cols>=0,cmf_cols<ncols))
         return zip(cmf_rows, cmf_cols), valid
-
-    def get_coupled_grid_mask(self, coupled_indices=None):
-        """Derives a coupled grid mask wich can be use to read out corresponding
-        cells from the CMF model.
-
-        The mask contains 0-2 values meaning:
-            0) no coupling
-            1) couple runoff only
-            2) couple runoff and upstream discharge
-
-        Arguments
-        ----------
-        coupled_indices : list of tuples, str
-          list with (row, col) tuples of low-res CMF model
-        """
-        from nb.dd_ops import NextXY
-        if coupled_indices is None:
-            if not hasattr(self, 'coupled_dict'):
-                msg = 'The CMF model must be coupled before creating a coupled ' + \
-                      'grid mask '
-                raise AssertionError(msg)
-            coupled_indices = self.coupled_dict.keys()
-        # model_grid_shape attribute required to read data correctly
-        if not hasattr(self, 'model_grid_shape'):
-            self.get_model_grid()
-        logger.info('Creating mask for coupled CMF cells.')
-        # get coupled indices
-        rows, cols = zip(*coupled_indices)
-        rows, cols = np.atleast_1d(rows), np.atleast_1d(cols)
-        valid = np.logical_and(rows>0, cols>0) # row, cols with -1 are not ignored (coastal) basins in CMF
-        rows, cols = rows[valid], cols[valid]
-        # mask of the coupled domain
-        coupled_mask = np.zeros(self.model_grid_shape)
-        coupled_mask[rows, cols] = 1
-        # read input data
-        fn_nextxy = join(self.model_data_dir, 'nextxy.bin')
-        if not isfile(fn_nextxy):
-            raise IOError("nextxy.bin file not found at {}".format(fn_nextxy))
-        # read drainage direction data and initialize nextxy object.
-        nextxy_data = np.fromfile(fn_nextxy, dtype=np.int32).reshape(2, *self.model_grid_shape)
-        # get uncoupled indices
-        uc_rows, uc_cols = np.where(np.logical_and(nextxy_data[0] > 0, nextxy_data[1] > 0, coupled_mask == 0))
-        uncoupled_indices = zip(uc_rows, uc_cols)
-        # find downstream for all uncoupled cells
-        downstream_dict = {} 
-        for r, c in uncoupled_indices:
-            nextx, nexty = nextxy_data[:, r, c]
-        # convert indexing fortran-based to python-based
-            r_ds, c_ds = nexty - 1, nextx - 1 
-        # assign 2 to the cells in coupled_mask
-        # if downstream cell is within the coupled domain 
-            if coupled_mask[r_ds, c_ds] == 1 and coupled_mask[r, c] == 0: 
-                coupled_mask[r, c] = 2
-                downstream_dict[(r, c)] = (r_ds, c_ds)
-        self.coupled_mask = coupled_mask
-        self.downstream_dict = downstream_dict
         
     def get_var(self, name, parse_missings=True, *args, **kwargs):
         var = super(CMF_model, self).get_var(name, parse_missings=parse_missings)
@@ -841,6 +757,18 @@ class CMF_model(BMI_model_wrapper):
     def _CMFtime_2_datetime(self, t):
         # internal CMF time is in minutes since 1850
         return datetime(1850, 1, 1) + timedelta(minutes = t)
+
+    def get_coupled_flux(self):
+        """Get summed runoff and upstream discharge at coupled cells"""
+        if not hasattr(self, 'coupled_mask'):
+            msg = 'The CMF model must be coupled before the total coupled flux can be calculated'
+            raise AssertionError(msg)
+        # get CMF runoff and discharge at masked cells
+        runoff = np.where(self.coupled_mask == 1, np.nan_to_num(self.get_var('runoff')), 0) # [m3/s]
+        q_out = np.where(self.coupled_mask == 2,  np.nan_to_num(self.get_var('outflw')), 0) # [m3/s]
+        # sum runoff + discharge routed one cell downstream
+        tot_flux = runoff + self.dd.dd_flux(q_out)
+        return tot_flux * self.options['dt']
 
 class DFM_model(BMI_model_wrapper):
     def __init__(self, engine, config_fn,
@@ -889,7 +817,7 @@ class DFM_model(BMI_model_wrapper):
                 shutil.copy(fn, dst)
             elif isdir(fn):
                 if not isdir(join(dst, basename(fn))):
-                    mkdir(join(dst, basename(fn)))
+                    os.mkdir(join(dst, basename(fn)))
 
     ## model grid functionality
     def get_model_coords(self):
