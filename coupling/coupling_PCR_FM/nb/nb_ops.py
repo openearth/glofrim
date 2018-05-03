@@ -1,9 +1,15 @@
-import numpy as np
-
-
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+#
+# Author: Dirk Eilander (contact: dirk.eilancer@vu.nl)
+# Created: Nov-2017
+#
 # objective is to get fast window functionality fully based on numpy and
 # witouth having to pad the array as a good compromise between speed and memory
 # we make use of masked numpy arrays to deal with missing values
+
+import numpy as np
+
 class MaskedWdwArray(np.ma.MaskedArray):
     """cast of numpy masked array with window functions"""
     def __new__(cls, input_array, sr=1):
@@ -67,7 +73,7 @@ class MaskedWdwArray(np.ma.MaskedArray):
                 data = np.asanyarray(self[row_wdw, col_wdw])
         return data, (row_wdw, col_wdw)
 
-    def wdw_eq(self, row, col, value, axis=-1, return_index=False):
+    def wdw_eq(self, row, col, value, axis=-1):
         """Check if value in window. Return a boolean array or indices that match
         the value (if return_index is True).
 
@@ -82,30 +88,24 @@ class MaskedWdwArray(np.ma.MaskedArray):
             column indices
         value : int, float
             value to find the in window
-        return_index : bool (default=False)
-            if True return the indices
 
         Returns
         -------
+        (row, col) : tuple of nd arrays
+            row, col indices of upstream cells
         wdw_bool : nd array
             boolean flattend representation of windows, True where value
-        row : nd array
-            row indices of upstream cells (if return_index)
-        col : nd array
-            column indices of upstream cells (if return_index)
         """
         
         value = np.atleast_1d(value)
         wdw_data, wdw_idx = self.wdw(row, col)
-        wdw_bool = np.logical_and(wdw_data.data == value, ~wdw_data.mask)
-        if return_index:
-            if self.ndim == 3:
-                wdw_bool = np.all(wdw_bool, axis=0)
-            row = np.atleast_1d(wdw_idx[0][wdw_bool])
-            col = np.atleast_1d(wdw_idx[1][wdw_bool])
-            return row, col
-        else:
-            return wdw_bool
+        wdw_bool = np.logical_and(wdw_data.data == value, wdw_data.mask == False)
+        if self.ndim == 3:
+            wdw_bool = np.all(wdw_bool, axis=0)
+        row = np.atleast_1d(wdw_idx[0][wdw_bool])
+        col = np.atleast_1d(wdw_idx[1][wdw_bool])
+        valid = wdw_bool.any(axis=-1)
+        return (row, col), valid
 
     def wdw_max(self, *index):
         return self.wdw(*index)[0].max(axis=-1)
