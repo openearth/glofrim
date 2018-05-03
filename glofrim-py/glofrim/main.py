@@ -2,6 +2,7 @@
 # TODO: write main docstring
 # TODO: add decorator to child functions to get docstring from parent function
 
+import re
 import logging
 import warnings
 import shutil
@@ -11,7 +12,7 @@ import numpy as np
 from bmi.wrapper import BMIWrapper
 
 # local libraries
-from utils import subcall, config_to_dict, dict_to_config, ConfigParser, NamConfigParser
+from utils import config_to_dict, dict_to_config, ConfigParser
 
 log_fmt = '%(asctime)s - %(levelname)s - %(message)s'
 logging.basicConfig(level=logging.INFO, format=log_fmt, filemode='w')
@@ -21,7 +22,7 @@ logger = logging.getLogger(__name__)
 class BMI_model_wrapper(object):
     def __init__(self, bmi, config_fn, name, t_unit,
                  model_data_dir, forcing_data_dir, out_dir,
-                 options, si_unit_conversions={}, **kwargs):
+                 options, configparser=ConfigParser(), si_unit_conversions={}, **kwargs):
         """initialize the model BMI class and model configuration file"""
         # TODO: extend docstring
         self.bmi = bmi
@@ -29,6 +30,7 @@ class BMI_model_wrapper(object):
         self.t_unit = t_unit
         # set model paths
         self.config_fn = abspath(config_fn)
+        self._configparser = configparser
         self.model_data_dir = abspath(model_data_dir)
         self.forcing_data_dir = abspath(forcing_data_dir)
         self.out_dir = abspath(out_dir)
@@ -46,7 +48,7 @@ class BMI_model_wrapper(object):
         self._si_unit_conversions = si_unit_conversions
 
 
-    # model configuration
+    ## model configuration
     def initialize_config(self, config_fn=None, **kwargs):
         """Read text based model configuration file to internal model_config
         dictionary.
@@ -121,7 +123,7 @@ class BMI_model_wrapper(object):
         """
         self.model_config[sec].update(**{opt: value})
 
-    # model initialization
+    ## model initialization/finalize/spinup
     def initialize(self):
         """Perform startup tasks for the model.
 
@@ -151,7 +153,7 @@ class BMI_model_wrapper(object):
             raise NotImplementedError("Spin-up functionality not implemented")
         self.bmi.spinup()
 
-    # exchange states
+    ## exchange states
     def get_var(self, name, parse_missings=True, mv=None):
         """Get data as nd array from the given variable <name>. All variables are
         returned in SI units based on the internal _si_unit_conversions dict.
@@ -243,7 +245,7 @@ class BMI_model_wrapper(object):
         var0[index] = var
         self.bmi.set_var(name, var0)
 
-    # run timestep dt in model
+    ## run timestep dt in model
     def update(self, dt=None):
         """Advance model state by one time step.
 
@@ -264,7 +266,7 @@ class BMI_model_wrapper(object):
             time_step
         )
 
-    # time attributes
+    ## time attributes
     def get_start_time(self):
         "get model start (initialization) time"
         return self.bmi.get_start_time()
@@ -277,7 +279,7 @@ class BMI_model_wrapper(object):
         "get model current time step"
         return self.bmi.get_time_step()
 
-    # var info
+    ## var info
     def get_var_count(self):
         return self.bmi.get_var_count()
 

@@ -24,7 +24,7 @@ class PCR_model(BMI_model_wrapper):
         # BMIWrapper for PCR model model
         pcr_bmi = pcrglobwb_bmi.pcrglobwbBMI()
         # set config parser
-        self._configparser = ConfigParser(inline_comment_prefixes=('#'))
+        configparser = ConfigParser(inline_comment_prefixes=('#'))
         # model and forcing data both in model_data_dir
         if forcing_data_dir is None:
             forcing_data_dir = model_data_dir
@@ -33,7 +33,7 @@ class PCR_model(BMI_model_wrapper):
         # initialize BMIWrapper for model
         super(PCR_model, self).__init__(pcr_bmi, config_fn, 'PCR', 'day',
                                         model_data_dir, forcing_data_dir, out_dir,
-                                        options, **kwargs)
+                                        options, configparser=configparser, **kwargs)
         # set some basic model properties
         globalOptions = {'globalOptions':
                             {'inputDir': self.forcing_data_dir,
@@ -42,6 +42,10 @@ class PCR_model(BMI_model_wrapper):
                              'endTime': end_date.strftime("%Y-%m-%d")
                         }}
         self.set_config(globalOptions)
+        
+        # read grid and ldd properties
+        self.get_model_grid()
+        self.get_drainage_direction()
 
     def get_model_grid(self):
         """Get PCR model bounding box, resolution and index based on the
@@ -56,23 +60,26 @@ class PCR_model(BMI_model_wrapper):
         model_grid_shape : tuple
             model number of rows and cols
         """
-        from nb.nb_io import read_dd_pcraster
         logger.info('Getting PCR model grid parameters.')
         fn_map = join(self.model_config['globalOptions']['inputDir'],
                       self.model_config['globalOptions']['landmask'])
         if not isfile(fn_map):
             raise IOError('landmask file not found')
+        self._fn_landmask = fn_map
         with rasterio.open(fn_map, 'r') as ds:
-            self._model_index = ds.index
+            self.grid_index = ds.index
             self.model_grid_res = ds.res
             self.model_grid_bounds = ds.bounds
             self.model_grid_shape = ds.shape
             self.model_grid_transform = ds.transform
-        self._fn_landmask = fn_map
         msg = 'Model bounds {:s}; width {}, height {}'
         logger.debug(msg.format(self.model_grid_bounds, *self.model_grid_shape))
+        pass
 
+    def get_drainage_direction(self):
+        from nb.nb_io import read_dd_pcraster
         # read file with pcr readmap
+        nodata = self.options.get('landmask_mv', 255)
         logger.info('Getting PCR LDD map.')
         fn_ldd = self.model_config['routingOptions']['lddMap']
         if not isabs(fn_ldd):
@@ -80,8 +87,8 @@ class PCR_model(BMI_model_wrapper):
             fn_ldd = abspath(join(ddir, fn_ldd))
         if not isfile(fn_ldd):
             raise IOError('ldd map file {} not found.'.format(fn_ldd))
-        nodata = self.options.get('landmask_mv', 255)
         self.dd = read_dd_pcraster(fn_ldd, self.model_grid_transform, nodata=nodata)
+        pass
 
     def model_2d_index(self, xy, **kwargs):
         """Get PCR (row, col) indices of xy coordinates.
@@ -97,20 +104,18 @@ class PCR_model(BMI_model_wrapper):
           list of (row, col) index tuples
         """
         import pcraster as pcr
+        nodata = self.options.get('landmask_mv', 255)
         logger.info('Getting PCR model indices of xy coordinates.')
-        if not hasattr(self, '_model_index'):
-            self.get_model_grid()
-        r, c = self._model_index(*zip(*xy), **kwargs)
+        r, c = self.grid_index(*zip(*xy), **kwargs)
         r = np.array(r).astype(int)
         c = np.array(c).astype(int)
         # get valid cells (inside landmask)
-        nodata = self.options.get('landmask_mv', 255)
         lm_map = pcr.readmap(str(self._fn_landmask))
         lm_data = pcr.pcr2numpy(lm_map, nodata)
         valid = lm_data[r, c] == 1
         return zip(r, c), valid
 
-
+    # TODO: this should be in the setting file. not changing the actual ldd
     def deactivate_routing(self, coupled_indices=None):
         """Deactive LDD at indices by replacing the local ldd value with 5, the
         ldd pit value. The ldd is modified offline. This only has effect before
@@ -123,6 +128,7 @@ class PCR_model(BMI_model_wrapper):
         """
         # this function requires pcr functionality
         import pcraster as pcr
+        nodata = self.options.get('landmask_mv', 255)
         if coupled_indices is None:
             if not hasattr(self, 'coupled_dict'):
                 msg = 'The PCR model must be coupled before deactivating ' + \
@@ -144,7 +150,6 @@ class PCR_model(BMI_model_wrapper):
             raise IOError('ldd map file {} not found.'.format(fn_ldd))
         lddmap = pcr.readmap(str(fn_ldd))
         # change nextxy coupled indices to pits == 5
-        nodata = self.options.get('landmask_mv', 255)
         ldd = pcr.pcr2numpy(lddmap, nodata)
         if coupled_indices == 'all':
             ldd = np.where(ldd != nodata, 5, ldd)
@@ -167,8 +172,8 @@ class PCR_model(BMI_model_wrapper):
             msg = 'The PCR model must be coupled before the total coupled flux can be calculated'
             raise AssertionError(msg)
         # get PCR runoff and discharge at masked cells
-        runoff = np.where(self.coupled_mask == 1,  self.get_var('runoff') * self.get_var('cellArea'), 0) # [m3/day] 
-        q_out = np.where(self.coupled_mask == 2,  self.get_var('discharge') * 86400., 0) # [m3/day] 
+        runoff = np.where(self.coupled_mask == 1, np.nan_to_num(self.get_var('runoff')) * self.get_var('cellArea'), 0) # [m3/day] 
+        q_out = np.where(self.coupled_mask == 2,  np.nan_to_num(self.get_var('discharge')) * 86400., 0) # [m3/day] 
         # sum runoff + discharge routed one cell downstream
         tot_flux = runoff + self.dd.dd_flux(q_out)
         return tot_flux * self.options['dt']

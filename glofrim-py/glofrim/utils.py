@@ -113,7 +113,7 @@ class NamConfigParser(ConfigParser):
                         inline_comment_prefixes=('!'),
                         delimiters=('='))
         defaults.update(**kwargs)
-        super(ConfigParser, self).__init__(**defaults)
+        super(NamConfigParser, self).__init__(**defaults)
         self.SECTCRE = re.compile(r"&(?P<header>[^]]+)")
 
     def write(self, fp, space_around_delimiters=False):
@@ -121,7 +121,7 @@ class NamConfigParser(ConfigParser):
         If `space_around_delimiters' is True (the default), delimiters
         between keys and values are surrounded by spaces.
         """
-        super(ConfigParser, self).write(fp, space_around_delimiters=space_around_delimiters)
+        super(NamConfigParser, self).write(fp, space_around_delimiters=space_around_delimiters)
 
     def _write_section(self, fp, section_name, section_items, delimiter):
         """Write a single section to the specified `fp'."""

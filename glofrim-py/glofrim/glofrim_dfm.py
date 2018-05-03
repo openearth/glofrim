@@ -30,7 +30,7 @@ class DFM_model(BMI_model_wrapper):
         ## initialize BMIWrapper and model
         dfm_bmi = BMIWrapper(engine = engine)
         # set config parser
-        self._configparser = ConfigParser(inline_comment_prefixes=('#'))
+        configparser = ConfigParser(inline_comment_prefixes=('#'))
         # for offline use the forcing data dir can be set. not yet inplemented
         forcing_data_dir = ''
         options = dict(dt=86400, tscale=1., # sec / dt
@@ -38,7 +38,8 @@ class DFM_model(BMI_model_wrapper):
         # initialize BMIWrapper for model
         super(DFM_model, self).__init__(dfm_bmi, config_fn, 'DFM', 'sec',
                                         model_data_dir, forcing_data_dir, out_dir,
-                                        options, si_unit_conversions=si_unit_conversions,
+                                        options, configparser=configparser,
+                                        si_unit_conversions=si_unit_conversions,
                                         **kwargs)
         # set some basic model properties
         globalOptions = {'time':
@@ -51,11 +52,14 @@ class DFM_model(BMI_model_wrapper):
                         }
         self.set_config(globalOptions)
 
+
     def initialize(self):
         # move model input files to out dir
         self.set_model_input_files()
         # write updated config and intialize
         super(DFM_model, self).initialize()
+        # read mesh after initialization
+        self.get_model_coords()
 
     def set_model_input_files(self):
         src = self.model_data_dir
@@ -65,7 +69,7 @@ class DFM_model(BMI_model_wrapper):
                 shutil.copy(fn, dst)
             elif isdir(fn):
                 if not isdir(join(dst, basename(fn))):
-                    os.mkdir(join(dst, basename(fn)))
+                    mkdir(join(dst, basename(fn)))
 
     ## model grid functionality
     def get_model_coords(self):
@@ -83,13 +87,11 @@ class DFM_model(BMI_model_wrapper):
         self.model_1d_coords = xy_coords[self._1d2d_idx:]
         n1d = len(self.model_1d_coords)
         self.model_1d_indices = np.arange(n1d, dtype=np.int32) + self._1d2d_idx
+        pass
 
     def get_model_1d_index(self):
         """Creat a spatial index for the 1d coordinates. A model_1d_index
         attribute funtion is created to find the nearest 1d coordinate tuple"""
-
-        if not hasattr(self, 'model_1d_coords'):
-            self.get_model_coords()
         logger.info('Constructing spatial index for the 1D coordinates of the DFM model.')
         # 1d coords
         n1d = len(self.model_1d_coords)
@@ -110,8 +112,6 @@ class DFM_model(BMI_model_wrapper):
         """Creat a spatial index for the 2d mesh center coordinates.
         A model_2d_index attribute funtion is created to find the nearest
         2d cell center"""
-        if not hasattr(self, 'model_2d_coords'):
-            self.get_model_coords()
         # build spatial rtree index of 2d coords
         logger.info('Constructing spatial index for the 2D mesh of the DFM model')
         self.model_2d_rtree = rtree.index.Index()
