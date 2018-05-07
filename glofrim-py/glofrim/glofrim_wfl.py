@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
+#TODO: guess the input dir as in PCR has to be set up to work with path of the WFLOW ini-file instead
+
 import logging
 from os.path import isdir, join, basename, dirname, abspath, isfile, isabs
 import numpy as np
 import rasterio
 
 # from pcrglobwb_bmi_v203 import pcrglobwb_bmi
-from wflow import wflow_bmi
+from wflow import bmi
 
 from main import BMI_model_wrapper
 from utils import ConfigParser
@@ -15,15 +17,19 @@ log_fmt = '%(asctime)s - %(levelname)s - %(message)s'
 logging.basicConfig(level=logging.INFO, format=log_fmt, filemode='w')
 logger = logging.getLogger(__name__)
 
-class WFL_model(WFL_model_wrapper):
+class WFL_model(BMI_model_wrapper):
     def __init__(self, config_fn,
-                 model_data_dir, out_dir,
+                 out_dir,
                  start_date, end_date,
                  missing_value=-999, landmask_mv=255, forcing_data_dir=None,
                  **kwargs):
         """initialize the WFLOW (WFL) model BMI class and model configuration file"""
-        # BMIWrapper for PCR model model
-        pcr_bmi = pcrglobwb_bmi.pcrglobwbBMI()
+
+        # BMIWrapper for WFLOW model model
+        wfl_bmi = bmi.Bmi()
+
+        model_data_dir = dirname(config_fn)
+
         # set config parser
         configparser = ConfigParser(inline_comment_prefixes=('#'))
         # model and forcing data both in model_data_dir
@@ -32,15 +38,12 @@ class WFL_model(WFL_model_wrapper):
         options = dict(dt=1, tscale=86400., # seconds per dt
                         missing_value=missing_value, landmask_mv=landmask_mv)
         # initialize BMIWrapper for model
-        super(PCR_model, self).__init__(pcr_bmi, config_fn, 'PCR', 'day',
+        super(WFL_model, self).__init__(wfl_bmi, config_fn, 'WFL', 'day',
                                         model_data_dir, forcing_data_dir, out_dir,
                                         options, configparser=configparser, **kwargs)
         # set some basic model properties
-        globalOptions = {'globalOptions':
-                            {'inputDir': self.forcing_data_dir,
-                             'outputDir': self.out_dir,
-                             'startTime': start_date.strftime("%Y-%m-%d"),
-                             'endTime': end_date.strftime("%Y-%m-%d")
+        globalOptions = {'run': {'startTime': start_date.strftime("%Y-%m-%d"),
+                                 'endTime': end_date.strftime("%Y-%m-%d")
                         }}
         self.set_config(globalOptions)
 
@@ -62,8 +65,10 @@ class WFL_model(WFL_model_wrapper):
             model number of rows and cols
         """
         logger.info('Getting WFLOW model grid parameters.')
-        fn_map = join(self.model_config['globalOptions']['inputDir'],
-                      self.model_config['globalOptions']['landmask'])
+        fn_map = getattr(self.model_config['model'], 'wflow_subcatch', 'staticmaps/wflow_subcatch.map')
+        if not isabs(fn_ldd):
+            ddir = self.model_data_dir
+            fn_map = abspath(join(ddir, fn_ldd))
         if not isfile(fn_map):
             raise IOError('landmask file not found')
         self._fn_landmask = fn_map
@@ -81,11 +86,12 @@ class WFL_model(WFL_model_wrapper):
         from nb.nb_io import read_dd_pcraster
         # read file with pcr readmap
         nodata = self.options.get('landmask_mv', 255)
-        logger.info('Getting PCR LDD map.')
-        fn_ldd = self.model_config['routingOptions']['lddMap']
+        logger.info('Getting WFLOW LDD map.')
+        fn_ldd = getattr(self.model_config['model'], 'wflow_ldd', 'staticmaps/wflow_ldd.map')
         if not isabs(fn_ldd):
-            ddir = self.model_config['globalOptions']['inputDir']
+            ddir = self.model_data_dir
             fn_ldd = abspath(join(ddir, fn_ldd))
+
         if not isfile(fn_ldd):
             raise IOError('ldd map file {} not found.'.format(fn_ldd))
         self.dd = read_dd_pcraster(fn_ldd, self.model_grid_transform, nodata=nodata)
@@ -106,7 +112,7 @@ class WFL_model(WFL_model_wrapper):
         """
         import pcraster as pcr
         nodata = self.options.get('landmask_mv', 255)
-        logger.info('Getting PCR model indices of xy coordinates.')
+        logger.info('Getting WFLOW model indices of xy coordinates.')
         r, c = self.grid_index(*zip(*xy), **kwargs)
         r = np.array(r).astype(int)
         c = np.array(c).astype(int)
@@ -119,7 +125,7 @@ class WFL_model(WFL_model_wrapper):
     def get_coupled_flux(self):
         """Get summed runoff and upstream discharge at coupled cells"""
         if not hasattr(self, 'coupled_mask'):
-            msg = 'The PCR model must be coupled before the total coupled flux can be calculated'
+            msg = 'The WFL model must be coupled before the total coupled flux can be calculated'
             raise AssertionError(msg)
         # get PCR runoff and discharge at masked cells
         runoff = np.where(self.coupled_mask == 1, np.nan_to_num(self.get_var('runoff')) * self.get_var('cellArea'), 0) # [m3/day]
