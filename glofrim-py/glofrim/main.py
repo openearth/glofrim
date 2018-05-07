@@ -297,8 +297,10 @@ class BMI_model_wrapper(object):
 
         The output model grid indices are model specific:
         - PCR : regular grid (row, col)
+        - WFL : regular grid (row, col)
         - CMF : irregular unit catchment grid (row, col)
         - DFM : flexible mesh (flat index)
+        - LFP : regular grid (flat index)
 
         Arguments
         ---------
@@ -315,19 +317,18 @@ class BMI_model_wrapper(object):
             Fraction of water volume from upstream model grid cell that should be
             added to downstream 1d node
         """
-        if (other.name != 'DFM') or (self.name not in ['PCR', 'CMF']):
+        if (other.name not in ['DFM', 'LFP']) or (self.name not in ['PCR', 'CMF', 'WFL']):
             msg = 'Grid to 1D coupling has only been implemented for PCR to' + \
                   ' CMF (upstream) to DFM (downstream) coupling'
             raise NotImplementedError(msg)
 
-        if other.name == 'DFM':
-            if not other.initialized:
-                msg = 'The DFM model should be initialized first to obtain ' + \
+        if not other.initialized:
+            msg = 'The hydrodynamic model should be initialized first to obtain ' + \
                       ' the 1D model coordinates via BMI'
-                raise AssertionError(msg)
-            if not hasattr(other, 'model_1d_coords'):
-                other.get_model_coords()
-            area_other = other.get_var('ba')
+            raise AssertionError(msg)
+        if not hasattr(other, 'model_1d_coords'):
+            other.get_model_coords()
+        area_other = other.get_area_1d()
 
         logger.info('Coupling {} grid to {} 1D nodes.'.format(self.name, other.name))
         # get cell indices at 1D coordinates
