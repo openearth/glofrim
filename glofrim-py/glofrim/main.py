@@ -134,7 +134,7 @@ class BMI_model_wrapper(object):
         # write possibly updated config file
         self.write_config()
         # initialize model with updated config file
-        self.bmi.initialize(self.config_fn)
+        self.bmi.initialize(configfile=self.config_fn)
         # set start time attribute
         self.start_time = self.get_start_time()
         self.initialized = True

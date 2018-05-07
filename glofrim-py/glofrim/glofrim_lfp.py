@@ -31,8 +31,9 @@ class LFP_model(BMI_model_wrapper):
         lfp_bmi = BMIWrapper(engine = engine)
 
         # set config parser
-        #TODO: new ConfigParser
-        # configparser = ConfigParser(inline_comment_prefixes=('#'))
+        #TODO: new wrapper around ConfigParser without headers. take idea from this stackoverflow link
+        # https://stackoverflow.com/questions/2819696/parsing-properties-file-in-python/25493615#25493615
+        configparser = ConfigParser(inline_comment_prefixes=('#'))
 
         # for offline use the forcing data dir can be set. not yet inplemented
         forcing_data_dir = ''

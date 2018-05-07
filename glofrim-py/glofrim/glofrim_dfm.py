@@ -90,9 +90,8 @@ class DFM_model(BMI_model_wrapper):
         pass
 
     def get_area_1d(self):
-        row, col = zip(*self.model_1d_indices)
-        area_1D = self.get_var('ba')[row, col]
-        return area_1D
+        #NOTE: to stay consistent with the indices we should return the full array
+        return self.get_var('ba')
 
     def get_model_1d_index(self):
         """Creat a spatial index for the 1d coordinates. A model_1d_index
