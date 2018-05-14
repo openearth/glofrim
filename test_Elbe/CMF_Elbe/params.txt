@@ -1,8 +1,0 @@
-       7.000                   west  edge [deg]
-      55.000                   north edge [deg]
-          40            grid number (east-west)
-          28          grid number (north-south)
-  0.25000000                   grid size  [deg]
-          10                  floodplain layers
-           1          area number of hires data
-  0.00500000    pixel size  of hires data [deg]
