@@ -27,7 +27,6 @@ class CMF_model(BMI_model_wrapper):
         """initialize the CaMa-Flood (CMF) model BMI class and model configuration file"""
         ## initialize BMIWrapper and model
         cmf_bmi = BMIWrapper(engine = engine)
-        self._engine_dir = dirname(engine)
         # set config parser
         configparser = NamConfigParser()
         # for offline use the forcing data dir can be set. not yet inplemented
@@ -90,8 +89,7 @@ class CMF_model(BMI_model_wrapper):
     def set_inpmat_file(self, bounds, res, olat='NtoS'):
         """Set the CMF inpmat file model based on the grid definition of upstream
         model"""
-        #TODO: make generate_impmat part of CFM BMI model and fix ddir reference here
-        ddir = self._engine_dir
+        ddir = self.model_data_dir
         if not isfile(join(ddir, 'generate_inpmat')):
             raise ValueError('{} not found'.format(join(ddir, 'generate_inpmat')))
         if not abs(res[0]) == abs(res[1]):
