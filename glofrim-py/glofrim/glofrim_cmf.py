@@ -28,7 +28,7 @@ class CMF_model(BMI_model_wrapper):
         ## initialize BMIWrapper and model
         cmf_bmi = BMIWrapper(engine = engine)
         # set config parser
-        self._configparser = NamConfigParser()
+        configparser = NamConfigParser()
         # for offline use the forcing data dir can be set. not yet inplemented
         forcing_data_dir = ''
         options = dict(dt=86400, tscale=1, # sec / dt
@@ -36,7 +36,7 @@ class CMF_model(BMI_model_wrapper):
         # initialize BMIWrapper for model
         super(CMF_model, self).__init__(cmf_bmi, config_fn, 'CMF', 'sec',
                                         model_data_dir, forcing_data_dir, out_dir,
-                                        options, **kwargs)
+                                        options, configparser=configparser, **kwargs)
         # setup output dir
         if not isdir(join(self.out_dir, 'out')):
             mkdir(join(self.out_dir, 'out'))
