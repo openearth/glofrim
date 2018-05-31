@@ -6,6 +6,8 @@ import re
 import logging
 import warnings
 import shutil
+import tempfile
+import os
 from os import mkdir
 from os.path import isdir, join, basename, dirname, abspath, isfile, isabs
 import numpy as np
@@ -65,17 +67,44 @@ class BMI_model_wrapper(object):
         """
         if config_fn is not None:
             self.config_fn = abspath(config_fn)
-        self.model_config = config_to_dict(self.config_fn,
+        #addded if-switch for LFP; 31-May-2018; JMH
+        if (self.name not in ['LFP']):
+            self.model_config = config_to_dict(self.config_fn,
                                            cf=self._configparser,
                                            **kwargs)
+                                           
+        if (self.name in ['LFP']):
+			#- adapted from
+			#- https://stackoverflow.com/questions/2819696/parsing-properties-file-in-python/25493615#25493615
+			#- PROBLEM: parsing only works with "=" signs...
+			fo = self.config_fn
+			f = open(fo, 'rw') # open LFP par-file
+			fake_config = '[dummysection]\n' + f.read() # add dummy section header
+
+			path = os.path.join(os.path.dirname(self.config_fn), 'tmp.par') # create tmp-file
+			fd, path = tempfile.mkstemp()
+			try:
+				with os.fdopen(fd, 'w') as tmp:
+					tmp.write(fake_config) # write dummy content to tmp-file
+				self.model_config = config_to_dict(path,
+                                           cf=self._configparser,
+                                           **kwargs) # create dictionary
+			finally:
+				os.remove(path) # remove tmp-file
+                                           
 
     def write_config(self, **kwargs):
         """The internal model_config dictionary is written to the out_dir. This
         step should be excecuted just before the model initialization."""
         self.config_fn = join(self.out_dir, basename(self.config_fn))
-        dict_to_config(self.model_config, self.config_fn,
+        #addded if-switch for LFP; 31-May-2018; JMH
+        if (self.name not in ['LFP']):
+			dict_to_config(self.model_config, self.config_fn,
                        cf=self._configparser, **kwargs)
-        logger.info('Ini file for {:s} written to {:s}'.format(self.name, self.config_fn))
+			logger.info('Ini file for {:s} written to {:s}'.format(self.name, self.config_fn))
+        if (self.name in ['LFP']):
+			print 'LFP section of write_config'
+			logger.info('Ini file for {:s} written to {:s}'.format(self.name, self.config_fn))
 
     def set_config(self, model_config):
         """Change multiple model config file settings with dictionary.
