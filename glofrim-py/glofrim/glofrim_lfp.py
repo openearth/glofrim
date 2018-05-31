@@ -3,10 +3,13 @@
 import logging
 import glob
 import shutil
+import os
 from os import mkdir
 from os.path import isdir, join, basename, dirname, abspath, isfile, isabs
 import numpy as np
 import rtree
+import StringIO
+import rasterio
 
 from bmi.wrapper import BMIWrapper
 
@@ -30,9 +33,7 @@ class LFP_model(BMI_model_wrapper):
         ## initialize BMIWrapper and model
         lfp_bmi = BMIWrapper(engine = engine)
 
-        # set config parser
-        #TODO: new wrapper around ConfigParser without headers. take idea from this stackoverflow link
-        # https://stackoverflow.com/questions/2819696/parsing-properties-file-in-python/25493615#25493615
+        # set config parser        
         configparser = ConfigParser(inline_comment_prefixes=('#'))
 
         # for offline use the forcing data dir can be set. not yet inplemented
@@ -47,13 +48,15 @@ class LFP_model(BMI_model_wrapper):
                                         **kwargs)
 
         # set some basic model properties
-        duration = int((end_date - start_date).total_seconds())
+        duration = (end_date - start_date).total_seconds()
+        
         #TODO: needs to be changed to fit with structure of par-files
-        # globalOptions = {'':
-        #                     {'sim_time': duration}
-        #                 }
-        # self.set_config(globalOptions)
-
+#        globalOptions = {'dummysection':
+#							{"sim_time": "{:f}".format(duration),},
+#						}
+        globalOptions = {}
+        
+        self.set_config(globalOptions)
 
     def initialize(self):
         # move model input files to out dir
@@ -81,6 +84,13 @@ class LFP_model(BMI_model_wrapper):
         logger.info('Getting LFP model coordinates.')
 
         i_ind, j_ind = np.where(np.logical_and(self.get_var('SGCwidth') > 0., self.get_var('DEM') != -9999))
+        print i_ind.shape, j_ind.shape
+        
+        fn_map = join(self.model_data_dir,
+                      self.model_config['dummysection']['DEMfile'])
+        if not isfile(fn_map):
+            raise IOError('landmask file not found')
+        self._fn_landmask = fn_map
 
         with rasterio.open(fn_map, 'r') as ds:
             self.grid_index = ds.index
