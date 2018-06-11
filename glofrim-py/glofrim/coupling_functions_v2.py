@@ -22,7 +22,7 @@ def get_CMF_delta_vol(CMF_bmi):
     return delta_vol
 
 def set_CMF_forcing(PCR_bmi, CMF_bmi):
-    "coupling runoff between CMF and PCR model"
+    """coupling runoff between CMF and PCR model"""
     runoff = np.copy(PCR_bmi.get_var('runoff')) # [m/day]
     runoff = np.where(np.isnan(runoff), 0, runoff)
     # note that runoff in (roffin) should be used to set PCR runoff.
