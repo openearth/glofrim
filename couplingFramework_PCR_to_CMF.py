@@ -8,7 +8,7 @@ import netCDF4
 from netCDF4 import Dataset
 import rasterio
 import os, sys
-from os import join
+from os.path import join
 from datetime import datetime
 import numpy as np
 import spotpy
@@ -56,7 +56,7 @@ if not os.path.isdir(out_dir):
 # CREATE PCR BMI OBJECT
 # ---
 
-PCR_config_fn = os.path.join(in_dr, options['hydrologic_model']['config_file'])
+PCR_config_fn = os.path.join(in_dir, options['hydrologic_model']['config_file'])
 PCR_in_dir = os.path.join(os.path.dirname(PCR_config_fn), 'input30min')
 PCR_out_dir = os.path.join(out_dir, 'PCR')
 
@@ -68,7 +68,7 @@ PCR_bmi = PCR_model(PCR_config_fn, PCR_in_dir, PCR_out_dir,
 # ---
 
 CMF_engine = options['CMF_engine']['CMF_path']
-CMF_config_fn = os.path.join(CMF_model_dir, options['routing_model']['model_file'])
+CMF_config_fn = os.path.join(in_dir, options['routing_model']['model_file'])
 CMF_model_dir = os.path.dirname(CMF_config_fn)
 CMF_out_dir = os.path.join(out_dir, 'CMF')
 
