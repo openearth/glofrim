@@ -12,12 +12,11 @@ import rasterio
 from bmi.wrapper import BMIWrapper
 
 from main import BMI_model_wrapper
-from utils import NamConfigParser, subcall
+from utils import subcall
 
 log_fmt = '%(asctime)s - %(levelname)s - %(message)s'
 logging.basicConfig(level=logging.INFO, format=log_fmt, filemode='w')
 logger = logging.getLogger(__name__)
-
 
 class CMF_model(BMI_model_wrapper):
     def __init__(self, engine, config_fn,
@@ -230,3 +229,41 @@ class CMF_model(BMI_model_wrapper):
         # sum runoff + discharge routed one cell downstream
         tot_flux = runoff + self.dd.dd_flux(q_out)
         return tot_flux * self.options['dt']
+
+class NamConfigParser(ConfigParser):
+    def __init__(self, **kwargs):
+        defaults = dict(comment_prefixes=('!', '/'),
+                        inline_comment_prefixes=('!'),
+                        delimiters=('='))
+        defaults.update(**kwargs)
+        super(NamConfigParser, self).__init__(**defaults)
+        self.SECTCRE = re.compile(r"&N(?P<header>[^]]+)")
+
+    def write(self, fp, space_around_delimiters=False):
+        """Write an .ini-format representation of the configuration state.
+        If `space_around_delimiters' is True (the default), delimiters
+        between keys and values are surrounded by spaces.
+        """
+        super(NamConfigParser, self).write(fp, space_around_delimiters=space_around_delimiters)
+
+    def _write_section(self, fp, section_name, section_items, delimiter):
+        """Write a single section to the specified `fp'."""
+        fp.write(u"&N{}\n".format(section_name))
+        for key, value in section_items:
+            if value.lower().strip('.') in ['true', 'false']:
+                value = '.TRUE.' if value.lower().strip('.')=='true' else '.FALSE.'
+            else:
+                try:
+                    float(value.replace('D', 'e'))
+                except:
+                    if not value.startswith('"'):
+                        value = '"{}'.format(value)
+                    if not value.endswith('"'):
+                        value = '{}"'.format(value)
+            value = self._interpolation.before_write(self, section_name, key, value)
+            if value is not None or not self._allow_no_value:
+                value = delimiter + str(value).replace('\n', '\n\t')
+            else:
+                value = ""
+            fp.write("{}{}\n".format(key.upper(), value))
+        fp.write("/\n")
