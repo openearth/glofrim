@@ -124,7 +124,7 @@ class BMI_model_wrapper(object):
         self.model_config[sec].update(**{opt: value})
 
     ## model initialization/finalize/spinup
-    def initialize(self):
+    def initialize(self, **kwargs):
         """Perform startup tasks for the model.
 
         This is second step of two-phase initialization and includes writing the
@@ -134,7 +134,7 @@ class BMI_model_wrapper(object):
         # write possibly updated config file
         self.write_config()
         # initialize model with updated config file
-        self.bmi.initialize(self.config_fn)
+        self.bmi.initialize(self.config_fn, **kwargs)
         # set start time attribute
         self.start_time = self.get_start_time()
         self.initialized = True

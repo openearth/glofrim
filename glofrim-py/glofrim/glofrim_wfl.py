@@ -7,9 +7,7 @@ from os.path import isdir, join, basename, dirname, abspath, isfile, isabs
 import numpy as np
 import rasterio
 
-# from pcrglobwb_bmi_v203 import pcrglobwb_bmi
-import wflow.bmi
-from wflow.wflow_bmi import wflowbmi_light, wflowbmi_csdms
+
 
 from main import BMI_model_wrapper
 from utils import ConfigParser
@@ -19,13 +17,17 @@ logging.basicConfig(level=logging.INFO, format=log_fmt, filemode='w')
 logger = logging.getLogger(__name__)
 
 class WFL_model(BMI_model_wrapper):
+    
     def __init__(self, config_fn,
                  out_dir,
                  start_date, end_date,
                  missing_value=-999, landmask_mv=255, forcing_data_dir=None,
                  **kwargs):
         """initialize the WFLOW (WFL) model BMI class and model configuration file"""
-
+        # from pcrglobwb_bmi_v203 import pcrglobwb_bmi
+        import wflow.bmi
+        from wflow.wflow_bmi import wflowbmi_csdms as wfbmi
+            
         # BMIWrapper for WFLOW model model
         model_data_dir = dirname(config_fn)
 
@@ -38,7 +40,7 @@ class WFL_model(BMI_model_wrapper):
         options = dict(dt=1, tscale=86400., # seconds per dt
                         missing_value=missing_value, landmask_mv=landmask_mv)
         # initialize BMIWrapper for model
-        super(WFL_model, self).__init__(wflowbmi_csdms(), config_fn, 'WFL', 'day',
+        super(WFL_model, self).__init__(wfbmi(), config_fn, 'WFL', 'day',
                                         model_data_dir, forcing_data_dir, out_dir,
                                         options, configparser=configparser, **kwargs)
         # set some basic model properties
@@ -127,8 +129,8 @@ class WFL_model(BMI_model_wrapper):
             msg = 'The WFL model must be coupled before the total coupled flux can be calculated'
             raise AssertionError(msg)
         # get PCR runoff and discharge at masked cells
-        runoff = np.where(self.coupled_mask == 1, np.nan_to_num(self.get_var('runoff')) * self.get_var('cellArea'), 0) # [m3/day]
-        q_out = np.where(self.coupled_mask == 2,  np.nan_to_num(self.get_var('discharge')) * 86400., 0) # [m3/day]
+        runoff = np.where(self.coupled_mask == 1, np.nan_to_num(self.get_var('Inwater')) * 86400., 0) # [m3/day]
+        q_out = np.where(self.coupled_mask == 2,  np.nan_to_num(self.get_var('SurfaceRunoff')) * 86400., 0) # [m3/day]
         # sum runoff + discharge routed one cell downstream
         tot_flux = runoff + self.dd.dd_flux(q_out)
         return tot_flux * self.options['dt']
@@ -136,7 +138,7 @@ class WFL_model(BMI_model_wrapper):
     ## exchange states
     # NOTE: overwrite parent bmi get_var en set_var because naming is different
     def get_var(self, name, parse_missings=True, mv=None):
-        var = self.bmi.get_attribute_value(name)
+        var = self.bmi.get_value(name)
         if parse_missings: # if given nodata is parsed to np.nan
             mv = self._mv if mv is None else mv
             var = np.where(var == mv, np.nan, var)
@@ -150,16 +152,18 @@ class WFL_model(BMI_model_wrapper):
         if parse_missings: # set nans back to model mv data values
             mv = self._mv if mv is None else mv
             var = np.where(np.isnan(var), mv, var)
-        self.bmi.set_attribute_value(name, var)
+        self.bmi.set_value(name, var)
 
     # NOTE: overwrite parent bmi update because it takes not dt argument
-    def update(self, **kwargs):
+    def update(self, dt=None, **kwargs):
         """Advance model state by one time step.
 
         Perform all tasks that take place within one pass through the model's
         time loop. This typically includes incrementing all of the model's
         state variables.
         """
+        if dt is not None: # by default take internally set dt
+            logger.warning('dt is not used in the wflow bmi update function')
         self.bmi.update()
         current_time = self.get_current_time()
         time_step = self.get_time_step()
