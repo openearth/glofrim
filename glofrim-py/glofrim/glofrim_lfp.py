@@ -83,10 +83,11 @@ class LFP_model(BMI_model_wrapper):
         logger.info('Getting LFP model coordinates.')
 
         i_ind, j_ind = np.where(np.logical_and(self.get_var('SGCwidth') > 0., self.get_var('DEM') != -9999))
-        print i_ind.shape, j_ind.shape
+        # print i_ind.shape, j_ind.shape
         
         fn_map = join(self.model_data_dir,
-                      self.model_config['dummysection']['DEMfile'])
+                      self.model_config['header1']['DEMfile'])
+
         if not isfile(fn_map):
             raise IOError('landmask file not found')
         self._fn_landmask = fn_map
@@ -113,6 +114,7 @@ class LFP_model(BMI_model_wrapper):
 
 class ParConfigParser(ConfigParser):
     def __init__(self, **kwargs):
+        self.optionxform = lambda option:option # keep format with capital/lower letters
         defaults = dict(comment_prefixes=('!', '/', '#'),
                         inline_comment_prefixes=('!'),
                         delimiters=('='))
@@ -133,5 +135,5 @@ class ParConfigParser(ConfigParser):
         for key, value in section_items:
             value = self._interpolation.before_write(self, section_name, key, value)
             value = ' ' + str(value).replace('\n', '\n\t')
-            fp.write("{}{}\n".format(key.upper(), value))
-        fp.write("/\n")
+            fp.write("{}{}\n".format(key, value))
+        fp.write("\n")

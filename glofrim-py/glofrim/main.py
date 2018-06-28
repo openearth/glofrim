@@ -77,14 +77,10 @@ class BMI_model_wrapper(object):
         """The internal model_config dictionary is written to the out_dir. This
         step should be excecuted just before the model initialization."""
         self.config_fn = join(self.out_dir, basename(self.config_fn))
-        #addded if-switch for LFP; 31-May-2018; JMH
-        if (self.name not in ['LFP']):
-			dict_to_config(self.model_config, self.config_fn,
-                       cf=self._configparser, **kwargs)
-			logger.info('Ini file for {:s} written to {:s}'.format(self.name, self.config_fn))
-        if (self.name in ['LFP']):
-			print 'LFP section of write_config'
-			logger.info('Ini file for {:s} written to {:s}'.format(self.name, self.config_fn))
+
+        dict_to_config(self.model_config, self.config_fn, cf=self._configparser, **kwargs)
+		
+        logger.info('Ini file for {:s} written to {:s}'.format(self.name, self.config_fn))
 
     def set_config(self, model_config):
         """Change multiple model config file settings with dictionary.
@@ -142,7 +138,8 @@ class BMI_model_wrapper(object):
         """
         # write possibly updated config file
         self.write_config()
-        # initialize model with updated config file
+        # import pdb; pdb.set_trace()       
+         # initialize model with updated config file
         self.bmi.initialize(self.config_fn, **kwargs)
         # set start time attribute
         self.start_time = self.get_start_time()
