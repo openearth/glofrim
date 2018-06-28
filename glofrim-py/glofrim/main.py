@@ -6,7 +6,7 @@ import re
 import logging
 import warnings
 import shutil
-import tempfile
+import string
 import os
 from os import mkdir
 from os.path import isdir, join, basename, dirname, abspath, isfile, isabs
@@ -76,21 +76,27 @@ class BMI_model_wrapper(object):
         if (self.name in ['LFP']):
 			#- adapted from
 			#- https://stackoverflow.com/questions/2819696/parsing-properties-file-in-python/25493615#25493615
-			#- PROBLEM: parsing only works with "=" signs...
+
 			fo = self.config_fn
 			f = open(fo, 'rw') # open LFP par-file
 			fake_config = '[dummysection]\n' + f.read() # add dummy section header
-
-			path = os.path.join(os.path.dirname(self.config_fn), 'tmp.par') # create tmp-file
-			fd, path = tempfile.mkstemp()
-			try:
-				with os.fdopen(fd, 'w') as tmp:
-					tmp.write(fake_config) # write dummy content to tmp-file
-				self.model_config = config_to_dict(path,
+			print fake_config
+										   
+			# EXPERIMENTAL #
+			tmpFile = os.path.join(os.path.dirname(self.config_fn), 'tmp.par') # create tmp-file
+			file = open(tmpFile, 'w+')
+			file.write(fake_config)
+			file.close()
+			
+			self.config_fn = tmpFile
+			
+			#- PROBLEM: parsing only works with "=" signs...
+			
+			self.model_config = config_to_dict(self.config_fn,
                                            cf=self._configparser,
                                            **kwargs) # create dictionary
-			finally:
-				os.remove(path) # remove tmp-file
+										   
+			#os.remove(tmpFile)
                                            
 
     def write_config(self, **kwargs):
