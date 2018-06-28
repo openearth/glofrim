@@ -8,8 +8,9 @@ from os.path import isdir, join, basename, dirname, abspath, isfile, isabs, spli
 from datetime import datetime, timedelta
 import numpy as np
 import rasterio
-
+from configparser import ConfigParser
 from bmi.wrapper import BMIWrapper
+import re
 
 from main import BMI_model_wrapper
 from utils import subcall
