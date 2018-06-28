@@ -98,16 +98,16 @@ class LFP_model(BMI_model_wrapper):
             self.model_grid_bounds = ds.bounds
             self.model_grid_shape = ds.shape
             self.model_grid_transform = ds.transform
-
-        list_x_coords, list_y_coords = self.model_grid_transform * (i_ind, j_ind)
+            list_x_coords, list_y_coords = ds.xy(i_ind, j_ind)
 
         self.model_1d_coords = zip(list_x_coords, list_y_coords)
-        self.model_1d_indices = zip(i_ind, j_ind)
+        self.model_1d_indices = np.arange(i_ind.size)
+        self.model_1d_rc = (i_ind, j_ind)
 
         pass
 
     def get_area_1d(self):
-        row, col = zip(*self.model_1d_indices)
+        row, col = self.model_1d_rc
         area_1D = self.get_var('dA')[row, col]
         return area_1D
 

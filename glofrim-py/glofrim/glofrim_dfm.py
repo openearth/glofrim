@@ -130,3 +130,4 @@ class DFM_model(BMI_model_wrapper):
         #TODO: assess validity based on e.g. max distance
         valid = np.ones(len(index), dtype=bool)
         return index, valid
+        

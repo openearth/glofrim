@@ -344,8 +344,9 @@ class BMI_model_wrapper(object):
         # set indices to easily exchange variables
         if not np.all(valid):
             logger.warning('1D nodes found outside of valid 2D domain')
-        other.coupled_idx = other.model_1d_indices[valid]
         self.coupled_idx = (rows[valid], cols[valid]) # tuple of (row, col) arrays
+        other.coupled_idx = other.model_1d_indices[valid]
+
         # create coupled 1-to-1 downstream-to-upstream indices dictionary
         other.coupled_dict = {i: (r, c) for i, r, c in zip(other.coupled_idx, *self.coupled_idx)}
         # invert dictionary for 1-to-n upstream-to-downstream coupling

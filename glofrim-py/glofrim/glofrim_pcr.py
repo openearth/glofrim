@@ -109,10 +109,14 @@ class PCR_model(BMI_model_wrapper):
         r, c = self.grid_index(*zip(*xy), **kwargs)
         r = np.array(r).astype(int)
         c = np.array(c).astype(int)
+        # check if inside domain
+        nrows, ncols = self.model_grid_shape
+        inside = np.logical_and.reduce((r>=0, r<nrows, c>=0, c<ncols))
         # get valid cells (inside landmask)
         lm_map = pcr.readmap(str(self._fn_landmask))
         lm_data = pcr.pcr2numpy(lm_map, nodata)
-        valid = lm_data[r, c] == 1
+        valid = np.zeros_like(inside, dtype=bool) 
+        valid[inside] = lm_data[r[inside], c[inside]] == 1
         return zip(r, c), valid
 
     # TODO: this should be in the setting file. not changing the actual ldd
