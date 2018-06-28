@@ -1,9 +1,9 @@
 
 [hydrologic_model]
 # PCR for PCRGLOB-WB or (not yet implemented) WFL for WFLOW
-model_name = PCR
+model_name = WFL
 # hydrological model ini-file
-config_file = PCR_Elbe/setup_PCR_30min_Elbe.ini
+config_file = WFL_Elbe/wflow_sbm_elbe/wflow_sbm.ini
 
 [routing_model]
 # CMF for CaMa-Flood

@@ -89,6 +89,10 @@ class DFM_model(BMI_model_wrapper):
         self.model_1d_indices = np.arange(n1d, dtype=np.int32) + self._1d2d_idx
         pass
 
+    def get_area_1d(self):
+        #NOTE: to stay consistent with the indices we should return the full array
+        return self.get_var('ba')
+
     def get_model_1d_index(self):
         """Creat a spatial index for the 1d coordinates. A model_1d_index
         attribute funtion is created to find the nearest 1d coordinate tuple"""

@@ -1,6 +1,6 @@
 
 # ---
-# LOAD lIBS
+# LOAD LIBS
 # ---
 
 # load general libraries
@@ -8,15 +8,16 @@ import netCDF4
 from netCDF4 import Dataset
 import rasterio
 import os, sys
+from os.path import join
 from datetime import datetime
 import numpy as np
 import spotpy
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 # load local libraries
-from coupling_PCR_FM.model_functions_v2 import PCR_model, CMF_model, DFM_model
-from coupling_PCR_FM import coupling_functions_v2
-from coupling_PCR_FM.utils import config_to_dict, determineSteps
+from glofrim import PCR_model, CMF_model
+from glofrim import coupling_functions_v2
+from glofrim.utils import config_to_dict, determineSteps
 
 # ---
 # IMPORT MODEL SETTINGS FROM INI-FILE
@@ -45,8 +46,8 @@ timeSteps = determineSteps(start_date, end_date)
 # SET OUTPUT DIRs
 # ---
 
-cwd = os.getcwd() # note: this get changed by pcr initialization later on
-out_dir = options['PCRpaths']['outputDirectoryPCR']
+in_dir = options['GENERAL']['inputDir']
+out_dir = options['GENERAL']['outputDir']
 out_dir = out_dir + 'PCR2CMF/'
 if not os.path.isdir(out_dir):
     os.mkdir(out_dir)
@@ -55,8 +56,8 @@ if not os.path.isdir(out_dir):
 # CREATE PCR BMI OBJECT
 # ---
 
-PCR_config_fn = os.path.join(cwd, options['hydrologic_model']['config_dir'], options['hydrologic_model']['config_file'])
-PCR_in_dir = options['PCRpaths']['inputDirectoryPCR']
+PCR_config_fn = os.path.join(in_dir, options['hydrologic_model']['config_file'])
+PCR_in_dir = os.path.join(os.path.dirname(PCR_config_fn), 'input30min')
 PCR_out_dir = os.path.join(out_dir, 'PCR')
 
 PCR_bmi = PCR_model(PCR_config_fn, PCR_in_dir, PCR_out_dir,
@@ -66,9 +67,9 @@ PCR_bmi = PCR_model(PCR_config_fn, PCR_in_dir, PCR_out_dir,
 # CREATE CMF BMI OBJECT
 # ---
 
-CMF_engine = os.path.join(cwd, options['CMF_engine']['CMF_path'])
-CMF_model_dir = os.path.join(cwd, options['routing_model']['model_dir'])
-CMF_config_fn = os.path.join(CMF_model_dir, options['routing_model']['model_file'])
+CMF_engine = options['CMF_engine']['CMF_path']
+CMF_config_fn = os.path.join(in_dir, options['routing_model']['model_file'])
+CMF_model_dir = os.path.dirname(CMF_config_fn)
 CMF_out_dir = os.path.join(out_dir, 'CMF')
 
 CMF_bmi = CMF_model(CMF_engine, CMF_config_fn, CMF_model_dir, CMF_out_dir,
@@ -105,7 +106,7 @@ tEnd = datetime.now()
 
 print 'start time coupling: ', tStart
 print 'end time coupling: ', tEnd
-print 'average time per update PCR->CMF->DFM: ', abs((tEnd - tStart)) / timeSteps
+print 'average time per update PCR->CMF: ', abs((tEnd - tStart)) / timeSteps
 
 # ---
 # FINALIZE MODELS

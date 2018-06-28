@@ -6,6 +6,8 @@ import re
 import logging
 import warnings
 import shutil
+import string
+import os
 from os import mkdir
 from os.path import isdir, join, basename, dirname, abspath, isfile, isabs
 import numpy as np
@@ -65,17 +67,50 @@ class BMI_model_wrapper(object):
         """
         if config_fn is not None:
             self.config_fn = abspath(config_fn)
-        self.model_config = config_to_dict(self.config_fn,
+        #addded if-switch for LFP; 31-May-2018; JMH
+        if (self.name not in ['LFP']):
+            self.model_config = config_to_dict(self.config_fn,
                                            cf=self._configparser,
                                            **kwargs)
+                                           
+        if (self.name in ['LFP']):
+			#- adapted from
+			#- https://stackoverflow.com/questions/2819696/parsing-properties-file-in-python/25493615#25493615
+
+			fo = self.config_fn
+			f = open(fo, 'rw') # open LFP par-file
+			fake_config = '[dummysection]\n' + f.read() # add dummy section header
+			print fake_config
+										   
+			# EXPERIMENTAL #
+			tmpFile = os.path.join(os.path.dirname(self.config_fn), 'tmp.par') # create tmp-file
+			file = open(tmpFile, 'w+')
+			file.write(fake_config)
+			file.close()
+			
+			self.config_fn = tmpFile
+			
+			#- PROBLEM: parsing only works with "=" signs...
+			
+			self.model_config = config_to_dict(self.config_fn,
+                                           cf=self._configparser,
+                                           **kwargs) # create dictionary
+										   
+			#os.remove(tmpFile)
+                                           
 
     def write_config(self, **kwargs):
         """The internal model_config dictionary is written to the out_dir. This
         step should be excecuted just before the model initialization."""
         self.config_fn = join(self.out_dir, basename(self.config_fn))
-        dict_to_config(self.model_config, self.config_fn,
+        #addded if-switch for LFP; 31-May-2018; JMH
+        if (self.name not in ['LFP']):
+			dict_to_config(self.model_config, self.config_fn,
                        cf=self._configparser, **kwargs)
-        logger.info('Ini file for {:s} written to {:s}'.format(self.name, self.config_fn))
+			logger.info('Ini file for {:s} written to {:s}'.format(self.name, self.config_fn))
+        if (self.name in ['LFP']):
+			print 'LFP section of write_config'
+			logger.info('Ini file for {:s} written to {:s}'.format(self.name, self.config_fn))
 
     def set_config(self, model_config):
         """Change multiple model config file settings with dictionary.
@@ -124,7 +159,7 @@ class BMI_model_wrapper(object):
         self.model_config[sec].update(**{opt: value})
 
     ## model initialization/finalize/spinup
-    def initialize(self):
+    def initialize(self, **kwargs):
         """Perform startup tasks for the model.
 
         This is second step of two-phase initialization and includes writing the
@@ -134,7 +169,7 @@ class BMI_model_wrapper(object):
         # write possibly updated config file
         self.write_config()
         # initialize model with updated config file
-        self.bmi.initialize(self.config_fn)
+        self.bmi.initialize(self.config_fn, **kwargs)
         # set start time attribute
         self.start_time = self.get_start_time()
         self.initialized = True
@@ -297,8 +332,10 @@ class BMI_model_wrapper(object):
 
         The output model grid indices are model specific:
         - PCR : regular grid (row, col)
+        - WFL : regular grid (row, col)
         - CMF : irregular unit catchment grid (row, col)
         - DFM : flexible mesh (flat index)
+        - LFP : regular grid (flat index)
 
         Arguments
         ---------
@@ -315,19 +352,18 @@ class BMI_model_wrapper(object):
             Fraction of water volume from upstream model grid cell that should be
             added to downstream 1d node
         """
-        if (other.name != 'DFM') or (self.name not in ['PCR', 'CMF']):
+        if (other.name not in ['DFM', 'LFP']) or (self.name not in ['PCR', 'CMF', 'WFL']):
             msg = 'Grid to 1D coupling has only been implemented for PCR to' + \
                   ' CMF (upstream) to DFM (downstream) coupling'
             raise NotImplementedError(msg)
 
-        if other.name == 'DFM':
-            if not other.initialized:
-                msg = 'The DFM model should be initialized first to obtain ' + \
+        if not other.initialized:
+            msg = 'The hydrodynamic model should be initialized first to obtain ' + \
                       ' the 1D model coordinates via BMI'
-                raise AssertionError(msg)
-            if not hasattr(other, 'model_1d_coords'):
-                other.get_model_coords()
-            area_other = other.get_var('ba')
+            raise AssertionError(msg)
+        if not hasattr(other, 'model_1d_coords'):
+            other.get_model_coords()
+        area_other = other.get_area_1d()
 
         logger.info('Coupling {} grid to {} 1D nodes.'.format(self.name, other.name))
         # get cell indices at 1D coordinates
