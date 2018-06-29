@@ -14,11 +14,8 @@ import numpy as np
 from bmi.wrapper import BMIWrapper
 
 # local libraries
-from utils import config_to_dict, dict_to_config, ConfigParser
+from utils import config_to_dict, dict_to_config, ConfigParser, setlogger
 
-log_fmt = '%(asctime)s - %(levelname)s - %(message)s'
-logging.basicConfig(level=logging.INFO, format=log_fmt, filemode='w')
-logger = logging.getLogger(__name__)
 
 # wrapper around BMI
 class BMI_model_wrapper(object):
@@ -38,6 +35,8 @@ class BMI_model_wrapper(object):
         self.out_dir = abspath(out_dir)
         if not isdir(self.out_dir):
             mkdir(self.out_dir)
+        log_fn = join(self.out_dir, 'glofrim_{}.log'.format(self.name))
+        self.logger = setlogger(log_fn, self.name, thelevel=logging.INFO)
         # first step of two step initialization.
         self.initialize_config()
         # second step is not yet performed

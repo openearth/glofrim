@@ -2,19 +2,12 @@
 
 #TODO: guess the input dir as in PCR has to be set up to work with path of the WFLOW ini-file instead
 
-import logging
 from os.path import isdir, join, basename, dirname, abspath, isfile, isabs
 import numpy as np
 import rasterio
-
-
-
 from main import BMI_model_wrapper
 from utils import ConfigParser
 
-log_fmt = '%(asctime)s - %(levelname)s - %(message)s'
-logging.basicConfig(level=logging.INFO, format=log_fmt, filemode='w')
-logger = logging.getLogger(__name__)
 
 class WFL_model(BMI_model_wrapper):
     
@@ -67,7 +60,7 @@ class WFL_model(BMI_model_wrapper):
         model_grid_shape : tuple
             model number of rows and cols
         """
-        logger.info('Getting WFLOW model grid parameters.')
+        self.logger.info('Getting WFLOW model grid parameters.')
         fn_map = getattr(self.model_config['model'], 'wflow_subcatch', 'staticmaps/wflow_subcatch.map')
         if not isabs(fn_map):
             ddir = self.model_data_dir
@@ -82,14 +75,14 @@ class WFL_model(BMI_model_wrapper):
             self.model_grid_shape = ds.shape
             self.model_grid_transform = ds.transform
         msg = 'Model bounds {:s}; width {}, height {}'
-        logger.debug(msg.format(self.model_grid_bounds, *self.model_grid_shape))
+        self.logger.debug(msg.format(self.model_grid_bounds, *self.model_grid_shape))
         pass
 
     def get_drainage_direction(self):
         from nb.nb_io import read_dd_pcraster
         # read file with pcr readmap
         nodata = self.options.get('landmask_mv', 255)
-        logger.info('Getting WFLOW LDD map.')
+        self.logger.info('Getting WFLOW LDD map.')
         fn_ldd = getattr(self.model_config['model'], 'wflow_ldd', 'staticmaps/wflow_ldd.map')
         if not isabs(fn_ldd):
             ddir = self.model_data_dir
@@ -113,7 +106,7 @@ class WFL_model(BMI_model_wrapper):
         indices : list of tuples
           list of (row, col) index tuples
         """
-        logger.info('Getting WFLOW model indices of xy coordinates.')
+        self.logger.info('Getting WFLOW model indices of xy coordinates.')
         r, c = self.grid_index(*zip(*xy), **kwargs)
         r = np.array(r).astype(int)
         c = np.array(c).astype(int)
@@ -163,11 +156,11 @@ class WFL_model(BMI_model_wrapper):
         state variables.
         """
         if dt is not None: # by default take internally set dt
-            logger.warning('dt is not used in the wflow bmi update function')
+            self.logger.warning('dt is not used in the wflow bmi update function')
         self.bmi.update()
         current_time = self.get_current_time()
         time_step = self.get_time_step()
-        logger.info(
+        self.logger.info(
             "%s -> start_time: %s, current_time %s, timestep %s",
             self.name,
             self.start_time,

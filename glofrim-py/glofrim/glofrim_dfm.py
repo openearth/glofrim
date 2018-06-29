@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import logging
 import glob
 import shutil
 from os import mkdir
@@ -12,11 +11,6 @@ from bmi.wrapper import BMIWrapper
 
 from main import BMI_model_wrapper
 from utils import ConfigParser
-
-log_fmt = '%(asctime)s - %(levelname)s - %(message)s'
-logging.basicConfig(level=logging.INFO, format=log_fmt, filemode='w')
-logger = logging.getLogger(__name__)
-
 
 class DFM_model(BMI_model_wrapper):
     def __init__(self, engine, config_fn,
@@ -76,7 +70,7 @@ class DFM_model(BMI_model_wrapper):
         """Get DFM model coordinates for 1D and 2D mesh via BMI. The DFM model
         should be initialized first in order to access the variables."""
 
-        logger.info('Getting DFM model coordinates.')
+        self.logger.info('Getting DFM model coordinates.')
         # define separator between 2D and 1D parts of arrays == lenght of 2d cell points
         self._1d2d_idx = len(self.get_var('flowelemnode'))
         x_coords = self.get_var('xz') # x-coords of each cell centre point
@@ -96,12 +90,12 @@ class DFM_model(BMI_model_wrapper):
     def get_model_1d_index(self):
         """Creat a spatial index for the 1d coordinates. A model_1d_index
         attribute funtion is created to find the nearest 1d coordinate tuple"""
-        logger.info('Constructing spatial index for the 1D coordinates of the DFM model.')
+        self.logger.info('Constructing spatial index for the 1D coordinates of the DFM model.')
         # 1d coords
         n1d = len(self.model_1d_coords)
         self.model_1d_indices = np.arange(n1d, dtype=np.int32) + self._1d2d_idx
         # build spatial rtree index of points2
-        logger.info('Constructing spatial index for 1D vertices of DFM model')
+        self.logger.info('Constructing spatial index for 1D vertices of DFM model')
         self.model_1d_rtree = rtree.index.Index()
         for i, xy in enumerate(self.model_1d_coords):
             self.model_1d_rtree.insert(i+n1d, xy) # return index including 2d
@@ -117,7 +111,7 @@ class DFM_model(BMI_model_wrapper):
         A model_2d_index attribute funtion is created to find the nearest
         2d cell center"""
         # build spatial rtree index of 2d coords
-        logger.info('Constructing spatial index for the 2D mesh of the DFM model')
+        self.logger.info('Constructing spatial index for the 2D mesh of the DFM model')
         self.model_2d_rtree = rtree.index.Index()
         for i, xy in enumerate(self.model_2d_coords):
             self.model_2d_rtree.insert(i, xy)

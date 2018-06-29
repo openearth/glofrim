@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import logging
 import glob
 import shutil
 import os
@@ -14,11 +13,6 @@ from configparser import ConfigParser
 import re
 from bmi.wrapper import BMIWrapper
 from main import BMI_model_wrapper
-
-log_fmt = '%(asctime)s - %(levelname)s - %(message)s'
-logging.basicConfig(level=logging.INFO, format=log_fmt, filemode='w')
-logger = logging.getLogger(__name__)
-
 
 class LFP_model(BMI_model_wrapper):
     def __init__(self, engine, config_fn,
@@ -80,7 +74,7 @@ class LFP_model(BMI_model_wrapper):
         """Get LFP model coordinates for 1D and 2D mesh via BMI. The LFP model
         should be initialized first in order to access the variables."""
 
-        logger.info('Getting LFP model coordinates.')
+        self.logger.info('Getting LFP model coordinates.')
 
         i_ind, j_ind = np.where(np.logical_and(self.get_var('SGCwidth') > 0., self.get_var('DEM') != -9999))
         # print i_ind.shape, j_ind.shape
