@@ -5,7 +5,51 @@ import re, codecs
 from configparser import ConfigParser
 from collections import OrderedDict
 from subprocess import check_output, STDOUT, CalledProcessError
+import logging
+import logging.handlers
 
+def setlogger(logfilename,loggername, thelevel=logging.INFO):
+    """
+    Set-up the logging system and return a logger object. Exit if this fails
+    """
+
+    try:    
+        #create logger
+        logger = logging.getLogger(loggername)
+        if not isinstance(thelevel, int):
+            logger.setLevel(logging.DEBUG)
+        else:
+            logger.setLevel(thelevel)
+        ch = logging.FileHandler(logfilename,mode='w')
+        console = logging.StreamHandler()
+        console.setLevel(logging.DEBUG)
+        ch.setLevel(logging.DEBUG)
+        #create formatter
+        formatter = logging.Formatter(
+            "%(asctime)s - %(name)s - %(module)s - %(levelname)s - %(message)s")
+        #add formatter to ch
+        ch.setFormatter(formatter)
+        console.setFormatter(formatter)
+        #add ch to logger
+        logger.addHandler(ch)
+        logger.addHandler(console)
+        logger.debug("File logging to " + logfilename)
+        return logger
+    except IOError:
+        print("ERROR: Failed to initialize logger with logfile: " + logfilename)
+        sys.exit(2)
+
+def closeLogger(logger, ch):
+    logger.removeHandler(ch)
+    ch.flush()
+    ch.close()
+    return logger, ch
+
+def close_with_error(logger, ch, msg):
+    logger.error(msg)
+    logger, ch = closeLogger(logger, ch)
+    del logger, ch
+    sys.exit(1)
 
 # utils
 def set_values_in_array(vals, idx, update_vals):
