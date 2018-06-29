@@ -67,36 +67,10 @@ class BMI_model_wrapper(object):
         """
         if config_fn is not None:
             self.config_fn = abspath(config_fn)
-        #addded if-switch for LFP; 31-May-2018; JMH
-        if (self.name not in ['LFP']):
-            self.model_config = config_to_dict(self.config_fn,
-                                           cf=self._configparser,
-                                           **kwargs)
-                                           
-        if (self.name in ['LFP']):
-			#- adapted from
-			#- https://stackoverflow.com/questions/2819696/parsing-properties-file-in-python/25493615#25493615
 
-			fo = self.config_fn
-			f = open(fo, 'rw') # open LFP par-file
-			fake_config = '[dummysection]\n' + f.read() # add dummy section header
-			print fake_config
-										   
-			# EXPERIMENTAL #
-			tmpFile = os.path.join(os.path.dirname(self.config_fn), 'tmp.par') # create tmp-file
-			file = open(tmpFile, 'w+')
-			file.write(fake_config)
-			file.close()
-			
-			self.config_fn = tmpFile
-			
-			#- PROBLEM: parsing only works with "=" signs...
-			
-			self.model_config = config_to_dict(self.config_fn,
-                                           cf=self._configparser,
-                                           **kwargs) # create dictionary
-										   
-			#os.remove(tmpFile)
+        self.model_config = config_to_dict(self.config_fn,
+                                        cf=self._configparser,
+                                        **kwargs)
                                            
 
     def write_config(self, **kwargs):

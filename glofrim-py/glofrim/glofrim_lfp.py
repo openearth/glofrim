@@ -10,11 +10,10 @@ import numpy as np
 import rtree
 import StringIO
 import rasterio
-
+from configparser import ConfigParser
+import re
 from bmi.wrapper import BMIWrapper
-
 from main import BMI_model_wrapper
-from utils import ConfigParser
 
 log_fmt = '%(asctime)s - %(levelname)s - %(message)s'
 logging.basicConfig(level=logging.INFO, format=log_fmt, filemode='w')
@@ -34,7 +33,7 @@ class LFP_model(BMI_model_wrapper):
         lfp_bmi = BMIWrapper(engine = engine)
 
         # set config parser        
-        configparser = ConfigParser(inline_comment_prefixes=('#'))
+        configparser = ParConfigParser()
 
         # for offline use the forcing data dir can be set. not yet inplemented
         forcing_data_dir = ''
@@ -110,3 +109,29 @@ class LFP_model(BMI_model_wrapper):
         row, col = zip(*self.model_1d_indices)
         area_1D = self.get_var('dA')[row, col]
         return area_1D
+
+
+class ParConfigParser(ConfigParser):
+    def __init__(self, **kwargs):
+        defaults = dict(comment_prefixes=('!', '/', '#'),
+                        inline_comment_prefixes=('!'),
+                        delimiters=('='))
+        defaults.update(**kwargs)
+        super(ParConfigParser, self).__init__(**defaults)
+
+    def read_file(self, f, **kwargs):
+        def par2ini(f, header_name):
+            """change par to ini before parse as ini
+            note that this removes comments"""
+            yield '[{}]\n'.format(header_name)
+            for line in f:
+                yield '='.join(line.split()[:2])
+        super(ParConfigParser, self).read_file(par2ini(f, 'header1'), **kwargs)
+        
+    def _write_section(self, fp, section_name, section_items, delimiter):
+        """Write a single section to the specified `fp'."""
+        for key, value in section_items:
+            value = self._interpolation.before_write(self, section_name, key, value)
+            value = ' ' + str(value).replace('\n', '\n\t')
+            fp.write("{}{}\n".format(key.upper(), value))
+        fp.write("/\n")
