@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import logging
 import glob
 import shutil
 import os
@@ -14,11 +13,6 @@ from configparser import ConfigParser
 import re
 from bmi.wrapper import BMIWrapper
 from main import BMI_model_wrapper
-
-log_fmt = '%(asctime)s - %(levelname)s - %(message)s'
-logging.basicConfig(level=logging.INFO, format=log_fmt, filemode='w')
-logger = logging.getLogger(__name__)
-
 
 class LFP_model(BMI_model_wrapper):
     def __init__(self, engine, config_fn,
@@ -80,13 +74,14 @@ class LFP_model(BMI_model_wrapper):
         """Get LFP model coordinates for 1D and 2D mesh via BMI. The LFP model
         should be initialized first in order to access the variables."""
 
-        logger.info('Getting LFP model coordinates.')
+        self.logger.info('Getting LFP model coordinates.')
 
         i_ind, j_ind = np.where(np.logical_and(self.get_var('SGCwidth') > 0., self.get_var('DEM') != -9999))
-        print i_ind.shape, j_ind.shape
+        # print i_ind.shape, j_ind.shape
         
         fn_map = join(self.model_data_dir,
-                      self.model_config['dummysection']['DEMfile'])
+                      self.model_config['header1']['DEMfile'])
+
         if not isfile(fn_map):
             raise IOError('landmask file not found')
         self._fn_landmask = fn_map
@@ -97,22 +92,23 @@ class LFP_model(BMI_model_wrapper):
             self.model_grid_bounds = ds.bounds
             self.model_grid_shape = ds.shape
             self.model_grid_transform = ds.transform
-
-        list_x_coords, list_y_coords = self.model_grid_transform * (i_ind, j_ind)
+            list_x_coords, list_y_coords = ds.xy(i_ind, j_ind)
 
         self.model_1d_coords = zip(list_x_coords, list_y_coords)
-        self.model_1d_indices = zip(i_ind, j_ind)
+        self.model_1d_indices = np.arange(i_ind.size)
+        self.model_1d_rc = (i_ind, j_ind)
 
         pass
 
     def get_area_1d(self):
-        row, col = zip(*self.model_1d_indices)
+        row, col = self.model_1d_rc
         area_1D = self.get_var('dA')[row, col]
         return area_1D
 
 
 class ParConfigParser(ConfigParser):
     def __init__(self, **kwargs):
+        self.optionxform = lambda option:option # keep format with capital/lower letters
         defaults = dict(comment_prefixes=('!', '/', '#'),
                         inline_comment_prefixes=('!'),
                         delimiters=('='))
@@ -133,5 +129,5 @@ class ParConfigParser(ConfigParser):
         for key, value in section_items:
             value = self._interpolation.before_write(self, section_name, key, value)
             value = ' ' + str(value).replace('\n', '\n\t')
-            fp.write("{}{}\n".format(key.upper(), value))
-        fp.write("/\n")
+            fp.write("{}{}\n".format(key, value))
+        fp.write("\n")

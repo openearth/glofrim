@@ -1,18 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import logging
 from os.path import isdir, join, basename, dirname, abspath, isfile, isabs
 import numpy as np
 import rasterio
-
-from pcrglobwb_bmi_v203 import pcrglobwb_bmi
-
 from main import BMI_model_wrapper
 from utils import ConfigParser
 
-log_fmt = '%(asctime)s - %(levelname)s - %(message)s'
-logging.basicConfig(level=logging.INFO, format=log_fmt, filemode='w')
-logger = logging.getLogger(__name__)
 
 class PCR_model(BMI_model_wrapper):
     def __init__(self, config_fn,
@@ -21,6 +14,7 @@ class PCR_model(BMI_model_wrapper):
                  missing_value=-999, landmask_mv=255, forcing_data_dir=None,
                  **kwargs):
         """initialize the PCR-GLOBWB (PCR) model BMI class and model configuration file"""
+        from pcrglobwb_bmi_v203 import pcrglobwb_bmi
         # BMIWrapper for PCR model model
         pcr_bmi = pcrglobwb_bmi.pcrglobwbBMI()
         # set config parser
@@ -60,7 +54,7 @@ class PCR_model(BMI_model_wrapper):
         model_grid_shape : tuple
             model number of rows and cols
         """
-        logger.info('Getting PCR model grid parameters.')
+        self.logger.info('Getting PCR model grid parameters.')
         fn_map = join(self.model_config['globalOptions']['inputDir'],
                       self.model_config['globalOptions']['landmask'])
         if not isfile(fn_map):
@@ -73,14 +67,14 @@ class PCR_model(BMI_model_wrapper):
             self.model_grid_shape = ds.shape
             self.model_grid_transform = ds.transform
         msg = 'Model bounds {:s}; width {}, height {}'
-        logger.debug(msg.format(self.model_grid_bounds, *self.model_grid_shape))
+        self.logger.debug(msg.format(self.model_grid_bounds, *self.model_grid_shape))
         pass
 
     def get_drainage_direction(self):
         from nb.nb_io import read_dd_pcraster
         # read file with pcr readmap
         nodata = self.options.get('landmask_mv', 255)
-        logger.info('Getting PCR LDD map.')
+        self.logger.info('Getting PCR LDD map.')
         fn_ldd = self.model_config['routingOptions']['lddMap']
         if not isabs(fn_ldd):
             ddir = self.model_config['globalOptions']['inputDir']
@@ -105,14 +99,18 @@ class PCR_model(BMI_model_wrapper):
         """
         import pcraster as pcr
         nodata = self.options.get('landmask_mv', 255)
-        logger.info('Getting PCR model indices of xy coordinates.')
+        self.logger.info('Getting PCR model indices of xy coordinates.')
         r, c = self.grid_index(*zip(*xy), **kwargs)
         r = np.array(r).astype(int)
         c = np.array(c).astype(int)
+        # check if inside domain
+        nrows, ncols = self.model_grid_shape
+        inside = np.logical_and.reduce((r>=0, r<nrows, c>=0, c<ncols))
         # get valid cells (inside landmask)
         lm_map = pcr.readmap(str(self._fn_landmask))
         lm_data = pcr.pcr2numpy(lm_map, nodata)
-        valid = lm_data[r, c] == 1
+        valid = np.zeros_like(inside, dtype=bool) 
+        valid[inside] = lm_data[r[inside], c[inside]] == 1
         return zip(r, c), valid
 
     # TODO: this should be in the setting file. not changing the actual ldd
@@ -139,7 +137,7 @@ class PCR_model(BMI_model_wrapper):
             msg = "Deactivating the LDD is only possible before the model is initialized"
             raise AssertionError(msg)
 
-        logger.info('Editing PCR ldd grid to deactivate routing in coupled cells.')
+        self.logger.info('Editing PCR ldd grid to deactivate routing in coupled cells.')
         # get ldd filename from config
         fn_ldd = self.model_config['routingOptions']['lddMap']
         if not isabs(fn_ldd):

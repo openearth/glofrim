@@ -14,11 +14,8 @@ import numpy as np
 from bmi.wrapper import BMIWrapper
 
 # local libraries
-from utils import config_to_dict, dict_to_config, ConfigParser
+from utils import config_to_dict, dict_to_config, ConfigParser, setlogger
 
-log_fmt = '%(asctime)s - %(levelname)s - %(message)s'
-logging.basicConfig(level=logging.INFO, format=log_fmt, filemode='w')
-logger = logging.getLogger(__name__)
 
 # wrapper around BMI
 class BMI_model_wrapper(object):
@@ -38,6 +35,8 @@ class BMI_model_wrapper(object):
         self.out_dir = abspath(out_dir)
         if not isdir(self.out_dir):
             mkdir(self.out_dir)
+        log_fn = join(self.out_dir, 'glofrim_{}.log'.format(self.name))
+        self.logger = setlogger(log_fn, self.name, thelevel=logging.INFO)
         # first step of two step initialization.
         self.initialize_config()
         # second step is not yet performed
@@ -77,14 +76,10 @@ class BMI_model_wrapper(object):
         """The internal model_config dictionary is written to the out_dir. This
         step should be excecuted just before the model initialization."""
         self.config_fn = join(self.out_dir, basename(self.config_fn))
-        #addded if-switch for LFP; 31-May-2018; JMH
-        if (self.name not in ['LFP']):
-			dict_to_config(self.model_config, self.config_fn,
-                       cf=self._configparser, **kwargs)
-			logger.info('Ini file for {:s} written to {:s}'.format(self.name, self.config_fn))
-        if (self.name in ['LFP']):
-			print 'LFP section of write_config'
-			logger.info('Ini file for {:s} written to {:s}'.format(self.name, self.config_fn))
+
+        dict_to_config(self.model_config, self.config_fn, cf=self._configparser, **kwargs)
+		
+        logger.info('Ini file for {:s} written to {:s}'.format(self.name, self.config_fn))
 
     def set_config(self, model_config):
         """Change multiple model config file settings with dictionary.
@@ -142,7 +137,8 @@ class BMI_model_wrapper(object):
         """
         # write possibly updated config file
         self.write_config()
-        # initialize model with updated config file
+        # import pdb; pdb.set_trace()       
+         # initialize model with updated config file
         self.bmi.initialize(self.config_fn, **kwargs)
         # set start time attribute
         self.start_time = self.get_start_time()
@@ -347,8 +343,9 @@ class BMI_model_wrapper(object):
         # set indices to easily exchange variables
         if not np.all(valid):
             logger.warning('1D nodes found outside of valid 2D domain')
-        other.coupled_idx = other.model_1d_indices[valid]
         self.coupled_idx = (rows[valid], cols[valid]) # tuple of (row, col) arrays
+        other.coupled_idx = other.model_1d_indices[valid]
+
         # create coupled 1-to-1 downstream-to-upstream indices dictionary
         other.coupled_dict = {i: (r, c) for i, r, c in zip(other.coupled_idx, *self.coupled_idx)}
         # invert dictionary for 1-to-n upstream-to-downstream coupling
