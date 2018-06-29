@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import logging
 import glob
 import shutil
 from os import mkdir, unlink
@@ -14,10 +13,6 @@ import re
 
 from main import BMI_model_wrapper
 from utils import subcall
-
-log_fmt = '%(asctime)s - %(levelname)s - %(message)s'
-logging.basicConfig(level=logging.INFO, format=log_fmt, filemode='w')
-logger = logging.getLogger(__name__)
 
 class CMF_model(BMI_model_wrapper):
     def __init__(self, engine, config_fn,
@@ -81,7 +76,7 @@ class CMF_model(BMI_model_wrapper):
                         shutil.copy(src_fn, dst_path)
                         # remove *tmp.* files from data_dir
                         if 'tmp.' in  basename(src_fn):
-                            logger.info('removing tmp file {:s} from model data dir'.format(basename(src_fn)))
+                            self.logger.info('removing tmp file {:s} from model data dir'.format(basename(src_fn)))
                             unlink(src_fn)
                     # update config_fn
                     self.update_config(sec, opt, '"./{}/{}"'.format(folder, fn))
@@ -101,7 +96,7 @@ class CMF_model(BMI_model_wrapper):
         # generate inpmat
         msg2 = './generate_inpmat {} {} {} {} {} {:s}'.format(
                         abs(res[0]), westin, eastin, northin, southin, olat)
-        logger.info(msg2)
+        self.logger.info(msg2)
         subcall(msg2, cwd=ddir)
         # set new inpmat and diminfo in config
         rel_path = relpath(dirname(self.config_fn), ddir)
@@ -132,7 +127,7 @@ class CMF_model(BMI_model_wrapper):
         """
         from nb.dd_ops import NextXY
 
-        logger.info('Getting CMF model grid parameters.')
+        self.logger.info('Getting CMF model grid parameters.')
         fn_lsmask = join(self.model_data_dir, 'lsmask.tif')
         if not isfile(fn_lsmask):
             raise IOError("lsmask.tif file not found at {}".format(fn_lsmask))
@@ -144,10 +139,10 @@ class CMF_model(BMI_model_wrapper):
             self.model_grid_transform = ds.transform
         self._fn_landmask = fn_lsmask
         msg = 'Model bounds {:s}; width {}, height {}'
-        logger.debug(msg.format(self.model_grid_bounds, *self.model_grid_shape))
+        self.logger.debug(msg.format(self.model_grid_bounds, *self.model_grid_shape))
 
         # read drainage direction data
-        logger.info('Getting CMF model drainage direction')
+        self.logger.info('Getting CMF model drainage direction')
         fn_nextxy = join(self.model_data_dir, 'nextxy.bin')
         if not isfile(fn_nextxy):
             raise IOError("nextxy.bin file not found at {}".format(fn_nextxy))
@@ -177,7 +172,7 @@ class CMF_model(BMI_model_wrapper):
         indices : list of tuples
           list of (row, col) index tuples
         """
-        logger.info('Getting CMF model indices for xy coordinates.')
+        self.logger.info('Getting CMF model indices for xy coordinates.')
         fn_catmxy = join(self.model_data_dir, 'hires', 'reg.catmxy.tif')
         if not isfile(fn_catmxy):
             raise IOError("{} file not found".format(fn_catmxy))
