@@ -1,14 +1,8 @@
-import os
-from os.path import join
-from datetime import datetime
-import re, codecs
-from configparser import ConfigParser
-from collections import OrderedDict
-from subprocess import check_output, STDOUT, CalledProcessError
+import sys
 import logging
 import logging.handlers
 
-def setlogger(logfilename,loggername, thelevel=logging.INFO):
+def setlogger(logfilename=None, loggername='glofrim', thelevel=logging.INFO):
     """
     Set-up the logging system and return a logger object. Exit if this fails
     """
@@ -20,20 +14,21 @@ def setlogger(logfilename,loggername, thelevel=logging.INFO):
             logger.setLevel(logging.DEBUG)
         else:
             logger.setLevel(thelevel)
-        ch = logging.FileHandler(logfilename,mode='w')
-        console = logging.StreamHandler()
-        console.setLevel(logging.DEBUG)
-        ch.setLevel(logging.DEBUG)
         #create formatter
         formatter = logging.Formatter(
             "%(asctime)s - %(name)s - %(module)s - %(levelname)s - %(message)s")
-        #add formatter to ch
-        ch.setFormatter(formatter)
+        # console logger
+        console = logging.StreamHandler()
+        console.setLevel(logging.DEBUG)
         console.setFormatter(formatter)
-        #add ch to logger
-        logger.addHandler(ch)
         logger.addHandler(console)
-        logger.debug("File logging to " + logfilename)
+        #add filehadnler to logger
+        if logfilename is not None:
+            ch = logging.FileHandler(logfilename,mode='w')
+            ch.setFormatter(formatter)
+            ch.setLevel(logging.DEBUG)
+            logger.addHandler(ch)
+            logger.debug("File logging to {}".format(logfilename))
         return logger
     except IOError:
         print("ERROR: Failed to initialize logger with logfile: " + logfilename)
@@ -50,103 +45,3 @@ def close_with_error(logger, ch, msg):
     logger, ch = closeLogger(logger, ch)
     del logger, ch
     sys.exit(1)
-
-# utils
-def set_values_in_array(vals, idx, update_vals):
-    """
-    Sets new values in an existing array at specified locations. Locations are provided by a list of (y, x) indices
-    :param vals: array (numpy) of values that will be updated
-    :param idx: list of (y, x) indices
-    :param update_vals: single value or list of values (equal size as idx) for updating
-    :return: vals: updated list
-    """
-    vals[zip(*idx)] = update_vals
-    return vals
-
-def determineSteps(d1, d2):
-    """
-    Computes numer of update steps based on start and endtime defined in PCR ini-file
-    Input: d1 = model start time, d2 = model end time; both in daytime format YYYY-MM-DD
-    """
-    return abs((d2 - d1).days)
-
-
-def write_ini(fn_ini_out, fn_ini_template, ignore='#', **kwargs):
-    """Function to fills ini-like template for all keys <kw> in kwargs.
-    Note that the values in kwargs are compared case insensitive.
-    Input:
-    fn_ini_out: 		new updated filename, i.e. needs to be created/defined before running the function
-    fn_ini_template: 	ld filename which will serve as template for new one
-    ignore:             per line, the part of the string behind the ignore token are ignored (default = '#')
-    **kwargs:			whole list of key-word argmunts to be replaced
-    The following lines:
-    <kw> = <value> # <comment>
-    <kw> =  # <comment>
-    result in:
-    <kw> = <new_value> # <comment>
-    where: <new_value> = kwargs[<kw>]
-    """
-    if os.path.isfile(fn_ini_out):
-        os.unlink(fn_ini_out)
-
-    # match independent of capital letters
-    kwargs = {kw.lower(): kwargs[kw] for kw in kwargs}
-
-    # open files
-    with open(fn_ini_template, 'r') as src, open(fn_ini_out, 'w') as dst:
-        # loop through lines
-        for line in src.readlines():
-            # if the line does not match the pattern or any key, it is not changed
-            line_out = line
-            # split line into settings and comment part
-            line_split = line.split(ignore)
-            if len(line_split) == 1: # no comments
-                setting = line
-                comment = ''
-            elif len(line_split) >= 1: # with comments
-                setting = line_split[0]
-                comment = ignore.join(line_split[1:])
-            # replace default from template with kwarg value if found
-            if '=' in setting:
-                # split and strip key-word and value
-                kw, old_val = setting.split('=')[:2]
-                old_val = old_val.strip()
-                kw = kw.strip().lower()
-                if kw in kwargs:
-                    if old_val == '':
-                        # no old value found, only whitespaces. insert new value behind '=' token
-                        line_out = setting.replace('=', '= {:s} '.format(kwargs[kw]))
-                    else:
-                        # replace old value with new value from kwargs
-                        line_out = setting.replace(old_val, kwargs[kw])
-                    # add comments back to output line
-                    if len(comment) > 0:
-                        line_out = '{:s}{:s}{:s}'.format(line_out, ignore, comment)
-            # write line
-            dst.write(line_out)
-
-def subcall(msg, cwd='./'):
-    # try:
-    output = check_output(msg, stderr=STDOUT, shell=True, cwd=cwd)
-    # except CalledProcessError as exc:
-    #     logger.error(exc.output)
-
-def config_to_dict(config_fn, encoding='utf-8',
-                   cf=ConfigParser()):
-    "read config file to dictionary"
-    cf.optionxform=str # preserve capital letter
-    with codecs.open(config_fn, 'r', encoding=encoding) as fp:
-        cf.read_file(fp)
-        out_dict = OrderedDict((sec, OrderedDict((opt, cf.get(sec, opt))
-                                      for opt in cf.options(sec)))
-                                for sec in cf.sections())
-    return out_dict
-
-def dict_to_config(config, config_fn, encoding='utf-8',
-                   cf=ConfigParser(), **kwargs):
-    "read config file to dictionary"
-    if not isinstance(config, dict):
-        raise ValueError("config argument should be of type dictionary")
-    cf.read_dict(config)
-    with codecs.open(config_fn, 'w', encoding=encoding) as fp:
-        cf.write(fp)
