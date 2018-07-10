@@ -16,7 +16,7 @@ def setlogger(logfilename=None, loggername='glofrim', thelevel=logging.INFO):
             logger.setLevel(thelevel)
         #create formatter
         formatter = logging.Formatter(
-            "%(asctime)s - %(name)s - %(module)s - %(levelname)s - %(message)s")
+            "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         # console logger
         console = logging.StreamHandler()
         console.setLevel(logging.DEBUG)

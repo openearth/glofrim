@@ -10,7 +10,7 @@ import rasterio
 def read_dd_rasterio(fn, ddtype='ldd', ddkwargs={}):
     with rasterio.open(fn, 'r') as src:
         if ddtype == 'ldd':
-            dd_r = LDD(src.read(1), src.transform, nodoata=src.nodata, **ddkwargs)
+            dd_r = LDD(src.read(1), src.transform, nodata=src.nodata, **ddkwargs)
         elif ddtype == 'nextxy':
             dd_r = NextXY(src.read(), src.transform, nodata=src.nodata, **ddkwargs)
     return dd_r 

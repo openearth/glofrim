@@ -14,7 +14,7 @@ https://github.com/eWaterCycle/bmi/blob/master/src/main/python/bmi.py
 from abc import ABCMeta, abstractmethod
 
 
-class BmiGridType(object):
+class GBmiGridType(object):
     """
     Enumeration with grid types.
     """
@@ -24,6 +24,17 @@ class BmiGridType(object):
     RECTILINEAR = 2
     STRUCTURED = 3
     UNSTRUCTURED = 4
+    UNITCATCHMENT = 5 # NOTE added unitcatchment CaMa-Flood specific type
+
+class GBmiModelType(object):
+    """
+    Enumeration with GLOFRIM model types.
+    """
+
+    HYDROLOGICAL = 0
+    ROUTING = 1
+    INUNDATION = 2
+
 
 class Bmi(object):
     """
@@ -187,7 +198,8 @@ class Bmi(object):
     def get_time_step(self):
         """
         Return value:
-        double: duration of one time step of the model in the units returned by the function get_time_units.
+        #NOTE: changed from double type to datetime.timedelta type for convenience
+        timedelta: duration of one time step as timedelta object
         """
         raise NotImplementedError
 
@@ -260,22 +272,22 @@ class Bmi(object):
     def get_grid_type(self):
         """
         Return value:
-        BmiGridType type of the grid geometry of the given variable.
-        NOTE: model grid is var independent
+        BmiGridType type of the grid geometry 
+        NOTE: assume model grid is var independent: deleted var argument
         """
         raise NotImplementedError
 
     @abstractmethod
     def get_grid_shape(self):
         """
-        String long_var_name: identifier of a variable in the model.
         Return value:
-        List of integers: the sizes of the dimensions of the given variable, e.g. [400, 500] for a 2D grid with 400 rows and 500 columns.
+        tuple of integers: the sizes of the dimensions of the given variable, e.g. [400, 500] for a 2D grid with 400 rows and 500 columns.
                           The dimensions are ordered [y, x] or [z, y, x].
-        NOTE: model grid is var independent
+        NOTE: assume model grid is var independent: deleted var argument
         """
         raise NotImplementedError
 
+    # NOTE most of the methods below are replaced by GBMI methods using rasterio, pyugrid etc.
     # @abstractmethod
     # def get_grid_spacing(self, long_var_name):
     #     """
@@ -441,35 +453,104 @@ class EBmi(Bmi):
 
 
 class GBmi(EBmi):
+    """
+    Variable Information Functions
+    """
+
+    @abstractmethod
+    def get_var_shape(self, long_var_name):
+        """
+        Input parameters:
+        String long_var_name: identifier of a variable in the model.
+        Return value:
+        Tuple of Integer: Variable shape
+        """
+        raise NotImplementedError
+
+    """
+    Model Information Function
+    """
+    @abstractmethod
+    def get_model_type(self):
+        """
+        Return value:
+        GBmiModelType type
+        """
+        raise NotImplementedError
     
     """
-    Uniform Grid Information Functions based on rasterio
+    Variable Getter and Setter Function extensions
+    """
+    
+    @abstractmethod
+    def get_drainage_direction(self):
+        """
+        Only for hydrological / routing models
+
+        Return value:
+        a dranage direction object
+        """
+        raise NotImplementedError
+
+    """
+    Grid Information Functions
     """
 
     @abstractmethod
     def get_grid_transform(self):
         """
-        Only return something for variables with a uniform grid. Otherwise raise ValueError.
+        Only return something for variables with a regular grid. Otherwise raise ValueError.
 
         Return value:
         rasterio transform
         """
         raise NotImplementedError
 
-    
-    """
-    UGrid Functions extended based on pyugrid
-    """
+    @abstractmethod
+    def get_grid_bounds(self):
+        """
+        Only return something for variables with a regular grid. Otherwise raise ValueError.
+
+        Return value:
+        rasterio transform
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_grid_res(self):
+        """
+        Only return something for variables with a regular grid. Otherwise raise ValueError.
+
+        Return value:
+        rasterio transform
+        """
+        raise NotImplementedError
+
+    @abstractmethod
+    def grid_index(self, x, y):
+        """
+        Determine the 1d the 1d grid index for a given x, y coordinate
+
+        Return value:
+        the 1d grid index
+        """
+        raise NotImplementedError
 
 
     """
-    1D nodes functions
+    Model control function
     """
+    @abstractmethod
+    def spinup(self):
+        """PCR specific spinup function"""
+        raise NotImplementedError
+
 
     """
-    LDD functionality for hydrological / routing models
+    set and get attribute / config 
     """
-
-    """
-    Unify output 
-    """
+    @abstractmethod
+    def write_config(self):
+        """write adapted config to file. just before initializing
+        only for models which do not allow for direct access to model config via bmi"""
+        raise NotImplementedError

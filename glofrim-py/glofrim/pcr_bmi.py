@@ -2,24 +2,28 @@ import numpy as np
 import sys
 from configparser import ConfigParser
 import logging
-from os.path import join, isfile, abspath
-from datetime import datetime, date
+import os
+from os.path import join, isfile, abspath, dirname, basename, normpath
+from datetime import datetime, date, timedelta
 import rasterio
 
 from utils import setlogger
-from gbmi import GBmi, BmiGridType
-from gbmi_lib import configread
+from gbmi import GBmi, GBmiGridType, GBmiModelType
+import gbmi_lib as glib 
+
 
 class PCR(GBmi):
     """
     Glofrim implementation of the PCR BMI adaptor.
     """
     _name = 'PCRGLOB-WB'
-    _var_units = {'var1': 'unit1'}
+    _version = '2.0.3'
+    _var_units = {'runoff': 'm/day', 'discharge': 'm3/s', 'cellArea': 'm2'}
     _input_var_names = ['var1']
-    _output_var_names = ['var1']
+    _output_var_names = ['runoff', 'discharge']
+    _area_var_name = 'cellArea'
 
-    def __init__ (self):
+    def __init__(self):
         # import original PCR bmi 
         from pcrglobwb_bmi_v203 import pcrglobwb_bmi as _bmi
         self._bmi = _bmi.pcrglobwbBMI()
@@ -30,45 +34,58 @@ class PCR(GBmi):
     Model Control Functions
     """
     def initialize_config(self, config_fn):
-        cf = ConfigParser(inline_comment_prefixes=('#'))
-        self._config_fn = config_fn
-        self._config = configread(config_fn, encoding='utf-8', cf=cf)
+        # config settings
+        if self.initialized:
+            raise Warning("model already initialized, it's therefore not longer possible to initialize the config")
+        self._cf = ConfigParser(inline_comment_prefixes=('#'))
+        self._config_fn = abspath(config_fn)
+        self._config = glib.configread(config_fn, encoding='utf-8', cf=self._cf)
+        self._datefmt = "%Y-%m-%d"
         # model time
-        self._dt = 1. 
+        self._dt = 1
         self._timeunit = 'day'
         self._startTime = self.get_start_time()
         self._endTime = self.get_end_time()
         self._t = self._startTime
         # model files
-        self._ddir = abspath(self.get_attribute_value('globalOptions:inputDir'))
-        self._lm_fn = join(self._ddir, self.get_attribute_value('globalOptions:landmask'))
-        self._ldd_fn = join(self._ddir, self.get_attribute_value('routingOptions:lddMap'))
-        if not isfile(self._lm_fn): raise IOError('landmask file not found')
+        self._indir = abspath(self.get_attribute_value('globalOptions:inputDir'))
+        self._outdir= abspath(self.get_attribute_value('globalOptions:outputDir'))
+        # ldd is used for coupling to routing / flood model
+        self._ldd_fn = glib.getabspath(self.get_attribute_value('routingOptions:lddMap'), self._indir)
         if not isfile(self._ldd_fn): raise IOError('ldd file not found')
+        # landmask used for masking out coordinates outside mask
+        self._lm_fn = glib.getabspath(self.get_attribute_value('globalOptions:landmask'), self._indir)
+        if not isfile(self._lm_fn): raise IOError('landmask file not found')
+        self.logger.info('Config initialized')
 
     def initialize_model(self, source_directory=None):
         #NOTE: PCR does not use a source_directory
         if not hasattr(self, '_config_fn'):
             raise Warning('run initialize_config before initialize_model')
+        self.write_config() # write updated config to file as bmi does not allow direct access
         self._bmi.initialize(self._config_fn)
         self.initialized = True
+        self.logger.info('Model initialized')
 
     def initialize(self, config_fn):
         self.initialize_config(config_fn)
         self.initialize_model()
-        self.logger.info('Model initialized')
-    
+            
     def update(self):
-        # if self._t >= self._endTime:
-		#     raise Exception("endTime already reached, model not updated")
+        if self._t >= self._endTime:
+		    raise Exception("endTime already reached, model not updated")
         self._bmi.update(dt=self._dt)
-        self._t = self.get_current_time()
+        self._t += self.get_time_step()
 
-    def update_until (self, t):
+    def update_until(self, t):
         if (t<self._t) or t>self._endTime:
             raise Exception("wrong time input: smaller than model time or larger than endTime")
         while self._t < t:
-            self.update ()
+            self.update()
+
+    def spinup(self):
+        """PCR specific spinup function"""
+        self._bmi.spinup()
 
     def finalize(self):
         self._bmi.finalize()
@@ -77,14 +94,16 @@ class PCR(GBmi):
     """
     Model Information Functions
     """
+    def get_model_type(self):
+        return GBmiModelType.HYDROLOGICAL 
 
-    def get_component_name (self):
+    def get_component_name(self):
         return self._name
 
-    def get_input_var_names (self):
+    def get_input_var_names(self):
         return self._input_var_names
 
-    def get_output_var_names (self):
+    def get_output_var_names(self):
         return self._output_var_names
 
 
@@ -92,17 +111,20 @@ class PCR(GBmi):
     Variable Information Functions
     """
 
-    def get_var_type (self, long_var_name):
+    def get_var_type(self, long_var_name):
         return str(self.get_value(long_var_name).dtype)
 
-    def get_var_units (self, long_var_name):
+    def get_var_units(self, long_var_name):
         return self._var_units[long_var_name]
 
-    def get_var_rank (self, long_var_name):
+    def get_var_rank(self, long_var_name):
         return self.get_value(long_var_name).ndim
 
     def get_var_size(self, long_var_name):
         return self.get_value(long_var_name).size
+
+    def get_var_shape(self, long_var_name):
+        return self.get_value(long_var_name).shape
 
     def get_var_nbytes(self, long_var_name):
         return self.get_value(long_var_name).nbytes
@@ -113,25 +135,28 @@ class PCR(GBmi):
             startTime = self._bmi.get_start_time()
         else:
             startTime = self.get_attribute_value('globalOptions:startTime')
-            startTime = datetime.strptime(startTime, '%Y-%m-%d').date()
+            startTime = datetime.strptime(startTime, self._datefmt).date()
         self._startTime = startTime
         return self._startTime
     
     def get_current_time(self):
-        return self._bmi.get_current_time()
+        if self.initialized:
+            return self._bmi.get_current_time()
+        else:
+            return self.get_start_time()
 
     def get_end_time(self):
         if self.initialized:
             endTime = self._bmi.get_end_time()
         else:
             endTime = self.get_attribute_value('globalOptions:endTime')
-            endTime = datetime.strptime(endTime, '%Y-%m-%d').date()
+            endTime = datetime.strptime(endTime, self._datefmt).date()
         self._endTime = endTime
         return self._endTime
 
     def get_time_step(self):
         #NOTE get_time_step in PCR bmi returns timestep as int instead of dt
-        return self._dt 
+        return timedelta(days=self._dt) 
         
     def get_time_units(self):
         return self._timeunit
@@ -161,29 +186,49 @@ class PCR(GBmi):
         val = self.get_value(long_var_name, missingValues=fill_value)
         val.flat[inds] = src
         self._bmi.set_var(long_var_name, val, missingValues=fill_value)
-        #TODO do we still need to set data or is get_value a pointer?
 
-    
+    def get_drainage_direction(self):
+        from nb.nb_io import read_dd_pcraster
+        # read file with pcr readmap
+        if not hasattr(self, 'grid_transform'):
+            self.get_grid_transform()
+        self.logger.info('Getting drainage direction from {}'.format(basename(self._ldd_fn)))
+        self.dd = read_dd_pcraster(self._ldd_fn, self.grid_transform, nodata=255)
+
     """
     Grid Information Functions
     """
     
-    def get_grid_type(self, long_var_name):
-        return BmiGridType.RECTILINEAR
+    def get_grid_type(self):
+        return GBmiGridType.RECTILINEAR
 
     def get_grid_transform(self):
         if not hasattr(self, 'grid_transform'):
-            self.logger.info('Getting PCR model transform based on landmask file')
+            self.logger.info('Getting grid transform based on {}'.format(basename(self._lm_fn)))
             with rasterio.open(self._lm_fn, 'r') as ds:
                 self.grid_transform = ds.transform
         return self.grid_transform
 
-    def get_grid_shape(self, **kwargs):
+    def get_grid_shape(self):
         if not hasattr(self, 'grid_shape'):
-            self.logger.info('Getting PCR model transform based on landmask file')
+            self.logger.info('Getting grid shape based on {}'.format(basename(self._lm_fn)))
             with rasterio.open(self._lm_fn, 'r') as ds:
                 self.grid_shape = ds.shape
         return self.grid_shape
+
+    def get_grid_bounds(self):
+        if not hasattr(self, 'grid_bounds'):
+            self.logger.info('Getting grid bounds based on {}'.format(basename(self._lm_fn)))
+            with rasterio.open(self._lm_fn, 'r') as ds:
+                self.grid_bounds = ds.bounds
+        return self.grid_bounds
+
+    def get_grid_res(self):
+        if not hasattr(self, 'grid_res'):
+            self.logger.info('Getting grid bounds based on {}'.format(basename(self._lm_fn)))
+            with rasterio.open(self._lm_fn, 'r') as ds:
+                self.grid_res = ds.res
+        return self.grid_res
 
     def grid_index(self, x, y, **kwargs):
         """Get PCR indices (1d) of xy coordinates."""
@@ -214,23 +259,15 @@ class PCR(GBmi):
             inds[valid] = np.ravel_multi_index((r[valid], c[valid]), (nrows, ncols))
         return inds
 
-    def get_drainage_direction(self):
-        from nb.nb_io import read_dd_pcraster
-        # read file with pcr readmap
-        if not hasattr(self, 'grid_transform'):
-            self.get_grid_transform()
-        self.dd = read_dd_pcraster(self._ldd_fn, self.grid_transform, nodata=255)
-
-
     """
     set and get attribute / config 
     """
 
     def set_start_time(self, start_time):
         if isinstance(start_time, (datetime, date)):
-            start_time = start_time.strftime("%Y-%m-%d")
+            start_time = start_time.strftime(self._datefmt)
         try:
-            start_time.strftime("%Y-%m-%d") 
+            datetime.strptime(start_time, self._datefmt) 
         except ValueError:
             raise ValueError('wrong date format, use "yyyy-mm-dd"')
 
@@ -238,37 +275,37 @@ class PCR(GBmi):
        
     def set_end_time(self, end_time):
         if isinstance(end_time, (datetime, date)):
-            end_time = end_time.strftime("%Y-%m-%d")
+            end_time = end_time.strftime(self._datefmt)
         try:
-            end_time.strftime("%Y-%m-%d") 
+            datetime.strftime(end_time, self._datefmt) 
         except ValueError:
             raise ValueError('wrong date format, use "yyyy-mm-dd"')
         self.set_attribute_value('globalOptions:endTime', end_time)
 
     def get_attribute_names(self):
-        attr = []
-        for sect in self._config.sections():
-            for opt in self._config.options(sect):
-                attr.append(sect + ":" + opt)
-        return attr
+        glib.configcheck(self, self.logger)
+        return glib.configattr(self._config)
     
     def get_attribute_value(self, attribute_name):
+        glib.configcheck(self, self.logger)
         self.logger.debug("get_attribute_value: " + attribute_name)
-        attrpath = attribute_name.split(":")
-        if len(attrpath) == 2:
-            return self._config.get(attrpath[0], attrpath[1])
-        else:
-            msg = "Attributes should follow the name:option convention"
-            self.logger.warn(msg)
-            raise Warning(msg)
+        return glib.configget(self._config, attribute_name)
     
     def set_attribute_value(self, attribute_name, attribute_value):
+        glib.configcheck(self, self.logger)
         self.logger.debug("set_attribute_value: " + attribute_value)
-        attrpath = attribute_name.split(":")
-        if len(attrpath) == 2:
-            self._config.set(attrpath[0], attrpath[1], attribute_value)
-        else:
-            msg = "Attributes should follow the name:option convention"
-            self.logger.warn(msg)
-            raise Warning(msg)
+        return glib.configset(self._config, attribute_name, attribute_value)
 
+    def write_config(self):
+        """write adapted config to file. just before initializing
+        only for models which do not allow for direct access to model config via bmi"""
+        glib.configcheck(self, self.logger)
+        out_dir = dirname(self._config_fn)
+        bname = basename(self._config_fn).split('.')
+        new_fn = '{}_glofrim.{}'.format('.'.join(bname[:-1]), bname[-1])
+        self._config_fn = join(out_dir, new_fn)
+        if isfile(self._config_fn):
+            os.unlink(self._config_fn)
+            self.logger.warn("{:s} file overwritten".format(self._config_fn))
+        glib.configwrite(self._config, self._config_fn, encoding='utf-8', cf=self._cf)
+        self.logger.info('Ini file written to {:s}'.format(self._config_fn))
