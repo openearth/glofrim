@@ -1,3 +1,4 @@
 from pcr_bmi import PCR
 from cmf_bmi import CMF
-from spatial_coupling import *
+from glofrim_bmi import Glofrim
+from spatial_coupling import SpatialCoupling

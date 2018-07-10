@@ -15,7 +15,7 @@ def configread(config_fn, encoding='utf-8', cf=ConfigParser()):
         cf.read_file(fp)
     return cf 
 
-def configwrite(config, config_fn, encoding='utf-8', cf=ConfigParser(), **kwargs):
+def configwrite(cf, config_fn, encoding='utf-8', **kwargs):
     """write model configuration to file"""
     with codecs.open(config_fn, 'w', encoding=encoding) as fp:
         cf.write(fp)

@@ -4,7 +4,7 @@ from configparser import ConfigParser
 import logging
 import os
 from os.path import join, isfile, abspath, dirname, basename, normpath
-from datetime import datetime, date, timedelta
+from datetime import datetime, timedelta
 import rasterio
 
 from utils import setlogger
@@ -14,7 +14,7 @@ import gbmi_lib as glib
 
 class PCR(GBmi):
     """
-    Glofrim implementation of the PCR BMI adaptor.
+    csdms BMI implementation of the PCR BMI adaptor for GLOFRIM.
     """
     _name = 'PCRGLOB-WB'
     _version = '2.0.3'
@@ -37,12 +37,12 @@ class PCR(GBmi):
         # config settings
         if self.initialized:
             raise Warning("model already initialized, it's therefore not longer possible to initialize the config")
-        self._cf = ConfigParser(inline_comment_prefixes=('#'))
         self._config_fn = abspath(config_fn)
-        self._config = glib.configread(config_fn, encoding='utf-8', cf=self._cf)
+        self._config = glib.configread(self._config_fn, encoding='utf-8', 
+                                       cf=ConfigParser(inline_comment_prefixes=('#')))
         self._datefmt = "%Y-%m-%d"
         # model time
-        self._dt = 1
+        self._dt = timedelta(days=1)
         self._timeunit = 'day'
         self._startTime = self.get_start_time()
         self._endTime = self.get_end_time()
@@ -58,8 +58,7 @@ class PCR(GBmi):
         if not isfile(self._lm_fn): raise IOError('landmask file not found')
         self.logger.info('Config initialized')
 
-    def initialize_model(self, source_directory=None):
-        #NOTE: PCR does not use a source_directory
+    def initialize_model(self, **kwargs):
         if not hasattr(self, '_config_fn'):
             raise Warning('run initialize_config before initialize_model')
         self.write_config() # write updated config to file as bmi does not allow direct access
@@ -74,7 +73,7 @@ class PCR(GBmi):
     def update(self):
         if self._t >= self._endTime:
 		    raise Exception("endTime already reached, model not updated")
-        self._bmi.update(dt=self._dt)
+        self._bmi.update(dt=self.get_time_step().days)
         self._t += self.get_time_step()
 
     def update_until(self, t):
@@ -132,31 +131,33 @@ class PCR(GBmi):
     
     def get_start_time(self):
         if self.initialized:
-            startTime = self._bmi.get_start_time()
+            # date to datetime object
+            startTime = datetime.combine(self._bmi.get_start_time(), datetime.min.time())
         else:
             startTime = self.get_attribute_value('globalOptions:startTime')
-            startTime = datetime.strptime(startTime, self._datefmt).date()
+            startTime = datetime.strptime(startTime, self._datefmt)
         self._startTime = startTime
         return self._startTime
     
     def get_current_time(self):
         if self.initialized:
-            return self._bmi.get_current_time()
+            return self._t
         else:
             return self.get_start_time()
 
     def get_end_time(self):
         if self.initialized:
-            endTime = self._bmi.get_end_time()
+            # date to datetime object
+            endTime = datetime.combine(self._bmi.get_end_time(), datetime.min.time())
         else:
             endTime = self.get_attribute_value('globalOptions:endTime')
-            endTime = datetime.strptime(endTime, self._datefmt).date()
+            endTime = datetime.strptime(endTime, self._datefmt)
         self._endTime = endTime
         return self._endTime
 
     def get_time_step(self):
         #NOTE get_time_step in PCR bmi returns timestep as int instead of dt
-        return timedelta(days=self._dt) 
+        return self._dt
         
     def get_time_units(self):
         return self._timeunit
@@ -264,7 +265,7 @@ class PCR(GBmi):
     """
 
     def set_start_time(self, start_time):
-        if isinstance(start_time, (datetime, date)):
+        if isinstance(start_time, datetime):
             start_time = start_time.strftime(self._datefmt)
         try:
             datetime.strptime(start_time, self._datefmt) 
@@ -274,13 +275,17 @@ class PCR(GBmi):
         self.set_attribute_value('globalOptions:startTime', start_time)
        
     def set_end_time(self, end_time):
-        if isinstance(end_time, (datetime, date)):
+        if isinstance(end_time, datetime):
             end_time = end_time.strftime(self._datefmt)
         try:
             datetime.strftime(end_time, self._datefmt) 
         except ValueError:
             raise ValueError('wrong date format, use "yyyy-mm-dd"')
         self.set_attribute_value('globalOptions:endTime', end_time)
+
+    def set_out_dir(self, out_dir):
+        self.set_attribute_value('globalOptions:outputDir', abspath(out_dir))
+
 
     def get_attribute_names(self):
         glib.configcheck(self, self.logger)
@@ -307,5 +312,5 @@ class PCR(GBmi):
         if isfile(self._config_fn):
             os.unlink(self._config_fn)
             self.logger.warn("{:s} file overwritten".format(self._config_fn))
-        glib.configwrite(self._config, self._config_fn, encoding='utf-8', cf=self._cf)
+        glib.configwrite(self._config, self._config_fn, encoding='utf-8')
         self.logger.info('Ini file written to {:s}'.format(self._config_fn))

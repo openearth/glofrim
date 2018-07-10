@@ -554,3 +554,7 @@ class GBmi(EBmi):
         """write adapted config to file. just before initializing
         only for models which do not allow for direct access to model config via bmi"""
         raise NotImplementedError
+
+    @abstractmethod
+    def set_out_dir(self, out_dir):
+        raise NotImplementedError

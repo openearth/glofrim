@@ -4,7 +4,7 @@ from configparser import ConfigParser
 import logging
 import os
 from os.path import join, isfile, abspath, dirname, basename, relpath
-from datetime import datetime, date, timedelta
+from datetime import datetime, timedelta
 import rasterio
 import re
 
@@ -38,11 +38,10 @@ class CMF(GBmi):
         if self.initialized:
             raise Warning("model already initialized, it's therefore not longer possible to initialize the config")
         # config settings
-        self._cf = NamConfigParser()
         self._config_fn = abspath(config_fn)
-        self._config = glib.configread(config_fn, encoding='utf-8', cf=self._cf)
+        self._config = glib.configread(self._config_fn, encoding='utf-8', cf=NamConfigParser())
         # model time
-        self._dt = int(self.get_attribute_value('CONF:DT'))
+        self._dt = timedelta(seconds=int(self.get_attribute_value('CONF:DT')))
         self._timeunit = 'seconds'
         self._startTime = self.get_start_time()
         self._endTime = self.get_end_time()
@@ -56,8 +55,7 @@ class CMF(GBmi):
         if not isfile(self._nextxy_fn): raise IOError('nextxy file {} not found'.format(self._nextxy_fn))
         self.logger.info('Config initialized')
 
-    def initialize_model(self, source_directory=None):
-        #NOTE: PCR does not use a source_directory
+    def initialize_model(self, **kwargs):
         if not hasattr(self, '_config_fn'):
             raise Warning('Run initialize_config before initialize_model')
         self.write_config() # write updated config to file as bmi does not allow direct access
@@ -160,7 +158,7 @@ class CMF(GBmi):
         return self._endTime
 
     def get_time_step(self):
-        return timedelta(seconds=self._dt) 
+        return self._dt 
         
     def get_time_units(self):
         return self._timeunit
@@ -271,7 +269,7 @@ class CMF(GBmi):
                 start_time.strptime("%Y-%m-%d") 
             except ValueError:
                 raise ValueError('wrong date format, use "yyyy-mm-dd"')
-        if not isinstance(start_time, (date, datetime)):
+        if not isinstance(start_time, datetime):
             raise ValueError("invalid date type")
         self.set_attribute_value('SIMTIME:ISYEAR', start_time.year)
         self.set_attribute_value('SIMTIME:ISMON', start_time.month)
@@ -283,11 +281,14 @@ class CMF(GBmi):
                 end_time.strptime("%Y-%m-%d") 
             except ValueError:
                 raise ValueError('wrong date format, use "yyyy-mm-dd"')
-        if not isinstance(end_time, (date, datetime)):
+        if not isinstance(end_time, datetime):
             raise ValueError("invalid date type")
         self.set_attribute_value('SIMTIME:IEYEAR', end_time.year)
         self.set_attribute_value('SIMTIME:IEMON', end_time.month)
         self.set_attribute_value('SIMTIME:IEDAY', end_time.day)
+
+    def set_out_dir(self, out_dir):
+        self.set_attribute_value('OUTPUT:COUTDIR', abspath(out_dir))
 
     def get_attribute_names(self):
         glib.configcheck(self, self.logger)
@@ -315,7 +316,7 @@ class CMF(GBmi):
         if isfile(self._config_fn):
             os.unlink(self._config_fn)
             self.logger.warn("{:s} file overwritten".format(self._config_fn))
-        glib.configwrite(self._config, self._config_fn, encoding='utf-8', cf=self._cf)
+        glib.configwrite(self._config, self._config_fn, encoding='utf-8')
         self.logger.info('Ini file written to {:s}'.format(self._config_fn))
 
     def set_inpmat(self, bounds, res, olat='NtoS', DROFUNIT=1):
