@@ -33,6 +33,7 @@ class CMF(GBmi):
         self._bmi = _bmi(engine = engine)
         self.logger = setlogger(None, self._name, thelevel=logging.INFO)
         self.initialized = False
+        self.grid = None
 
     """
     Model Control Functions
@@ -188,10 +189,7 @@ class CMF(GBmi):
 
     def set_start_time(self, start_time):
         if isinstance(start_time, str):
-            try:
-                start_time.strptime("%Y-%m-%d") 
-            except ValueError:
-                raise ValueError('wrong date format, use "yyyy-mm-dd"')
+            start_time = datetime.strptime(start_time, "%Y-%m-%d") 
         if not isinstance(start_time, datetime):
             raise ValueError("invalid date type")
         self.set_attribute_value('SIMTIME:ISYEAR', start_time.year)
@@ -200,10 +198,7 @@ class CMF(GBmi):
        
     def set_end_time(self, end_time):
         if isinstance(end_time, str):
-            try:
-                end_time.strptime("%Y-%m-%d") 
-            except ValueError:
-                raise ValueError('wrong date format, use "yyyy-mm-dd"')
+            end_time = datetime.strptime(end_time, "%Y-%m-%d") 
         if not isinstance(end_time, datetime):
             raise ValueError("invalid date type")
         self.set_attribute_value('SIMTIME:IEYEAR', end_time.year)

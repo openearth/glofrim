@@ -12,6 +12,7 @@ import glofrim_lib as glib
 from pcr_bmi import PCR
 from cmf_bmi import CMF
 from dfm_bmi import DFM
+from wfl_bmi import WFL
 from spatial_coupling import SpatialCoupling, groupby_sum
 
 class Glofrim(EBmi):
@@ -21,7 +22,7 @@ class Glofrim(EBmi):
     """
     _name = 'GLOFRIM'
     _version = '2.0'
-    _models = {'PCR': PCR, 'CMF': CMF, 'DFM': DFM}
+    _models = {'PCR': PCR, 'CMF': CMF, 'DFM': DFM, 'WFL': WFL}
     _init_pre_exchange = ['DFM']
 
     def __init__(self):
@@ -139,7 +140,7 @@ class Glofrim(EBmi):
                 exdict['from_vars'].append(var_from) # model variable
                 exdict['from_unit'].append(from_bmi.get_var_units(var_from))
                 if isinstance(var_from, str) and var_from not in from_model_vars:
-                    self.logger.Warning("Unkonwn variable {} for model {}".format(var_from, from_bmi._name))
+                    self.logger.warning("Unkonwn variable {} for model {}".format(var_from, from_bmi._name))
             ## TO
             # index
             if self._ind_sep in ex_to:
@@ -222,7 +223,7 @@ class Glofrim(EBmi):
     def update(self):
         if not self.initialized:
             raise Warning("models should be initialized first")
-        if self._t >= self._endTime:
+        if self._t >= self.get_end_time():
 		    raise Exception("endTime already reached, model not updated")
         next_t = self.get_current_time() + self.get_time_step()
         for item in self.exchanges:
@@ -233,7 +234,7 @@ class Glofrim(EBmi):
         self._t = next_t
 
     def update_until(self, t):
-        if (t<self._t) or t>self._endTime:
+        if (t<self._t) or t>self.get_end_time():
             raise Exception("wrong time input: smaller than model time or larger than endTime")
         while self._t < t:
             self.update()
@@ -354,13 +355,15 @@ class Glofrim(EBmi):
 
     
     def get_start_time(self):
-        return max([self.bmimodels[mod].get_start_time() for mod in self.bmimodels])
-    
+        self._startTime = max([self.bmimodels[mod].get_start_time() for mod in self.bmimodels])
+        return self._startTime
+
     def get_current_time(self):
         return self._t
 
     def get_end_time(self):
-         return min([self.bmimodels[mod].get_end_time() for mod in self.bmimodels])
+        self._endTime = min([self.bmimodels[mod].get_end_time() for mod in self.bmimodels])
+        return self._endTime
 
     def get_time_step(self):
         #NOTE get_time_step in PCR bmi returns timestep as int instead of dt

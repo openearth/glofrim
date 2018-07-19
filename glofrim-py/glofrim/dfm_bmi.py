@@ -32,6 +32,7 @@ class DFM(GBmi):
         self._bmi = _bmi(engine = engine)
         self.logger = setlogger(None, self._name, thelevel=logging.INFO)
         self.initialized = False
+        self.grid = None
 
     """
     Model Control Functions
