@@ -8,10 +8,11 @@ import numpy as np
 
 from utils import setlogger
 from gbmi import EBmi
-import gbmi_lib as glib 
+import glofrim_lib as glib 
 from pcr_bmi import PCR
 from cmf_bmi import CMF
-from spatial_coupling import SpatialCoupling
+from dfm_bmi import DFM
+from spatial_coupling import SpatialCoupling, groupby_sum
 
 class Glofrim(EBmi):
 
@@ -20,7 +21,8 @@ class Glofrim(EBmi):
     """
     _name = 'GLOFRIM'
     _version = '2.0'
-    _models = {'PCR': PCR, 'CMF': CMF}
+    _models = {'PCR': PCR, 'CMF': CMF, 'DFM': DFM}
+    _init_pre_exchange = ['DFM']
 
     def __init__(self):
         self.bmimodels = OrderedDict()
@@ -83,6 +85,9 @@ class Glofrim(EBmi):
             modconf = glib.getabspath(self._config.get('models', mod), self._root)
             self.bmimodels[mod].initialize_config(modconf)
 
+        # parse echanges section
+        self.exchanges = self.set_exchanges()
+
         # combined model time
         self._dt = timedelta(seconds=int(self._config.get('coupling' ,'dt', fallback=86400)))
         # set start_time & end_time if given
@@ -102,42 +107,83 @@ class Glofrim(EBmi):
         # parse exchanges
         if not self._config.has_section('exchanges'):
             raise ValueError('GLOFRIM ini misses a "exchanges" section')
-        model_called = []
+        self.exchanges = []
+        model_called, vars_set = [], []
         for ex_from in self._config.options('exchanges'):
             ex_to = self._config.get('exchanges', ex_from)
-            if not ((len(ex_from.split(self._var_sep)) == 2) and 
-                    (len(ex_to.split(self._var_sep)) == 2)):
-                msg = 'use "From_model{}var = To_model{}var" syntax for exchange options'.format(self._var_sep, self._var_sep)
-                raise ValueError(msg)
             # break up starting from back
             exdict = {}
-            # FROM
+            ## FROM
+            # model
             if self._ind_sep in ex_from:
-                ex_from, exdict['from_ind'] = ex_from.split(self._ind_sep)
-            if self._mult_sep in ex_from:
-                ex_from, m = ex_from.split(self._mult_sep)
-                exdict['multiplier'] = float(m)
-            mod_from, exdict['from_var'] = ex_from.split(self._var_sep)
+                ex_from, ind_from = ex_from.split(self._ind_sep)
+            else:
+                ind_from = 'grid'
+            ex_from = ex_from.split(self._var_sep)
+            mod_from, vars_from = ex_from[0], '.'.join(ex_from[1:])
             if not (mod_from in self.bmimodels.keys()):
                 raise ValueError("unkown model name {}".format(mod_from))
             exdict['from_mod'] = mod_from
-            # TO
+            from_bmi =  self.bmimodels[mod_from]
+            # variables
+            exdict['from_vars'], exdict['from_unit'] = [], []
+            vars_from = vars_from.split('*')
+            from_model_vars = from_bmi._input_var_names + from_bmi._output_var_names
+            for i, var_from in enumerate(vars_from):
+                # last var may be a scalar multiplier
+                if i > 0 and i == (len(vars_from) - 1):
+                    try:
+                        var_from = float(var_from)
+                    except ValueError:
+                        pass
+                exdict['from_vars'].append(var_from) # model variable
+                exdict['from_unit'].append(from_bmi.get_var_units(var_from))
+                if isinstance(var_from, str) and var_from not in from_model_vars:
+                    self.logger.Warning("Unkonwn variable {} for model {}".format(var_from, from_bmi._name))
+            ## TO
+            # index
             if self._ind_sep in ex_to:
-                ex_to, coupling_method = ex_to.split(self._ind_sep)
-            mod_to, exdict['to_var'] = ex_to.split(self._var_sep)
+                ex_to, ind_to = ex_to.split(self._ind_sep)
+            else:
+                ind_to = 'grid'
+            # model
+            ex_to = ex_to.split(self._var_sep)
+            mod_to, vars_to = ex_to[0], '.'.join(ex_to[1:])
             if not (mod_to in self.bmimodels.keys()):
                 raise ValueError("unkown model name {}".format(mod_to))
+            to_bmi = self.bmimodels[mod_to]
             exdict['to_mod'] = mod_to
-            # do spatial coupling
-            exdict['coupling'] = SpatialCoupling()
-            if isfile(coupling_method):
-                json_fn = coupling_method
-                exdict['coupling'].from_file(json_fn)
-            elif hasattr(exdict['coupling'], coupling_method):
-                getattr(exdict['coupling'], coupling_method)(self.bmimodels[mod_to], self.bmimodels[mod_from])
+            # variables
+            exdict['to_vars'],  exdict['to_unit'] = [], []
+            vars_to = vars_to.split('*')
+            to_model_vars = to_bmi._input_var_names + to_bmi._output_var_names
+            for i, var_to in enumerate(vars_to):
+                # last var may be a scalar multiplier
+                if i > 0 and i == (len(vars_to) - 1):
+                    try:
+                        var_to = float(var_to)
+                    except ValueError:
+                        pass
+                exdict['to_vars'].append(var_to) # model variable
+                exdict['to_unit'].append(to_bmi.get_var_units(var_to))
+                if isinstance(var_to, str) and var_to not in to_model_vars:
+                    self.logger.Warning("Unkonwn variable {} for model {}".format(var_to, to_bmi._name))
+            # with second call to set variable add instead of replace
+            if exdict['to_vars'][0] in vars_set:
+                exdict['add'] = True 
             else:
-                raise AttributeError('Coupling method {} does not exist'.format(exdict['coupling']))
-            # update model before first time it is called in mod_from
+                vars_set.append(exdict['to_vars'][0])
+            ## SpatialCoupling
+            # create SpatialCoupling object. Actual coupling happens later
+            sc_kwargs = dict(to_bmi=to_bmi, from_bmi=from_bmi)
+            if isfile(ind_to):
+                sc_kwargs.update(filename=ind_to, method='from_file')
+            else:
+                coupling_method = '{}_2_{}'.format(ind_from, ind_to)
+                sc_kwargs.update(method=coupling_method)
+            exdict['coupling'] = SpatialCoupling(**sc_kwargs)
+            ## UPDATE
+            #  update model before first time it is called in mod_from
             if not mod_from in model_called:
                 self.exchanges.append(('update', mod_from))
                 model_called.append(mod_from)
@@ -149,12 +195,24 @@ class Glofrim(EBmi):
                 model_called.append(mod)
         return self.exchanges
 
+    def _set_spatial_coupling(self):
+        for item in self.exchanges:
+            if item[0] == 'exchange':
+                item[1]['coupling'].couple()
+
     def initialize_model(self, **kwargs):
-        self.set_exchanges()
         if not hasattr(self, '_config_fn'):
             raise Warning('run initialize_config before initialize_model')
+        # some models (e.g. DFM) need to be intialized before we access it spatial information
         for mod in self.bmimodels:
-            self.bmimodels[mod].initialize_model()
+            if mod in self._init_pre_exchange:
+                self.bmimodels[mod].initialize_model()
+        # set spatial coupling
+        self._set_spatial_coupling()
+        # initialize other models (CMF needs to be initialized after spatial coupling!)
+        for mod in self.bmimodels:
+            if mod not in self._init_pre_exchange:
+                self.bmimodels[mod].initialize_model()
         self._check_initialized()
 
     def initialize(self, config_fn):
@@ -188,20 +246,68 @@ class Glofrim(EBmi):
         for mod in self.bmimodels:
             self.bmimodels[mod].finalize()
 
-    def exchange(self, from_mod, to_mod, from_var, to_var, multiplier=1., coupling=SpatialCoupling()):
+    def exchange(self, from_mod, to_mod, from_vars, to_vars, coupling, add=False, **kwargs):
+        if coupling.at_indices():
+            self.exchange_at_indices(from_mod, to_mod, from_vars, to_vars, coupling, add=add, **kwargs)
+        else:
+            self.exchange_same_grid(from_mod, to_mod, from_vars, to_vars, add=add, **kwargs)
+
+    def exchange_same_grid(self, from_mod, to_mod, from_vars, to_vars, add=False, **kwargs):
+        # get FROM data & translate
+        shape = self.bmimodels[from_mod].get_var_shape(from_vars[0])
+        vals = np.ones(shape)
+        for from_var in from_vars:
+            if isinstance(from_var, float): # scalar multiplier
+                vals *= from_var
+            else:
+                vals *= self.bmimodels[from_mod].get_value(from_var)
+        self.logger.debug('total volume get {:3f} m3'.format(vals.sum()))
+        # get TO data & translate
+        for var in to_vars[1:]:
+            if isinstance(var, float):
+                div = var
+            else:
+                div = self.bmimodels[to_mod].get_value(var) 
+            assert np.all(np.not_equal(div, 0)) # make sure not to divide by zero
+            vals /= div
+        # SET data
+        if add:  # add to current state
+            vals += self.bmimodels[to_mod].set_value(to_vars[0], vals) # TO       
+        self.bmimodels[to_mod].set_value(to_vars[0], vals)   
+
+    def exchange_at_indices(self, from_mod, to_mod, from_vars, to_vars, coupling, add=False, **kwargs):
         """
         exchanges values between variables of two models
         """
-        from_ind = coupling.from_ind
-        to_ind = coupling.to_ind
-        # TODO deal with dict
-        if len(from_ind) == 0:
-            value = self.bmimodels[from_mod].get_value(from_var) * multiplier # FROM
-            self.bmimodels[to_mod].set_value(to_var, value) # TO
+        # get FROM data & translate
+        vals_get = np.ones(coupling.from_ind.size)
+        for from_var in from_vars:
+            if isinstance(from_var, float): # scalar multiplier
+                vals_get *= from_var
+            else:
+                vals_get *= self.bmimodels[from_mod].get_value_at_indices(from_var, coupling.from_ind)
+        # TRANSFORM data from coupling.from_ind.size > coupling.to_ind.size
+        if coupling.from_grp_n.max() > 1: # aggregate data from
+            vals_get = groupby_sum(vals_get, coupling.from_grp)
+        if coupling.to_grp_n.max() > 1: # split using fractions
+            vals_set = np.repeat(vals_get, coupling.to_grp_n) * coupling.get_frac()
         else:
-            value = self.bmimodels[from_mod].get_value_at_indices(from_var, from_ind) * multiplier # FROM
-            self.bmimodels[to_mod].set_value_at_indices(to_var, value, to_ind) # TO
-        
+            vals_set = vals_get
+        assert vals_get.sum().round(5) == vals_set.sum().round(5)
+        self.logger.debug('total volume get {:3f} m3'.format(vals_get.sum()))
+        # get TO data & translate
+        for var in to_vars[1:]:
+            if isinstance(var, float):
+                div = var
+            else:
+                div = self.bmimodels[to_mod].get_value_at_indices(var, coupling.to_ind)
+            assert np.all(np.not_equal(div, 0)) # make sure not to divide by zero
+            vals_set /= div
+        # SET data
+        if add: # add to current state
+            vals_set += self.bmimodels[to_mod].get_value_at_indices(to_vars[0], coupling.to_ind)
+        self.bmimodels[to_mod].set_value_at_indices(to_vars[0], coupling.to_ind, vals_set)
+
     """
     Model Information Functions
     """
@@ -291,19 +397,7 @@ class Glofrim(EBmi):
     def get_grid_type(self):
         return {mod: self.bmimodels[mod].get_grid_type() for mod in self.bmimodels}
 
-    def get_grid_transform(self):
-        return {mod: self.bmimodels[mod].get_grid_type() for mod in self.bmimodels
-                if self.bmimodels[mod].get_grid_type == 2} # only for RECTILINEAR grids
-
-    def get_grid_shape(self):
-        return {mod: self.bmimodels[mod].get_grid_shape() for mod in self.bmimodels}
-
-    def get_grid_bounds(self):
-        return {mod: self.bmimodels[mod].get_grid_bounds() for mod in self.bmimodels}
-
-    def get_grid_res(self):
-        return {mod: self.bmimodels[mod].get_grid_res() for mod in self.bmimodels}
-
+    
     """
     set and get attribute / config 
     """
@@ -347,4 +441,3 @@ class Glofrim(EBmi):
         """
         mod, attr = self._check_long_var_name(attribute_name)
         return self.bmimodels[mod].set_attribute_value(attr, attribute_value)
-

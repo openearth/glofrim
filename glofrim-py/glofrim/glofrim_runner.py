@@ -1,7 +1,7 @@
 import click
 from os.path import isdir, dirname, abspath
 from os import makedirs
-from glofrim_bmi import Glofrim
+from glofrim_bmi import Glofrim 
 
 @click.group()
 def cli():

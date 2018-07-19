@@ -8,20 +8,24 @@ from datetime import datetime, timedelta
 import rasterio
 
 from utils import setlogger
-from gbmi import GBmi, GBmiGridType, GBmiModelType
-import gbmi_lib as glib 
+from gbmi import GBmi
+from grids import RGrid
+import glofrim_lib as glib 
 
 
 class PCR(GBmi):
     """
     csdms BMI implementation of the PCR BMI adaptor for GLOFRIM.
     """
-    _name = 'PCRGLOB-WB'
+    _name = 'PCR'
+    _long_name = 'PCRGLOB-WB'
     _version = '2.0.3'
     _var_units = {'runoff': 'm/day', 'discharge': 'm3/s', 'cellArea': 'm2'}
-    _input_var_names = ['var1']
+    _input_var_names = ['cellArea']
     _output_var_names = ['runoff', 'discharge']
     _area_var_name = 'cellArea'
+    _timeunit = 'days'
+    _dt = timedelta(days=1) # NOTE: this is not an optoins in PCR
 
     def __init__(self):
         # import original PCR bmi 
@@ -42,20 +46,11 @@ class PCR(GBmi):
                                        cf=ConfigParser(inline_comment_prefixes=('#')))
         self._datefmt = "%Y-%m-%d"
         # model time
-        self._dt = timedelta(days=1)
-        self._timeunit = 'day'
         self._startTime = self.get_start_time()
         self._endTime = self.get_end_time()
         self._t = self._startTime
         # model files
-        self._indir = abspath(self.get_attribute_value('globalOptions:inputDir'))
         self._outdir= abspath(self.get_attribute_value('globalOptions:outputDir'))
-        # ldd is used for coupling to routing / flood model
-        self._ldd_fn = glib.getabspath(self.get_attribute_value('routingOptions:lddMap'), self._indir)
-        if not isfile(self._ldd_fn): raise IOError('ldd file not found')
-        # landmask used for masking out coordinates outside mask
-        self._lm_fn = glib.getabspath(self.get_attribute_value('globalOptions:landmask'), self._indir)
-        if not isfile(self._lm_fn): raise IOError('landmask file not found')
         self.logger.info('Config initialized')
 
     def initialize_model(self, **kwargs):
@@ -91,43 +86,8 @@ class PCR(GBmi):
 
 
     """
-    Model Information Functions
-    """
-    def get_model_type(self):
-        return GBmiModelType.HYDROLOGICAL 
-
-    def get_component_name(self):
-        return self._name
-
-    def get_input_var_names(self):
-        return self._input_var_names
-
-    def get_output_var_names(self):
-        return self._output_var_names
-
-
-    """
     Variable Information Functions
     """
-
-    def get_var_type(self, long_var_name):
-        return str(self.get_value(long_var_name).dtype)
-
-    def get_var_units(self, long_var_name):
-        return self._var_units[long_var_name]
-
-    def get_var_rank(self, long_var_name):
-        return self.get_value(long_var_name).ndim
-
-    def get_var_size(self, long_var_name):
-        return self.get_value(long_var_name).size
-
-    def get_var_shape(self, long_var_name):
-        return self.get_value(long_var_name).shape
-
-    def get_var_nbytes(self, long_var_name):
-        return self.get_value(long_var_name).nbytes
-
     
     def get_start_time(self):
         if self.initialized:
@@ -156,8 +116,7 @@ class PCR(GBmi):
         return self._endTime
 
     def get_time_step(self):
-        #NOTE get_time_step in PCR bmi returns timestep as int instead of dt
-        return self._dt
+        return self._dt 
         
     def get_time_units(self):
         return self._timeunit
@@ -172,9 +131,6 @@ class PCR(GBmi):
         return np.asarray(self._bmi.get_var(long_var_name, missingValues=fill_value))
 
     def get_value_at_indices(self, long_var_name, inds, fill_value=-999):
-        # always use 1d inds
-        if not ((isinstance(inds, np.ndarray)) and (inds.ndim == 1)):
-            raise ValueError('indices should be 1d arrays')
         return self.get_value(long_var_name, fill_value=fill_value).flat[inds]
 
     def set_value(self, long_var_name, src, fill_value=-999):
@@ -187,78 +143,29 @@ class PCR(GBmi):
         val = self.get_value(long_var_name, missingValues=fill_value)
         val.flat[inds] = src
         self._bmi.set_var(long_var_name, val, missingValues=fill_value)
-
-    def get_drainage_direction(self):
-        from nb.nb_io import read_dd_pcraster
-        # read file with pcr readmap
-        if not hasattr(self, 'grid_transform'):
-            self.get_grid_transform()
-        self.logger.info('Getting drainage direction from {}'.format(basename(self._ldd_fn)))
-        self.dd = read_dd_pcraster(self._ldd_fn, self.grid_transform, nodata=255)
+        
 
     """
     Grid Information Functions
     """
-    
-    def get_grid_type(self):
-        return GBmiGridType.RECTILINEAR
+    def get_grid(self):
 
-    def get_grid_transform(self):
-        if not hasattr(self, 'grid_transform'):
-            self.logger.info('Getting grid transform based on {}'.format(basename(self._lm_fn)))
-            with rasterio.open(self._lm_fn, 'r') as ds:
-                self.grid_transform = ds.transform
-        return self.grid_transform
+        if not hasattr(self, 'grid') or (self.grid is None):
+            # ldd is used for coupling to routing / flood model
+            _indir = abspath(self.get_attribute_value('globalOptions:inputDir'))
+            _ldd_fn = glib.getabspath(self.get_attribute_value('routingOptions:lddMap'), _indir)
+            if not isfile(_ldd_fn): raise IOError('ldd file not found')
+            # landmask used for masking out coordinates outside mask
+            _lm_fn = glib.getabspath(self.get_attribute_value('globalOptions:landmask'), _indir)
+            if not isfile(_lm_fn): raise IOError('landmask file not found')
+            self.logger.info('Getting rgrid info based on {}'.format(basename(_lm_fn)))
+            with rasterio.open(_lm_fn, 'r') as ds:
+                self.grid = RGrid(ds.transform, ds.height, ds.width, crs=ds.crs, mask=ds.read(1)==1)
 
-    def get_grid_shape(self):
-        if not hasattr(self, 'grid_shape'):
-            self.logger.info('Getting grid shape based on {}'.format(basename(self._lm_fn)))
-            with rasterio.open(self._lm_fn, 'r') as ds:
-                self.grid_shape = ds.shape
-        return self.grid_shape
-
-    def get_grid_bounds(self):
-        if not hasattr(self, 'grid_bounds'):
-            self.logger.info('Getting grid bounds based on {}'.format(basename(self._lm_fn)))
-            with rasterio.open(self._lm_fn, 'r') as ds:
-                self.grid_bounds = ds.bounds
-        return self.grid_bounds
-
-    def get_grid_res(self):
-        if not hasattr(self, 'grid_res'):
-            self.logger.info('Getting grid bounds based on {}'.format(basename(self._lm_fn)))
-            with rasterio.open(self._lm_fn, 'r') as ds:
-                self.grid_res = ds.res
-        return self.grid_res
-
-    def grid_index(self, x, y, **kwargs):
-        """Get PCR indices (1d) of xy coordinates."""
-        if not hasattr(self, '_grid_index'):
-            self.logger.info('Getting PCR model index based on landmask file')
-            with rasterio.open(self._lm_fn, 'r') as ds:
-                self._grid_index = ds.index
-        if not hasattr(self, '_mask'):
-            self.logger.info('Getting PCR model mask based on landmask file')
-            with rasterio.open(self._lm_fn, 'r') as ds:
-                self._mask = ds.read(1)==1
-        # get row, cols
-        self.logger.info('Getting PCR model indices of xy coordinates.')
-        r, c = self._grid_index(x, y)
-        r, c = np.asarray(r).astype(int), np.asarray(c).astype(int)
-        # check if inside domain
-        nrows, ncols = self.get_grid_shape()
-        inside = np.logical_and.reduce((r>=0, r<nrows, c>=0, c<ncols))
-        # get valid cells (inside landmask and mask)
-        valid = np.zeros_like(inside, dtype=bool) 
-        inds = np.ones_like(inside, dtype=int)*-1 
-        # import pdb; pdb.set_trace()
-        if np.any(inside):
-            valid[inside] = self._mask[r[inside], c[inside]]
-        # calculate 1d index 
-        # NOTE invalid indices have value -1
-        if np.any(valid):
-            inds[valid] = np.ravel_multi_index((r[valid], c[valid]), (nrows, ncols))
-        return inds
+            # read file with pcr readmap
+            self.logger.info('Getting drainage direction from {}'.format(basename(_ldd_fn)))
+            self.grid.set_dd(_ldd_fn, ddtype='ldd', nodata=255)
+        return self.grid
 
     """
     set and get attribute / config 
@@ -278,14 +185,13 @@ class PCR(GBmi):
         if isinstance(end_time, datetime):
             end_time = end_time.strftime(self._datefmt)
         try:
-            datetime.strftime(end_time, self._datefmt) 
+            datetime.strptime(end_time, self._datefmt) 
         except ValueError:
             raise ValueError('wrong date format, use "yyyy-mm-dd"')
         self.set_attribute_value('globalOptions:endTime', end_time)
 
     def set_out_dir(self, out_dir):
         self.set_attribute_value('globalOptions:outputDir', abspath(out_dir))
-
 
     def get_attribute_names(self):
         glib.configcheck(self, self.logger)
@@ -304,13 +210,4 @@ class PCR(GBmi):
     def write_config(self):
         """write adapted config to file. just before initializing
         only for models which do not allow for direct access to model config via bmi"""
-        glib.configcheck(self, self.logger)
-        out_dir = dirname(self._config_fn)
-        bname = basename(self._config_fn).split('.')
-        new_fn = '{}_glofrim.{}'.format('.'.join(bname[:-1]), bname[-1])
-        self._config_fn = join(out_dir, new_fn)
-        if isfile(self._config_fn):
-            os.unlink(self._config_fn)
-            self.logger.warn("{:s} file overwritten".format(self._config_fn))
-        glib.configwrite(self._config, self._config_fn, encoding='utf-8')
-        self.logger.info('Ini file written to {:s}'.format(self._config_fn))
+        glib.write_config(self, self._config, self._config_fn, self.logger)

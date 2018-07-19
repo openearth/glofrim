@@ -1,8 +1,11 @@
 
-import re, codecs, sys
+import re
+import codecs
+import sys
 from configparser import ConfigParser
 from collections import OrderedDict
 import os
+from os.path import dirname, basename, isfile, join
 from subprocess import check_output, STDOUT, CalledProcessError
 
 """
@@ -53,14 +56,28 @@ def config2dict(cf):
                             for sec in cf.sections())
     return out_dict
 
-def configcheck(ob, logger):
+def configcheck(bmi, logger):
     """check if object has config attribute"""
-    if not hasattr(ob, '_config'):
+    if not hasattr(bmi, '_config'):
         msg = "run initialize_model first before using get_attribute_value"
         logger.warn(msg)
         raise Warning(msg)
     pass
 
+def write_config(bmi, config, config_fn, logger):
+    """write adapted config to file. just before initializing
+    only for models which do not allow for direct access to model config via bmi"""
+    configcheck(bmi, logger)
+    out_dir = dirname(config_fn)
+    bname = basename(config_fn).split('.')
+    new_config_fn = '{}_glofrim.{}'.format('.'.join(bname[:-1]), bname[-1])
+    new_config_fn = join(out_dir, new_config_fn)
+    if isfile(new_config_fn):
+        os.unlink(new_config_fn)
+        logger.warn("{:s} file overwritten".format(new_config_fn))
+    configwrite(config, new_config_fn, encoding='utf-8')
+    logger.info('Ini file written to {:s}'.format(new_config_fn))
+    return new_config_fn
 """
 paths stuff
 """

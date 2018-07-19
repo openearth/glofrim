@@ -13,35 +13,18 @@ https://github.com/eWaterCycle/bmi/blob/master/src/main/python/bmi.py
 
 from abc import ABCMeta, abstractmethod
 
-
-class GBmiGridType(object):
-    """
-    Enumeration with grid types.
-    """
-
-    UNKNOWN = 0
-    UNIFORM = 1
-    RECTILINEAR = 2
-    STRUCTURED = 3
-    UNSTRUCTURED = 4
-    UNITCATCHMENT = 5 # NOTE added unitcatchment CaMa-Flood specific type
-
-class GBmiModelType(object):
-    """
-    Enumeration with GLOFRIM model types.
-    """
-
-    HYDROLOGICAL = 0
-    ROUTING = 1
-    INUNDATION = 2
-
-
 class Bmi(object):
     """
     Interface (abstract base class) for a model that implements the CSDMS BMI (Basic Model Interface).
     """
 
     __metaclass__ = ABCMeta
+    grid = None
+    _name = 'dummy'
+    _long_name = 'dummy'
+    _var_units = {'var1': 'm/s', 'var2': 'm'}
+    _input_var_names = ['var1']
+    _output_var_names = ['var2']
 
     """
     Model Control Functions
@@ -54,14 +37,14 @@ class Bmi(object):
         Input parameters:
         File filename: path and name of the configuration file for the model.
         """
-        raise NotImplementedError
+        pass
 
     @abstractmethod
     def update(self):
         """
         Update the model to the next time step.
         """
-        raise NotImplementedError
+        pass
 
     @abstractmethod
     def update_until(self, time):
@@ -70,7 +53,7 @@ class Bmi(object):
         Input parameters:
         double time: time in the units and epoch returned by the function get_time_units.
         """
-        raise NotImplementedError
+        pass
 
     # @abstractmethod
     # def update_frac(self, time_frac):
@@ -79,48 +62,45 @@ class Bmi(object):
     #     Input parameters:
     #     double time_frac: ???
     #     """
-    #     raise NotImplementedError
+    #     pass
 
     @abstractmethod
     def finalize(self):
         """
         Finalize the model.
         """
-        raise NotImplementedError
+        pass
 
     """
     Model Information Functions
     """
 
-    @abstractmethod
     def get_component_name(self):
         """
         Return value:
         String: identifier of the model.
         """
-        raise NotImplementedError
+        return self._name
 
-    @abstractmethod
     def get_input_var_names(self):
         """
         Return value:
         List of String objects: identifiers of all input variables of the model.
         """
-        raise NotImplementedError
+        return self._input_var_names
 
-    @abstractmethod
     def get_output_var_names(self):
         """
         Return value:
         List of String objects: identifiers of all output variables of the model.
         """
-        raise NotImplementedError
+        return self._output_var_names
 
     """
     Variable Information Functions
     """
 
-    @abstractmethod
+
     def get_var_type(self, long_var_name):
         """
         Input parameters:
@@ -128,9 +108,8 @@ class Bmi(object):
         Return value:
         String: data type of the values of the given variable, e.g. Numpy datatype string.
         """
-        raise NotImplementedError
+        return str(self.get_value(long_var_name).dtype)
 
-    @abstractmethod
     def get_var_units(self, long_var_name):
         """
         Input parameters:
@@ -138,9 +117,8 @@ class Bmi(object):
         Return value:
         String: unit of the values of the given variable. Return a string formatted using the UDUNITS standard from Unidata.
         """
-        raise NotImplementedError
+        return self._var_units.get(long_var_name, 'unknown')
 
-    @abstractmethod
     def get_var_rank(self, long_var_name):
         """
         Input parameters:
@@ -148,9 +126,8 @@ class Bmi(object):
         Return value:
         Integer: number of dimensions of the given variable.
         """
-        raise NotImplementedError
+        return self.get_value(long_var_name).ndim
 
-    @abstractmethod
     def get_var_size(self, long_var_name):
         """
         Input parameters:
@@ -158,9 +135,8 @@ class Bmi(object):
         Return value:
         Integer: total number of values contained in the given variable, e.g. gridCellCount.
         """
-        raise NotImplementedError
+        return self.get_value(long_var_name).size
 
-    @abstractmethod
     def get_var_nbytes(self, long_var_name):
         """
         Input parameters:
@@ -168,7 +144,7 @@ class Bmi(object):
         Return value:
         ???: ???
         """
-        raise NotImplementedError
+        return self.get_value(long_var_name).nbytes
 
     @abstractmethod
     def get_start_time(self):
@@ -176,7 +152,7 @@ class Bmi(object):
         Return value:
         double: start time of the model in the units and epoch returned by the function get_time_units.
         """
-        raise NotImplementedError
+        pass
 
     @abstractmethod
     def get_current_time(self):
@@ -184,7 +160,7 @@ class Bmi(object):
         Return value:
         double: current time of the model in the units and epoch returned by the function get_time_units.
         """
-        raise NotImplementedError
+        pass
 
     @abstractmethod
     def get_end_time(self):
@@ -192,7 +168,7 @@ class Bmi(object):
         Return value:
         double: end time of the model in the units and epoch returned by the function get_time_units.
         """
-        raise NotImplementedError
+        pass
 
     @abstractmethod
     def get_time_step(self):
@@ -201,7 +177,7 @@ class Bmi(object):
         #NOTE: changed from double type to datetime.timedelta type for convenience
         timedelta: duration of one time step as timedelta object
         """
-        raise NotImplementedError
+        pass
 
     @abstractmethod
     def get_time_units(self):
@@ -209,7 +185,7 @@ class Bmi(object):
         Return value:
         String: unit and epoch of time in the model. Return a string formatted using the UDUNITS standard from Unidata.
         """
-        raise NotImplementedError
+        pass
 
     """
     Variable Getter and Setter Functions
@@ -224,7 +200,7 @@ class Bmi(object):
         Numpy array of values in the data type returned by the function get_var_type: all values of the given variable.
                                                                                       For a 2D grid these values must be in row major order, starting with the bottom row.
         """
-        raise NotImplementedError
+        pass
 
     @abstractmethod
     def get_value_at_indices(self, long_var_name, inds):
@@ -238,7 +214,7 @@ class Bmi(object):
         Return value:
         Numpy array of values in the data type returned by the function get_var_type: one value for each of the indicated elements.
         """
-        raise NotImplementedError
+        pass
 
     @abstractmethod
     def set_value(self, long_var_name, src):
@@ -248,7 +224,7 @@ class Bmi(object):
         Numpy array of values in the data type returned by the function get_var_type src: all values to set for the given variable.
                                                                                           For a 2D grid these values must be in row major order, starting with the bottom row.
         """
-        raise NotImplementedError
+        pass
 
     @abstractmethod
     def set_value_at_indices(self, long_var_name, inds, src):
@@ -261,33 +237,32 @@ class Bmi(object):
                                         For a grid the indices start counting at the grid origin, i.e. the lower left corner for a 2D grid.
         Numpy array of values in the data type returned by the function get_var_type src: one value to set for each of the indicated elements.
         """
-        raise NotImplementedError
+        pass
 
     
-    """
-    Grid Information Functions
-    """
+    # NOTE all methods are replaced by Grid object methods using rasterio, pyugrid etc., see grid.py
+    # """
+    # Grid Information Functions
+    # """
+    # @abstractmethod
+    # def get_grid.type(self, long_var_name):
+    #     """
+    #     Input parameters:
+    #     String long_var_name: identifier of a variable in the model.
+    #     Return value:
+    #     BmiGridType type of the grid geometry of the given variable.
+    #     """
+    #     pass
+    # @abstractmethod
+    # def get_grid_shape(self):
+    #     """
+    #     Return value:
+    #     tuple of integers: the sizes of the dimensions of the given variable, e.g. [400, 500] for a 2D grid with 400 rows and 500 columns.
+    #                       The dimensions are ordered [y, x] or [z, y, x].
+    #     NOTE: assume model grid is var independent: deleted var argument
+    #     """
+    #     pass
 
-    @abstractmethod
-    def get_grid_type(self):
-        """
-        Return value:
-        BmiGridType type of the grid geometry 
-        NOTE: assume model grid is var independent: deleted var argument
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_grid_shape(self):
-        """
-        Return value:
-        tuple of integers: the sizes of the dimensions of the given variable, e.g. [400, 500] for a 2D grid with 400 rows and 500 columns.
-                          The dimensions are ordered [y, x] or [z, y, x].
-        NOTE: assume model grid is var independent: deleted var argument
-        """
-        raise NotImplementedError
-
-    # NOTE most of the methods below are replaced by GBMI methods using rasterio, pyugrid etc.
     # @abstractmethod
     # def get_grid_spacing(self, long_var_name):
     #     """
@@ -298,7 +273,7 @@ class Bmi(object):
     #     List of doubles: the size of a grid cell for each of the dimensions of the given variable, e.g. [cellHeight, cellWidth] for a 2D grid.
     #                      The dimensions are ordered [y, x] or [z, y, x].
     #     """
-    #     raise NotImplementedError
+    #     pass
 
     # @abstractmethod
     # def get_grid_origin(self, long_var_name):
@@ -311,7 +286,7 @@ class Bmi(object):
     #                      For a 2D grid this must be the lower left corner of the grid.
     #                      The dimensions are ordered [y, x] or [z, y, x].
     #     """
-    #     raise NotImplementedError
+    #     pass
 
     # @abstractmethod
     # def get_grid_x(self, long_var_name):
@@ -323,7 +298,7 @@ class Bmi(object):
     #     Numpy array of doubles: x coordinate of grid cell center for each grid cell, in the same order as the values returned by function get_value.
     #                      For a rectilinear grid: x coordinate of column center for each column.
     #     """
-    #     raise NotImplementedError
+    #     pass
 
     # @abstractmethod
     # def get_grid_y(self, long_var_name):
@@ -335,7 +310,7 @@ class Bmi(object):
     #     Numpy array of doubles: y coordinate of grid cell center for each grid cell, in the same order as the values returned by function get_value.
     #                      For a rectilinear grid: y coordinate of row center for each row.
     #     """
-    #     raise NotImplementedError
+    #     pass
 
     # @abstractmethod
     # def get_grid_z(self, long_var_name):
@@ -347,7 +322,7 @@ class Bmi(object):
     #     Numpy array of doubles: z coordinate of grid cell center for each grid cell, in the same order as the values returned by function get_value.
     #                      For a rectilinear grid: z coordinate of layer center for each layer.
     #     """
-    #     raise NotImplementedError
+    #     pass
 
     # @abstractmethod
     # def get_grid_connectivity(self, long_var_name):
@@ -358,7 +333,7 @@ class Bmi(object):
     #     Return value:
     #     ???
     #     """
-    #     raise NotImplementedError
+    #     pass
 
     # @abstractmethod
     # def get_grid_offset(self, long_var_name):
@@ -369,7 +344,7 @@ class Bmi(object):
     #     Return value:
     #     ???
     #     """
-    #     raise NotImplementedError
+    #     pass
     
     
 class EBmi(Bmi):
@@ -380,7 +355,7 @@ class EBmi(Bmi):
         First step of two-phase initialize. In this step only the configuration is read in.
         This allows a user to then change settings and parameters before fully initializing the model
         """
-        raise NotImplementedError
+        pass
     
     @abstractmethod
     def initialize_model(self, source_directory):
@@ -388,7 +363,7 @@ class EBmi(Bmi):
         Second step of two-phase initialize. In this step the model is setup, and will now allow
         reading/setting values.
         """
-        raise NotImplementedError
+        pass
     
     @abstractmethod
     def set_start_time(self, start_time):
@@ -396,7 +371,7 @@ class EBmi(Bmi):
         Set the start time of the model. Can usually only be called after initialize_config
         and before initialize_model. Expects a value in the time units of the model
         """
-        raise NotImplementedError
+        pass
     
     @abstractmethod
     def set_end_time(self, end_time):
@@ -404,7 +379,7 @@ class EBmi(Bmi):
         Set the end time of the model. Can usually only be called after initialize_config
         and before initialize_model. Expects a value in the time units of the model.
         """
-        raise NotImplementedError
+        pass
     
     @abstractmethod
     def get_attribute_names(self):
@@ -412,7 +387,7 @@ class EBmi(Bmi):
         Gets a list of all supported attributes for this model. Attributes can be considered
         the meta-data of a model, for instance author, version, model specific settings, etc.
         """
-        raise NotImplementedError
+        pass
     
     @abstractmethod
     def get_attribute_value(self, attribute_name):
@@ -420,7 +395,7 @@ class EBmi(Bmi):
         Gets the value of a certain attribute for this model. Attributes can be considered
         the meta-data of a model, for instance author, version, model specific settings, etc.
         """
-        raise NotImplementedError
+        pass
     
     @abstractmethod
     def set_attribute_value(self, attribute_name, attribute_value):
@@ -428,7 +403,7 @@ class EBmi(Bmi):
         Sets the value of a certain attribute for this model. Usually only string values are allowed.
         Attributes can be considered the meta-data of a model, for instance author, version, model specific settings, etc.
         """
-        raise NotImplementedError
+        pass
     
     # @abstractmethod
     # def save_state(self, destination_directory):
@@ -438,7 +413,7 @@ class EBmi(Bmi):
     #     Input parameters:
     #     File destination_directory: the directory in which the state files should be written.
     #     """
-    #     raise NotImplementedError
+    #     pass
     
     # @abstractmethod
     # def load_state(self, source_directory):
@@ -448,7 +423,7 @@ class EBmi(Bmi):
     #     Input parameters:
     #     File source_directory: the directory from which the state files should be read.
     #     """
-    #     raise NotImplementedError
+    #     pass
 
 
 
@@ -457,7 +432,6 @@ class GBmi(EBmi):
     Variable Information Functions
     """
 
-    @abstractmethod
     def get_var_shape(self, long_var_name):
         """
         Input parameters:
@@ -465,76 +439,32 @@ class GBmi(EBmi):
         Return value:
         Tuple of Integer: Variable shape
         """
-        raise NotImplementedError
-
-    """
-    Model Information Function
-    """
-    @abstractmethod
-    def get_model_type(self):
-        """
-        Return value:
-        GBmiModelType type
-        """
-        raise NotImplementedError
-    
-    """
-    Variable Getter and Setter Function extensions
-    """
-    
-    @abstractmethod
-    def get_drainage_direction(self):
-        """
-        Only for hydrological / routing models
-
-        Return value:
-        a dranage direction object
-        """
-        raise NotImplementedError
+        return self.get_value(long_var_name).shape
 
     """
     Grid Information Functions
     """
 
-    @abstractmethod
-    def get_grid_transform(self):
-        """
-        Only return something for variables with a regular grid. Otherwise raise ValueError.
+    """
+    Grid Information Functions
+    """
 
+    def get_grid_type(self):
+        """
         Return value:
-        rasterio transform
+        GridType type of bmi model 
         """
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_grid_bounds(self):
-        """
-        Only return something for variables with a regular grid. Otherwise raise ValueError.
-
-        Return value:
-        rasterio transform
-        """
-        raise NotImplementedError
+        return self.get_grid().get_type()
 
     @abstractmethod
-    def get_grid_res(self):
+    def get_grid(self):
         """
-        Only return something for variables with a regular grid. Otherwise raise ValueError.
+        Create Grid definition object, see grid.py
 
         Return value:
-        rasterio transform
+        grid.py object
         """
-        raise NotImplementedError
-
-    @abstractmethod
-    def grid_index(self, x, y):
-        """
-        Determine the 1d the 1d grid index for a given x, y coordinate
-
-        Return value:
-        the 1d grid index
-        """
-        raise NotImplementedError
+        pass
 
 
     """
@@ -543,7 +473,7 @@ class GBmi(EBmi):
     @abstractmethod
     def spinup(self):
         """PCR specific spinup function"""
-        raise NotImplementedError
+        pass
 
 
     """
@@ -553,8 +483,8 @@ class GBmi(EBmi):
     def write_config(self):
         """write adapted config to file. just before initializing
         only for models which do not allow for direct access to model config via bmi"""
-        raise NotImplementedError
+        pass
 
     @abstractmethod
     def set_out_dir(self, out_dir):
-        raise NotImplementedError
+        pass
