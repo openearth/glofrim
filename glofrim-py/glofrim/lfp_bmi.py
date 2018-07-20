@@ -17,15 +17,15 @@ import glofrim_lib as glib
 
 class LFP(GBmi):
     """
-    Glofrim implementation of the PCR BMI adaptor.
+    Glofrim implementation of the LFP BMI adaptor.
     """
     _name = 'LFP'
     _long_name = 'LISFlood-FP'
-    _version = ''
-    _var_units = {}
-    _input_var_names = []
-    _output_var_names = []
-    _area_var_name = ''
+    _version = '5.9'
+    _var_units = {'SGCQin': 'm3/s', 'dA': 'm2', 'H': 'm'}
+    _input_var_names = ['SGCQin', 'dA']
+    _output_var_names = ['SGCQin', 'H']
+    _area_var_name = 'dA'
     _timeunit = 'seconds'
 
     def __init__(self, engine):
