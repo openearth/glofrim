@@ -125,7 +125,7 @@ class RGrid(Grid):
     def _inside(self, r, c):
         inside = np.logical_and.reduce((r>=0, r<self.height, c>=0, c<self.width))
         if self.mask is not None:
-            inside = np.logical_and(inside, self.mask[r, c])
+            inside[inside] = np.logical_and(inside[inside], self.mask[r[inside], c[inside]])
         return inside
 
     def set_dd(self, fn, ddtype, **kwargs):
