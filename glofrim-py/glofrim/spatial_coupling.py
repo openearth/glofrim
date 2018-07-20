@@ -205,7 +205,6 @@ def group_index(indices):
     groups: [0, 0, 0, 1, 1]
     """
     x = np.array(indices)
-    import pdb; pdb.set_trace()
     if isinstance(x[0], (list, tuple)): # check if jagged array
         grp_n = np.array([len(a) for a in x])
         grp = np.repeat(np.arange(x.size), grp_n)
