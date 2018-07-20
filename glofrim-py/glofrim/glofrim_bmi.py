@@ -24,7 +24,7 @@ class Glofrim(EBmi):
     _name = 'GLOFRIM'
     _version = '2.0'
     _models = {'PCR': PCR, 'CMF': CMF, 'DFM': DFM, 'WFL': WFL, 'LFP': LFP}
-    _init_pre_exchange = ['DFM']
+    _init_pre_exchange = ['DFM'] # need to initialize before we can know the grid
 
     def __init__(self):
         self.bmimodels = OrderedDict()
@@ -35,6 +35,7 @@ class Glofrim(EBmi):
 
         self.logger = setlogger(None, self._name, thelevel=logging.INFO)
         self.initialized = False
+        self.obs = None
 
     def _check_long_var_name(self, long_var_name):
         if not (len(long_var_name.split(self._var_sep)) == 2):
@@ -215,6 +216,8 @@ class Glofrim(EBmi):
         for mod in self.bmimodels:
             if mod not in self._init_pre_exchange:
                 self.bmimodels[mod].initialize_model()
+        # set observation points
+
         self._check_initialized()
 
     def initialize(self, config_fn):
@@ -394,6 +397,8 @@ class Glofrim(EBmi):
         mod, var = self._check_long_var_name(long_var_name)
         return self.bmimodels[mod].get_value_at_indices(var, inds, src, **kwargs)
 
+
+
     """
     Grid Information Functions
     """
@@ -401,6 +406,25 @@ class Glofrim(EBmi):
     def get_grid_type(self):
         return {mod: self.bmimodels[mod].get_grid_type() for mod in self.bmimodels}
 
+    """
+    Observation points
+    """
+    def get_obs(self):
+        pass
+
+    def set_obs(self):
+        pass
+
+    def index(self, x, y, mod, in1d=False):
+        if self.bmimodels[mod].grid is None:
+            raise AssertionError("{}: model grid not set".format(mod))
+        if in1d:
+            if self.bmimodels[mod].grid._1d is None:
+                raise AssertionError("{}: model 1d network not set".format(mod))
+            idx = self.bmimodels[mod].grid._1d.index(x,y)
+        else:
+            idx = self.bmimodels[mod].grid.index(x,y)
+        return idx
     
     """
     set and get attribute / config 

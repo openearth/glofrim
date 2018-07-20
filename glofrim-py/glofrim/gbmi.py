@@ -254,12 +254,11 @@ class Bmi(object):
     #     """
     #     pass
     # @abstractmethod
-    # def get_grid_shape(self):
+    # def get_grid_shape(self, long_var_name):
     #     """
     #     Return value:
     #     tuple of integers: the sizes of the dimensions of the given variable, e.g. [400, 500] for a 2D grid with 400 rows and 500 columns.
     #                       The dimensions are ordered [y, x] or [z, y, x].
-    #     NOTE: assume model grid is var independent: deleted var argument
     #     """
     #     pass
 
@@ -440,10 +439,6 @@ class GBmi(EBmi):
         Tuple of Integer: Variable shape
         """
         return self.get_value(long_var_name).shape
-
-    """
-    Grid Information Functions
-    """
 
     """
     Grid Information Functions

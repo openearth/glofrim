@@ -51,8 +51,8 @@ class DFM(GBmi):
         self._endTime = self.get_end_time()
         self._t = self._startTime
         # model files
-        # TODO
-        self._outdir = ''
+        _root = dirname(self._config_fn)
+        self._outdir = glib.getabspath(self.get_attribute_value('output:OutputDir'), _root)
         self.logger.info('Config initialized')
 
     def initialize_model(self, **kwargs):
@@ -280,6 +280,7 @@ class DFM(GBmi):
 
     def set_out_dir(self, out_dir):
         self.set_attribute_value('output:OutputDir', abspath(out_dir))
+        self._outdir = abspath(out_dir)
 
     def get_attribute_names(self):
         glib.configcheck(self, self.logger)

@@ -189,6 +189,7 @@ class CMF(GBmi):
             start_time = datetime.strptime(start_time, "%Y-%m-%d") 
         if not isinstance(start_time, datetime):
             raise ValueError("invalid date type")
+        self._startTime = start_time
         self.set_attribute_value('SIMTIME:ISYEAR', start_time.year)
         self.set_attribute_value('SIMTIME:ISMON', start_time.month)
         self.set_attribute_value('SIMTIME:ISDAY', start_time.day)
@@ -198,12 +199,14 @@ class CMF(GBmi):
             end_time = datetime.strptime(end_time, "%Y-%m-%d") 
         if not isinstance(end_time, datetime):
             raise ValueError("invalid date type")
+        self._endTime = end_time
         self.set_attribute_value('SIMTIME:IEYEAR', end_time.year)
         self.set_attribute_value('SIMTIME:IEMON', end_time.month)
         self.set_attribute_value('SIMTIME:IEDAY', end_time.day)
 
     def set_out_dir(self, out_dir):
         self.set_attribute_value('OUTPUT:COUTDIR', abspath(out_dir))
+        self._outdir = abspath(out_dir)
 
     def get_attribute_names(self):
         glib.configcheck(self, self.logger)

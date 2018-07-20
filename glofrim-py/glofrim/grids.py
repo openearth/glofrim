@@ -96,21 +96,21 @@ class RGrid(Grid):
             inds = (r, c) 
         return inds
 
-    def xy(self, row, col, **kwargs):
+    def xy(self, ind=None, row=None, col=None, **kwargs):
+        if ind is not None:
+            ind = np.atleast_1d(ind)
+            row, col = self.unravel_index(ind)
+        if (row is None) or (col is None):
+            raise ValueError('Provide either row and col or flat index')
         row, col = np.atleast_1d(row), np.atleast_1d(col)
         inside = self._inside(row, col)
-        x, y = np.ones_like(row)*-1, np.ones_like(row)*-1
+        x, y = np.ones(row.size)*-1, np.ones(row.size)*-1
         x[inside], y[inside] = rasterio.transform.xy(self.transform, row[inside], col[inside])
         return x, y
 
-    def xy_flat(self, ind, **kwargs):
-        ind = np.atleast_1d(ind)
-        row, col = self.unravel_index(ind)
-        return self.xy(row, col)
-
     def get_poly_coords(self):
         rows, cols = np.where(self.mask)
-        xs, ys = self.xy(rows, cols)
+        xs, ys = self.xy(row=rows, col=cols)
         r = self.res/2
         bounds = [[x-r, y-r, x+r, y+r] for x,y in zip(xs, ys)]
         cells = [[[s,e], [n,e], [n,w], [s,w], [s,e]] for s, e, n, w in bounds]
@@ -289,7 +289,10 @@ class Network1D(object):
         if self._tree is None:
             self._build_rtree()
         x, y = np.atleast_1d(x), np.atleast_1d(y)
-        return [list(self._tree.nearest(xy, 1))[0] for xy in zip(x, y)]
+        return np.array([list(self._tree.nearest(xy, 1))[0] for xy in zip(x, y)])
+
+    def xy(self, ind):
+        return self.nodes[ind]
 
     def _build_rtree(self):
         """Creat a spatial index for the 1d coordinates. A model_1d_index
@@ -297,5 +300,5 @@ class Network1D(object):
         # build spatial rtree index of points
         import rtree
         self._tree = rtree.index.Index()
-        for i, xy in zip(self.inds, self.nodes()):
+        for i, xy in zip(self.inds, self.nodes):
             self._tree.insert(i, xy.tolist())
