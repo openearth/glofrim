@@ -154,9 +154,6 @@ class CMF(GBmi):
         self._bmi.set_var(long_var_name, src)
 
     def set_value_at_indices(self, long_var_name, inds, src, **kwargs):
-        # always use 1d inds
-        if not ((isinstance(inds, np.ndarray)) and (inds.ndim == 1)):
-            raise ValueError('indices should be 1d arrays')
         val = self.get_value(long_var_name)
         val.flat[inds] = src
         self._bmi.set_var(long_var_name, val)

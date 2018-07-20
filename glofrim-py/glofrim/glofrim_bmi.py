@@ -13,6 +13,7 @@ from pcr_bmi import PCR
 from cmf_bmi import CMF
 from dfm_bmi import DFM
 from wfl_bmi import WFL
+from lfp_bmi import LFP
 from spatial_coupling import SpatialCoupling, groupby_sum
 
 class Glofrim(EBmi):
@@ -22,7 +23,7 @@ class Glofrim(EBmi):
     """
     _name = 'GLOFRIM'
     _version = '2.0'
-    _models = {'PCR': PCR, 'CMF': CMF, 'DFM': DFM, 'WFL': WFL}
+    _models = {'PCR': PCR, 'CMF': CMF, 'DFM': DFM, 'WFL': WFL, 'LFP': LFP}
     _init_pre_exchange = ['DFM']
 
     def __init__(self):

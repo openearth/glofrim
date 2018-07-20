@@ -251,7 +251,8 @@ class DFM(GBmi):
         else:
             TStart = '0.'
         try:
-            datetime.strptime(start_time, self._datefmt) 
+            start_time = datetime.strptime(start_time, self._datefmt) 
+            self._startTime = start_time
         except ValueError:
             raise ValueError('wrong date format, use "yyyymmdd"')
         self.set_attribute_value('time:RefDate', RefDate)
@@ -260,7 +261,7 @@ class DFM(GBmi):
     def set_end_time(self, end_time):
         if isinstance(end_time, str):
             try:
-                datetime.strftime(end_time, self._datefmt) 
+                end_time = datetime.strptime(end_time, self._datefmt)
             except ValueError:
                 raise ValueError('wrong end_date format, use "yyyymmdd"')
         if not isinstance(end_time, datetime):
@@ -268,6 +269,7 @@ class DFM(GBmi):
         RefDate = self.get_attribute_value('time:RefDate')
         RefDate = datetime.strptime(RefDate, self._datefmt)
         assert end_time >  RefDate
+        self._endTime = end_time
         TStop = (end_time - RefDate).seconds + (end_time - RefDate).days * 86400
         if self.get_time_units() == 'minutes':
             TStop = TStop / 60
