@@ -166,7 +166,7 @@ class LFP(GBmi):
             if not isfile(_width_fn): raise IOError('SGCwidth file not found')
             with rasterio.open(_width_fn, 'r') as ds:
                 row, col = np.where(ds.read(1)>0)
-                x, y = self.grid.xy(row, col)
+                x, y = self.grid.xy(row=row, col=col)
             self.grid.set_1d(np.array(zip(x, y)), links=None)
         return self.grid
 
