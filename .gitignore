@@ -111,6 +111,7 @@ MAIN_day
 .DS_Store
 
 # personal envs
+environment.ini
 modelPaths.env
 modelPaths_H6.env
 modelPaths_H6_GBR.env
