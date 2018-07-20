@@ -131,7 +131,7 @@ class SpatialCoupling(object):
             print('1D nodes found outside of valid 2D domain')
             self._nodes_outside_domain = to_inds[~valid]
         if np.all(~valid):
-            raise IndexError('All 2d nodes outside of valid 2D domain')
+            raise IndexError('All 1D nodes outside of valid 2D domain')
         # to(1):from(1) dict
         d = dict(zip(to_inds[valid].tolist(), from_inds[valid].tolist()))
         # from(n):from(1) dict
@@ -161,7 +161,7 @@ class SpatialCoupling(object):
             print('1D nodes found outside of valid 2D domain')
             self._nodes_outside_domain = to_inds[~valid]
         if np.all(~valid):
-            raise IndexError('All 2d nodes outside of valid 2D domain')
+            raise IndexError('All 1D nodes outside of valid 2D domain')
         # find  unique indices and convert to row, col
         u_from_inds = np.unique(from_inds[valid])
         from_rows, from_cols = frowcol(from_inds[valid])
@@ -175,6 +175,8 @@ class SpatialCoupling(object):
                 d[i] = tuple(from_idx_us) # tuple as list cannot be used as python dict key
         # from(n):from(n) dict
         coupled_dict = dictinvert(d)
+        if len(d) == 0:
+            raise IndexError('There are no 2D cells upstream from most upstream 1D nodes')
         # set indices
         self.set_inds_from_coupled_dict(coupled_dict)
         return coupled_dict
@@ -203,6 +205,7 @@ def group_index(indices):
     groups: [0, 0, 0, 1, 1]
     """
     x = np.array(indices)
+    import pdb; pdb.set_trace()
     if isinstance(x[0], (list, tuple)): # check if jagged array
         grp_n = np.array([len(a) for a in x])
         grp = np.repeat(np.arange(x.size), grp_n)
