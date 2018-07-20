@@ -202,6 +202,7 @@ class LFP(GBmi):
 
     def set_out_dir(self, out_dir):
         self.set_attribute_value('dirroot', relpath(out_dir, dirname(self._config_fn)))
+        self._outdir = abspath(out_dir)
 
     def get_attribute_names(self):
         glib.configcheck(self, self.logger)
