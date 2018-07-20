@@ -112,6 +112,7 @@ MAIN_day
 
 # personal envs
 environment.ini
+environment.env
 modelPaths.env
 modelPaths_H6.env
 modelPaths_H6_GBR.env
