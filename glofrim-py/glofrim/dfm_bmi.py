@@ -174,71 +174,38 @@ class DFM(GBmi):
             cell_x = self.get_value('xz') # x-coords of each cell centre point
             cell_y = self.get_value('yz') # y-coords of each cell centre point
             cell_xy = np.array(zip(cell_x, cell_y))
-            # 1D-2D divide for cells
-            n2d = int(self.get_value('ndx2d'))
-            cidx_1d = np.arange(n2d, cell_xy.shape[0])
-            # all nodes first 2D, then 1D, then boundaries
+            # 1D-2D-boundary divide for cells
+            ndx2d = int(self.get_value('ndx2d'))
+            ndxi = int(self.get_value('ndxi'))
+            cidx_2d = np.arange(ndx2d)
+            cidx_1d = np.arange(ndx2d, ndxi)
+            cidx_bnds = np.arange(ndxi, cell_xy.shape[0])
+            # 1d network
+            ln = self.get_value('ln') 
+            ln_1d = np.array([[fr, to] for fr, to in ln if (fr in  cidx_1d) and (to in cidx_1d)])
+            # cell coordinates
+            coords_1d = cell_xy[cidx_1d, :]
+            coords_bnd = cell_xy[cidx_bnds, :] # TODO: save to grid object
+            face_coordinates = cell_xy[:ndx2d, :] # coordinates of cell centers
+            # 2D for mesh only
             node_lon = self.get_value('xk')
             node_lat = self.get_value('yk') 
             nodes = np.array(zip(node_lon, node_lat))
-            # 2d mesh 
             faces = self.get_value('flowelemnode') # face_node_connectivity
             nidx_2d = np.arange(faces.max()) # index of 2d nodes
             faces = np.ma.masked_equal(faces, -1) - 1
             nodes_2d = nodes[nidx_2d, :]     # coordinates of nodes
-            face_coordinates = cell_xy[:n2d, :] # coordinates of cell centres
             self.grid = UGrid(nodes_2d, faces, face_coordinates=face_coordinates, fill_value=-1, crs=None)
             ## 1D network
             # TODO: indices of nodes and cell-centers (at which data is stored) do not match for 1d ?? check with Arthur v. Dam
             # if we figure out how the cell indices relate to the node indices we can set a 1d network with links.
-            self.grid.set_1d(cell_xy[cidx_1d, :], links=None)
+            self.grid.set_1d(coords_1d, links=ln_1d)
         return self.grid
 
-
-    # def get_snetwork(self):
-    #     """Get DFM 2D mesh definition via BMI"""
-    #     if not hasattr(self, 'snetwork') or (self.snetwork is None):
-    #         import rtree
-    #         self.logger.info('Getting DFM 1D network.')
-    #         # all cells 2d + 1d
-    #         cell_x = self.get_value('xz') # x-coords of each cell centre point
-    #         cell_y = self.get_value('yz') # y-coords of each cell centre point
-    #         cell_xy = np.array(zip(cell_x, cell_y))
-    #         # 1D-2D divide for cells
-    #         n2d = int(self.get_value('ndx2d'))
-    #         cidx_1d = np.arange(n2d, cell_xy.shape[0])
-    #         # all nodes first 2D, then 1D, then boundaries
-    #         node_lon = self.get_value('xk')
-    #         node_lat = self.get_value('yk') 
-    #         nodes = np.array(zip(node_lon, node_lat))
-    #         # all links
-    #         kn = self.get_value('kn') 
-    #         nlink_type = kn[:, 2] # type
-    #         nlinks = kn[:, :2] - 1 # link
-    #         nlinks_1d = nlinks[nlink_type == 1] # link_between_1D_nodes
-    #         nidx_1d = np.arange(nlinks_1d.min(), nlinks_1d.max()+1)
-    #         nodes_1d = nodes[nidx_1d, :]
-    #         nlinks_1d = nlinks_1d - nlinks_1d.min()
-    #         # create index
-    #         ncidx_1d = np.ones_like(nidx_1d) * -1
-    #         rt = rtree.index.Index()
-    #         for ci, xy in zip(cidx_1d, cell_xy[cidx_1d]):
-    #             rt.insert(ci, xy.tolist())
-    #         # find nearest cell for each node
-    #         for ni, xy in enumerate(nodes[nidx_1d]):
-    #             ci = list(rt.nearest(xy.tolist(), 1))
-    #             assert np.all(xy == cell_xy[ci])
-    #             ncidx_1d[ni] = ci[0] 
-    #             # make sure each cell is found only ones
-    #             # this is expensive, but only way to do it
-    #             rt.delete(ci[0], xy.tolist()) 
-    #         self.snetwork = SNetwork(nodes_1d, nlinks_1d, inds=ncidx_1d, fill_value=-1, crs=None)
-    #     return self.snetwork
 
     """
     set and get attribute / config 
     """
-
     def set_start_time(self, start_time):
         if isinstance(start_time, datetime):
             RefDate = start_time.strftime(self._datefmt)

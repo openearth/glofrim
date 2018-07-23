@@ -199,7 +199,7 @@ class UGrid(Grid):
         # optional index array
         self.inds = np.arange(self.nfaces) if inds is None else np.array(inds)
         assert self.nfaces == self.inds.size
-        # optional links 
+        # optional links: links[0,:]=from-idx, links[1,:]=to-idx
         self.edges = edges
         self.boundaries = boundaries 
         self.face_face_connectivity = face_face_connectivity
