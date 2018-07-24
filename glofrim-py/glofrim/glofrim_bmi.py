@@ -234,6 +234,7 @@ class Glofrim(EBmi):
         if self._t >= self.get_end_time():
 		    raise Exception("endTime already reached, model not updated")
         next_t = self.get_current_time() + self.get_time_step()
+        # import pdb; pdb.set_trace()
         for item in self.exchanges:
             if item[0] == 'update':
                 self.bmimodels[item[1]].update_until(next_t)
@@ -256,6 +257,7 @@ class Glofrim(EBmi):
             self.bmimodels[mod].finalize()
 
     def exchange(self, from_mod, to_mod, from_vars, to_vars, coupling, add=False, **kwargs):
+        self.logger.debug("get data from {}.{}; set to {}.{}".format(from_mod, from_vars[0], to_mod, to_vars[0]))
         if coupling.at_indices():
             self.exchange_at_indices(from_mod, to_mod, from_vars, to_vars, coupling, add=add, **kwargs)
         else:
@@ -270,7 +272,7 @@ class Glofrim(EBmi):
                 vals *= from_var
             else:
                 vals *= self.bmimodels[from_mod].get_value(from_var)
-        self.logger.debug('total volume get {:3f} m3'.format(vals.sum()))
+        self.logger.debug('total get {:3f}'.format(np.nansum(vals)))
         # get TO data & translate
         for var in to_vars[1:]:
             if isinstance(var, float):
@@ -281,8 +283,8 @@ class Glofrim(EBmi):
             vals /= div
         # SET data
         if add:  # add to current state
-            vals += self.bmimodels[to_mod].set_value(to_vars[0], vals) # TO       
-        self.bmimodels[to_mod].set_value(to_vars[0], vals)   
+            vals += self.bmimodels[to_mod].set_value(to_vars[0], vals) # TO   
+        self.bmimodels[to_mod].set_value(to_vars[0], vals)
 
     def exchange_at_indices(self, from_mod, to_mod, from_vars, to_vars, coupling, add=False, **kwargs):
         """
@@ -302,8 +304,8 @@ class Glofrim(EBmi):
             vals_set = np.repeat(vals_get, coupling.to_grp_n) * coupling.get_frac()
         else:
             vals_set = vals_get
-        assert vals_get.sum().round(5) == vals_set.sum().round(5)
-        self.logger.debug('total volume get {:3f} m3'.format(vals_get.sum()))
+        assert np.nansum(vals_get).round(5) == np.nansum(vals_set).round(5)
+        self.logger.debug('total get {:3f}'.format(np.nansum(vals_get)))
         # get TO data & translate
         for var in to_vars[1:]:
             if isinstance(var, float):

@@ -143,12 +143,13 @@ class LFP(GBmi):
         return self.get_value(long_var_name).flat[inds]
 
     def set_value(self, long_var_name, src, **kwargs):
-        self._bmi.set_var(long_var_name, src)
+        # LFP does not have a set_var function, but used the get_var function with an extra argument
+        self._bmi.get_var(long_var_name)[:] = src.astype(self.get_var_type(long_var_name))
 
     def set_value_at_indices(self, long_var_name, inds, src, **kwargs):
         val = self.get_value(long_var_name)
         val.flat[inds] = src
-        self._bmi.set_var(long_var_name, val)
+        self.set_value(long_var_name, val)
 
     """
     Grid Information Functions
@@ -178,11 +179,15 @@ class LFP(GBmi):
     def set_start_time(self, start_time):
         if isinstance(start_time, datetime):
             refdate = start_time.strftime(self._datefmt)
-        try:
-            start_time = datetime.strptime(start_time, self._datefmt)
-            self._startTime = start_time
-        except ValueError:
-            raise ValueError('wrong date format, use "yyyy-mm-dd"')
+        elif isinstance(start_time, str):
+            try:
+                refdate = start_time # str
+                start_time = datetime.strptime(start_time, self._datefmt) # check format
+            except ValueError:
+                raise ValueError('wrong date format, use "yyyy-mm-dd"')
+        else:
+            raise ValueError('wrong start_date datatype')
+        self._startTime = start_time
         self.set_attribute_value('refdate', refdate)
 
     def set_end_time(self, end_time):
@@ -195,9 +200,9 @@ class LFP(GBmi):
             raise ValueError('wrong end_date datatype')
         refdate = self.get_start_time()
         assert end_time >  refdate
-        self._endTime = end_time
         TStop = (end_time - refdate).seconds + (end_time - refdate).days * 86400
         TStop = '{:.0f}'.format(TStop)
+        self._endTime = end_time
         self.set_attribute_value('sim_time', TStop)
 
     def set_out_dir(self, out_dir):

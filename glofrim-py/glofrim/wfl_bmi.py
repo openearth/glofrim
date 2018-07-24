@@ -148,7 +148,7 @@ class WFL(GBmi):
         return self.get_value(long_var_name).flat[inds]
 
     def set_value(self, long_var_name, src, **kwargs):
-        self._bmi.set_value(long_var_name, src)
+        self._bmi.set_value(long_var_name, src.astype(self.get_var_type(long_var_name)))
 
     def set_value_at_indices(self, long_var_name, inds, src, **kwargs):
         val = self.get_value(long_var_name)

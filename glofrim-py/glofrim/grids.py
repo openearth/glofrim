@@ -180,6 +180,7 @@ class UCGrid(RGrid):
         # generate inpmat
         cmd = './generate_inpmat {} {} {} {} {} {:s}'
         cmd = cmd.format(abs(res), w, e, n, s, olat)
+        # print(cmd)
         glib.subcall(cmd, cwd=mapdir)
 
 class UGrid(Grid):
@@ -292,7 +293,9 @@ class Network1D(object):
         return np.array([list(self._tree.nearest(xy, 1))[0] for xy in zip(x, y)])
 
     def xy(self, ind):
-        return self.nodes[ind]
+        orig_indices = self.inds.copy().argsort()
+        ndx = orig_indices[np.searchsorted(self.inds[orig_indices], ind)]
+        return self.nodes[ndx].squeeze()
 
     def _build_rtree(self):
         """Creat a spatial index for the 1d coordinates. A model_1d_index

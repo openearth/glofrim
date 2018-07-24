@@ -144,13 +144,22 @@ class CMF(GBmi):
     Variable Getter and Setter Functions
     """
     
-    def get_value(self, long_var_name, **kwargs):
-        return np.asarray(self._bmi.get_var(long_var_name))
+    def get_value(self, long_var_name, fill_value=1e20, **kwargs):
+        var = self._bmi.get_var(long_var_name, **kwargs)
+        var = np.where(var == fill_value, np.nan, var)
+        # return var with switched axis (fortran to python translation)
+        return var.reshape(var.shape[::-1])
 
-    def get_value_at_indices(self, long_var_name, inds, **kwargs):
-        return self.get_value(long_var_name).flat[inds]
+    def get_value_at_indices(self, long_var_name, inds, fill_value=1e20, **kwargs):
+        return self.get_value(long_var_name, fill_value=fill_value, **kwargs).flat[inds]
 
     def set_value(self, long_var_name, src, **kwargs):
+        grid_shape = self.get_grid().shape
+        if (grid_shape[0] == src.shape[1]) and (grid_shape[1] == src.shape[0]):
+            self.logger.info('src array has been flipped to fit CMF grid')
+            # reverse grid (python to fortran translation)
+            src = src.reshape(src.shape[::-1])
+        src = np.where(np.isnan(src), 0, src).astype(self.get_var_type(long_var_name))
         self._bmi.set_var(long_var_name, src)
 
     def set_value_at_indices(self, long_var_name, inds, src, **kwargs):

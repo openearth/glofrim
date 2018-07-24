@@ -117,11 +117,13 @@ class DFM(GBmi):
         RefDate = datetime.strptime(RefDate, self._datefmt)
         if self.initialized:
             # date to datetime object
-            TStop = self._bmi.get_end_time()
+            # TODO: end_time changes afer initialization??
+            # TStop = self._bmi.get_end_time()
+            pass
         else:
             TStop= float(self.get_attribute_value('time:TStop'))
-        endTime = RefDate + timedelta(**{self.get_time_units(): TStop})
-        self._endTime = endTime
+            endTime = RefDate + timedelta(**{self.get_time_units(): TStop})
+            self._endTime = endTime
         return self._endTime
 
     def get_time_step(self):
@@ -151,7 +153,7 @@ class DFM(GBmi):
         return self.get_value(long_var_name).flat[inds]
 
     def set_value(self, long_var_name, src, **kwargs):
-        self._bmi.set_var(long_var_name, src)
+        self._bmi.set_var(long_var_name, src.astype(self.get_var_type(long_var_name)))
 
     def set_value_at_indices(self, long_var_name, inds, src, **kwargs):
         # always use 1d inds
@@ -199,7 +201,7 @@ class DFM(GBmi):
             ## 1D network
             # TODO: indices of nodes and cell-centers (at which data is stored) do not match for 1d ?? check with Arthur v. Dam
             # if we figure out how the cell indices relate to the node indices we can set a 1d network with links.
-            self.grid.set_1d(coords_1d, links=ln_1d)
+            self.grid.set_1d(coords_1d, links=ln_1d, inds=cidx_1d)
         return self.grid
 
 
@@ -207,21 +209,23 @@ class DFM(GBmi):
     set and get attribute / config 
     """
     def set_start_time(self, start_time):
-        if isinstance(start_time, datetime):
-            RefDate = start_time.strftime(self._datefmt)
-            TStart = timedelta(hours=start_time.hour, minutes=start_time.minute, seconds=start_time.second).seconds
-            if self.get_time_units() == 'minutes':
-                TStart = TStart / 60
-            elif self.get_time_units() == 'hours':
-                TStart = TStart / 3600
-            TStart = '{:.0f}'.format(TStart)
-        else:
-            TStart = '0.'
-        try:
-            start_time = datetime.strptime(start_time, self._datefmt) 
-            self._startTime = start_time
-        except ValueError:
-            raise ValueError('wrong date format, use "yyyymmdd"')
+        if isinstance(start_time, str):
+            try:
+                start_time = datetime.strptime(start_time, self._datefmt) # to datetime
+            except ValueError:
+                raise ValueError('wrong date format, use "yyyymmdd"')
+        if not isinstance(start_time, datetime):
+            raise ValueError('wrong end_date datatype')
+        # RefDate to start date
+        RefDate = start_time.strftime(self._datefmt)  # to str
+        # get subdaily data to set TStart relative to RefDate
+        TStart = timedelta(hours=start_time.hour, minutes=start_time.minute, seconds=start_time.second).seconds
+        if self.get_time_units() == 'minutes':
+            TStart = TStart / 60
+        elif self.get_time_units() == 'hours':
+            TStart = TStart / 3600
+        TStart = '{:.0f}'.format(TStart)
+        self._startTime = start_time
         self.set_attribute_value('time:RefDate', RefDate)
         self.set_attribute_value('time:TStart', TStart)
 
@@ -236,13 +240,13 @@ class DFM(GBmi):
         RefDate = self.get_attribute_value('time:RefDate')
         RefDate = datetime.strptime(RefDate, self._datefmt)
         assert end_time >  RefDate
-        self._endTime = end_time
         TStop = (end_time - RefDate).seconds + (end_time - RefDate).days * 86400
         if self.get_time_units() == 'minutes':
             TStop = TStop / 60
         elif self.get_time_units() == 'hours':
             TStop = TStop / 3600
         TStop = '{:.0f}'.format(TStop)
+        self._endTime = end_time
         self.set_attribute_value('time:TStop', TStop)
 
     def set_out_dir(self, out_dir):

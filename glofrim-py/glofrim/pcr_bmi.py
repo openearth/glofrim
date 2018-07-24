@@ -71,6 +71,7 @@ class PCR(GBmi):
 		    raise Exception("endTime already reached, model not updated")
         self._bmi.update(dt=self.get_time_step().days)
         self._t += self.get_time_step()
+        self.logger.info('updated model to datetime {}'.format(self._t.strftime("%Y-%m-%d")))
 
     def update_until(self, t):
         if (t<self._t) or t>self._endTime:
@@ -127,18 +128,21 @@ class PCR(GBmi):
     Variable Getter and Setter Functions
     """
     
-    def get_value(self, long_var_name, **kwargs):
+    def get_value(self, long_var_name, fill_value=-999, **kwargs):
         # additional fill_value argument required to translate pcr maps to numpy arrays
-        return np.asarray(self._bmi.get_var(long_var_name, **kwargs))
+        var = np.asarray(self._bmi.get_var(long_var_name, missingValues=fill_value, **kwargs))
+        var = np.where(var == fill_value, np.nan, var)
+        return var
 
-    def get_value_at_indices(self, long_var_name, inds, **kwargs):
-        return self.get_value(long_var_name, **kwargs).flat[inds]
+    def get_value_at_indices(self, long_var_name, inds, fill_value=-999, **kwargs):
+        return self.get_value(long_var_name, fill_value=fill_value, **kwargs).flat[inds]
 
-    def set_value(self, long_var_name, src, **kwargs):
-        self._bmi.set_var(long_var_name, src, **kwargs)
+    def set_value(self, long_var_name, src, fill_value=-999, **kwargs):
+        src = np.where(np.isnan(src), fill_value, src).astype(self.get_var_type(long_var_name))
+        self._bmi.set_var(long_var_name, src, missingValues=fill_value, **kwargs)
 
-    def set_value_at_indices(self, long_var_name, inds, src, **kwargs):
-        val = self.get_value(long_var_name, **kwargs)
+    def set_value_at_indices(self, long_var_name, inds, src, fill_value=-999,  **kwargs):
+        val = self.get_value(long_var_name, fill_value=fill_value, **kwargs)
         val.flat[inds] = src
         self.set_value(long_var_name, val, **kwargs)
         
