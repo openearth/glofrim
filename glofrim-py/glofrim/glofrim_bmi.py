@@ -64,9 +64,13 @@ class Glofrim(EBmi):
             env = glib.configread(env_fn, encoding='utf-8', 
                                   cf=ConfigParser(inline_comment_prefixes=('#')))
             for sect in env.sections():
-                self._config.add_section(sect)
+                if sect not in self._config.sections():
+                    self._config.add_section(sect)
                 for opt in env.options(sect):
                     self._config.set(sect, opt, glib.getabspath(env.get(sect, opt), dirname(env_fn)))
+        if self._config.has_option('models', 'root_dir'):
+            self._root = glib.getabspath(self._config.get('models', 'root_dir'), self._root)
+            self._config.remove_option('models', 'root_dir')
         
         ## parse glofrim config
         # initialize bmi component and it's configuration 
