@@ -168,7 +168,8 @@ class LFP(GBmi):
             with rasterio.open(_width_fn, 'r') as ds:
                 row, col = np.where(ds.read(1)>0)
                 x, y = self.grid.xy(row=row, col=col)
-            self.grid.set_1d(np.array(zip(x, y)), links=None)
+                inds = self.grid.ravel_multi_index(row, col)
+            self.grid.set_1d(nodes=np.array(zip(x, y)), links=None, inds=inds)
         return self.grid
 
 
