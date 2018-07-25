@@ -62,6 +62,11 @@ class DFM(GBmi):
         self._bmi.initialize(self._config_fn)
         self.initialized = True
         self.logger.info('Model initialized')
+        # reset model time to make sure it is consistent with the model
+        self._dt = self.get_time_step()
+        self._startTime = self.get_start_time()
+        self._endTime = self.get_end_time()
+        self._t = self._startTime
 
     def initialize(self, config_fn):
         if not hasattr(self, '_config'):
@@ -71,9 +76,9 @@ class DFM(GBmi):
     def update(self):
         if self._t >= self._endTime:
 		    raise Exception("endTime already reached, model not updated")
-        self._bmi.update(dt=self.get_time_step().days)
-        self._t += self.get_time_step()
-        self.logger.info('updated model to datetime {}'.format(self._t.strftime("%Y-%m-%d")))
+        self._bmi.update()
+        self._t += self._dt
+        self.logger.info('updated model to datetime {}'.format(self._t.strftime("%Y-%m-%d %H:%M")))
 
     def update_until(self, t):
         if (t<self._t) or t>self._endTime:
@@ -108,7 +113,7 @@ class DFM(GBmi):
     
     def get_current_time(self):
         if self.initialized:
-            return self._bmi.get_current_time()
+            return self._startTime + timedelta(**{self.get_time_units(): self._bmi.get_current_time()})
         else:
             return self.get_start_time()
 
@@ -116,22 +121,21 @@ class DFM(GBmi):
         RefDate = self.get_attribute_value('time:RefDate')
         RefDate = datetime.strptime(RefDate, self._datefmt)
         if self.initialized:
-            # date to datetime object
-            # TODO: end_time changes afer initialization??
-            # TStop = self._bmi.get_end_time()
-            pass
+            TStop = self._bmi.get_end_time()
         else:
             TStop= float(self.get_attribute_value('time:TStop'))
-            endTime = RefDate + timedelta(**{self.get_time_units(): TStop})
-            self._endTime = endTime
+        endTime = RefDate + timedelta(**{self.get_time_units(): TStop})
+        self._endTime = endTime
         return self._endTime
 
     def get_time_step(self):
-        if not hasattr(self, '_dt'):
+        if self.initialized:
+            dt = self._bmi.get_time_step()
+        else:
             dt = float(self.get_attribute_value('time:DtUser'))
-            self._dt = timedelta(**{self.get_time_units(): dt})
+        self._dt = timedelta(**{self.get_time_units(): dt})
         return self._dt 
-        
+
     def get_time_units(self):
         if not hasattr(self, '_timeunit'):
             tunit = self.get_attribute_value('time:Tunit')
@@ -226,6 +230,7 @@ class DFM(GBmi):
             TStart = TStart / 3600
         TStart = '{:.0f}'.format(TStart)
         self._startTime = start_time
+        self._t = self._startTime
         self.set_attribute_value('time:RefDate', RefDate)
         self.set_attribute_value('time:TStart', TStart)
 
@@ -270,4 +275,4 @@ class DFM(GBmi):
     def write_config(self):
         """write adapted config to file. just before initializing
         only for models which do not allow for direct access to model config via bmi"""
-        glib.write_config(self, self._config, self._config_fn, self.logger)
+        self._config_fn = glib.write_config(self, self._config, self._config_fn, self.logger)

@@ -70,6 +70,11 @@ class CMF(GBmi):
         self._bmi.initialize(self._config_fn)
         self.initialized = True
         self.logger.info('Model initialized')
+        # reset model time to make sure it is consistent with the model
+        self._dt = self.get_time_step()
+        self._startTime = self.get_start_time()
+        self._endTime = self.get_end_time()
+        self._t = self._startTime
 
     def initialize(self, config_fn):
         if not hasattr(self, '_config'):
@@ -79,9 +84,9 @@ class CMF(GBmi):
     def update(self):
         if self._t >= self._endTime:
 		    raise Exception("endTime already reached, model not updated")
-        self._bmi.update(dt=self.get_time_step().days)
-        self._t += self.get_time_step()
-        self.logger.info('updated model to datetime {}'.format(self._t.strftime("%Y-%m-%d")))
+        self._bmi.update()
+        self._t += self._dt
+        self.logger.info('updated model to datetime {}'.format(self._t.strftime("%Y-%m-%d %H:%M")))
 
     def update_until(self, t):
         if (t<self._t) or t>self._endTime:
@@ -131,9 +136,11 @@ class CMF(GBmi):
         return self._endTime
 
     def get_time_step(self):
-        if not hasattr(self, '_dt'):
+        if self.initialized:
+            dt = self._bmi.get_time_step()
+        else:
             dt = int(self.get_attribute_value('CONF:DT'))
-            self._dt = timedelta(**{self.get_time_units(): dt})
+        self._dt = timedelta(**{self.get_time_units(): dt})
         return self._dt 
         
     def get_time_units(self):
@@ -199,6 +206,7 @@ class CMF(GBmi):
         if not isinstance(start_time, datetime):
             raise ValueError("invalid date type")
         self._startTime = start_time
+        self._t = start_time
         self.set_attribute_value('SIMTIME:ISYEAR', start_time.year)
         self.set_attribute_value('SIMTIME:ISMON', start_time.month)
         self.set_attribute_value('SIMTIME:ISDAY', start_time.day)

@@ -61,6 +61,10 @@ class PCR(GBmi):
         self._bmi.initialize(self._config_fn)
         self.initialized = True
         self.logger.info('Model initialized')
+        # reset model time to make sure it is consistent with the model
+        self._startTime = self.get_start_time()
+        self._endTime = self.get_end_time()
+        self._t = self._startTime
 
     def initialize(self, config_fn):
         self.initialize_config(config_fn)
@@ -69,8 +73,8 @@ class PCR(GBmi):
     def update(self):
         if self._t >= self._endTime:
 		    raise Exception("endTime already reached, model not updated")
-        self._bmi.update(dt=self.get_time_step().days)
-        self._t += self.get_time_step()
+        self._bmi.update(dt=self._dt.days)
+        self._t += self._dt
         self.logger.info('updated model to datetime {}'.format(self._t.strftime("%Y-%m-%d")))
 
     def update_until(self, t):
@@ -177,17 +181,17 @@ class PCR(GBmi):
         if isinstance(start_time, datetime):
             start_time = start_time.strftime(self._datefmt)
         try:
-            datetime.strptime(start_time, self._datefmt) 
+            self._startTime = datetime.strptime(start_time, self._datefmt) 
+            self._t = self._startTime
         except ValueError:
             raise ValueError('wrong date format, use "yyyy-mm-dd"')
-
         self.set_attribute_value('globalOptions:startTime', start_time)
        
     def set_end_time(self, end_time):
         if isinstance(end_time, datetime):
             end_time = end_time.strftime(self._datefmt)
         try:
-            datetime.strptime(end_time, self._datefmt) 
+            self._endTime = datetime.strptime(end_time, self._datefmt) 
         except ValueError:
             raise ValueError('wrong date format, use "yyyy-mm-dd"')
         self.set_attribute_value('globalOptions:endTime', end_time)
@@ -212,4 +216,4 @@ class PCR(GBmi):
     def write_config(self):
         """write adapted config to file. just before initializing
         only for models which do not allow for direct access to model config via bmi"""
-        glib.write_config(self, self._config, self._config_fn, self.logger)
+        self._config_fn = glib.write_config(self, self._config, self._config_fn, self.logger)

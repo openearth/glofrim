@@ -46,12 +46,14 @@ class WFL(GBmi):
         self._bmi.initialize_config(str(self._config_fn))
         self._config = self._bmi.config
         self._datefmt = "%Y-%m-%d %H:%M:%S"
+        if self.get_attribute_value('run:runlengthdetermination') == 'steps':
+            raise Warning('set WFLOW run:runlengthdetermination to "intervals" in order to use the same time convention as in GLOFRIM')
         # model time
+        self._dt = self.get_time_step()
         self._startTime = self.get_start_time()
         self._endTime = self.get_end_time()
         self._t = self._startTime
         # model files
-        # self._outdir= abspath(self.get_attribute_value('globalOptions:outputDir'))
         self.logger.info('Config initialized')
 
         namesroles = self._bmi.dynModel.wf_supplyVariableNamesAndRoles()
@@ -68,7 +70,8 @@ class WFL(GBmi):
         self._bmi.initialize_model()
         self.initialized = True
         self.logger.info('Model initialized')
-        # model time -> model time only set correctly after model initialization
+        # reset model time to make sure it is consistent with the model
+        self._dt = self.get_time_step()
         self._startTime = self.get_start_time()
         self._endTime = self.get_end_time()
         self._t = self._startTime
@@ -113,6 +116,7 @@ class WFL(GBmi):
     
     def get_current_time(self):
         if self.initialized:
+            #
             return datetime.utcfromtimestamp(self._bmi.get_current_time())
         else:
             return self.get_start_time()
@@ -185,12 +189,15 @@ class WFL(GBmi):
         if isinstance(start_time, str):
             start_time = datetime.strptime(start_time, self._datefmt) 
         t = (start_time - datetime.utcfromtimestamp(0))
+        self._startTime = start_time
+        self._t = start_time
         self._bmi.set_start_time(t.days*86400+t.seconds)
        
     def set_end_time(self, end_time):
         if isinstance(end_time, str):
             end_time = datetime.strptime(end_time, self._datefmt) 
         t = (end_time - datetime.utcfromtimestamp(0))
+        self._endTime = end_time
         self._bmi.set_end_time(t.days*86400+t.seconds)
 
     def set_out_dir(self, out_dir):
@@ -209,7 +216,10 @@ class WFL(GBmi):
     
     def set_attribute_value(self, attribute_name, attribute_value):
         glib.configcheck(self, self.logger)
-        self.logger.debug("set_attribute_value: " + attribute_value)
+        self.logger.info("set_attribute_value {} -> {} ".format(attribute_name, attribute_value))
+        # update config
+        glib.configset(self._config, attribute_name, attribute_value)
+        # set wfl config
         return self._bmi.set_attribute_value(attribute_name, attribute_value)
 
     def write_config(self):

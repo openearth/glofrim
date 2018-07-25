@@ -46,6 +46,20 @@ class Glofrim(EBmi):
     def _check_initialized(self):
         self.initialized = np.all([self.bmimodels[mod].initialized for mod in self.bmimodels])
         return self.initialized
+
+    def _check_dt(self):
+        for mod in self.bmimodels:
+            dt_mod = self.bmimodels[mod].get_time_step()
+            dt_mod = (dt_mod.days*86400 + dt_mod.seconds)
+            _dt = (self._dt.days*86400 + self._dt.seconds)
+            dt_diff = _dt % dt_mod
+            if dt_diff > 0:
+                msg = 'A whole number of {:s} model timesteps ({:d} sec) should fit in the GLOFRIM exchange time step ({:d} sec). ' \
+                      'Please change the model timestep in the model configuration file'  
+                self.logger.error(msg)
+                raise AssertionError(msg.format(mod, dt_mod, _dt))
+        return self.initialized
+
     """
     Model Control Functions
     """
@@ -109,6 +123,8 @@ class Glofrim(EBmi):
         self._endTime = self.get_end_time()
         self._t = self._startTime
         self.initialized=False
+        # check model dt
+        self._check_dt()
 
     def set_exchanges(self):
         # parse exchanges
@@ -220,9 +236,14 @@ class Glofrim(EBmi):
         for mod in self.bmimodels:
             if mod not in self._init_pre_exchange:
                 self.bmimodels[mod].initialize_model()
-        # set observation points
-
         self._check_initialized()
+        # sync start and endtimes
+        self._startTime = self.get_start_time()
+        self._endTime = self.get_end_time()
+        self._t = self._startTime
+        # check model dt
+        self._check_dt()
+        # TODO set observation points
 
     def initialize(self, config_fn):
         self.initialize_config(config_fn)
@@ -234,7 +255,6 @@ class Glofrim(EBmi):
         if self._t >= self.get_end_time():
 		    raise Exception("endTime already reached, model not updated")
         next_t = self.get_current_time() + self.get_time_step()
-        # import pdb; pdb.set_trace()
         for item in self.exchanges:
             if item[0] == 'update':
                 self.bmimodels[item[1]].update_until(next_t)
@@ -304,7 +324,9 @@ class Glofrim(EBmi):
             vals_set = np.repeat(vals_get, coupling.to_grp_n) * coupling.get_frac()
         else:
             vals_set = vals_get
-        assert np.nansum(vals_get).round(5) == np.nansum(vals_set).round(5)
+        vol_diff = np.nansum(vals_get) - np.nansum(vals_set)
+        if vol_diff > 1E-2:
+            self.logger.warming('Large difference in water volume from and to: {:.4f} m3'.format(vol_diff))
         self.logger.debug('total get {:3f}'.format(np.nansum(vals_get)))
         # get TO data & translate
         for var in to_vars[1:]:
@@ -376,7 +398,7 @@ class Glofrim(EBmi):
         return self._endTime
 
     def get_time_step(self):
-        #NOTE get_time_step in PCR bmi returns timestep as int instead of dt
+        
         return self._dt
         
     def get_time_units(self):
@@ -401,7 +423,7 @@ class Glofrim(EBmi):
 
     def set_value_at_indices(self, long_var_name, inds, src, **kwargs):
         mod, var = self._check_long_var_name(long_var_name)
-        return self.bmimodels[mod].get_value_at_indices(var, inds, src, **kwargs)
+        return self.bmimodels[mod].set_value_at_indices(var, inds, src, **kwargs)
 
 
 
@@ -439,10 +461,13 @@ class Glofrim(EBmi):
     def set_start_time(self, start_time):
         for mod in self.bmimodels:
             self.bmimodels[mod].set_start_time(start_time)
+        self.get_start_time() # sync start time
+        self._t = self._startTime
        
     def set_end_time(self, end_time):
         for mod in self.bmimodels:
             self.bmimodels[mod].set_end_time(end_time)
+        self.get_end_time() # sync start time
 
     def get_attribute_names(self):
         """

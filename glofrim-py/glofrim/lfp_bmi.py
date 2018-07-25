@@ -63,6 +63,11 @@ class LFP(GBmi):
         self._bmi.initialize(self._config_fn)
         self.initialized = True
         self.logger.info('Model initialized')
+        # reset model time to make sure it is consistent with the model
+        self._dt = self.get_time_step()
+        self._startTime = self.get_start_time()
+        self._endTime = self.get_end_time()
+        self._t = self._startTime
 
     def initialize(self, config_fn):
         if not hasattr(self, '_config'):
@@ -72,9 +77,9 @@ class LFP(GBmi):
     def update(self):
         if self._t >= self._endTime:
 		    raise Exception("endTime already reached, model not updated")
-        self._bmi.update(dt=self.get_time_step().days)
-        self._t += self.get_time_step()
-        self.logger.info('updated model to datetime {}'.format(self._t.strftime("%Y-%m-%d")))
+        self._bmi.update()
+        self._t += self._dt
+        self.logger.info('updated model to datetime {}'.format(self._t.strftime("%Y-%m-%d %H:%M")))
 
     def update_until(self, t):
         if (t<self._t) or t>self._endTime:
@@ -109,13 +114,15 @@ class LFP(GBmi):
     def get_current_time(self):
         if self.initialized:
             curtime = timedelta(**{self.get_time_units(): self._bmi.get_current_time()})
-            return self.get_start_time() + curtime
+            return self._startTime + curtime
         else:
             return self.get_start_time()
 
     def get_end_time(self):
         if self.initialized:
+            # TODO end time after initialization is not correct
             TStop = self._bmi.get_end_time()
+            # pass
         else:
             TStop= float(self.get_attribute_value('sim_time'))
         endTime = self.get_start_time() + timedelta(**{self.get_time_units(): TStop})
@@ -123,11 +130,13 @@ class LFP(GBmi):
         return self._endTime
 
     def get_time_step(self):
-        if not hasattr(self, '_dt'):
-            dt = float(self.get_attribute_value('massint'))
-            self._dt = timedelta(**{self.get_time_units(): dt})
+        if self.initialized:
+            dt = self._bmi.get_time_step()
+        else:
+            dt = float(self.get_attribute_value('initial_tstep'))
+        self._dt = timedelta(**{self.get_time_units(): dt})
         return self._dt 
-        
+
     def get_time_units(self):
         return self._timeunit
 
@@ -137,7 +146,7 @@ class LFP(GBmi):
     """
     
     def get_value(self, long_var_name, **kwargs):
-        return np.asarray(self._bmi.get_var(long_var_name))
+        return np.asarray(self._bmi.get_var(long_var_name)).copy()
 
     def get_value_at_indices(self, long_var_name, inds, **kwargs):
         return self.get_value(long_var_name).flat[inds]
@@ -189,6 +198,7 @@ class LFP(GBmi):
         else:
             raise ValueError('wrong start_date datatype')
         self._startTime = start_time
+        self._t = start_time
         self.set_attribute_value('refdate', refdate)
 
     def set_end_time(self, end_time):
@@ -237,7 +247,7 @@ class LFP(GBmi):
     def write_config(self):
         """write adapted config to file. just before initializing
         only for models which do not allow for direct access to model config via bmi"""
-        glib.write_config(self, self._config, self._config_fn, self.logger)
+        self._config_fn = glib.write_config(self, self._config, self._config_fn, self.logger)
 
 # UTILS
 class ParConfigParser(ConfigParser):
