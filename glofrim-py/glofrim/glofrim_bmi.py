@@ -149,7 +149,7 @@ class Glofrim(EBmi):
             from_model_vars = from_bmi._input_var_names + from_bmi._output_var_names
             for i, var_from in enumerate(vars_from):
                 # last var may be a scalar multiplier
-                if i > 0 and i == (len(vars_from) - 1):
+                if i > 0: # and i == (len(vars_from) - 1):
                     try:
                         var_from = float(var_from)
                     except ValueError:
@@ -177,7 +177,7 @@ class Glofrim(EBmi):
             to_model_vars = to_bmi._input_var_names + to_bmi._output_var_names
             for i, var_to in enumerate(vars_to):
                 # last var may be a scalar multiplier
-                if i > 0 and i == (len(vars_to) - 1):
+                if i > 0: # and i == (len(vars_to) - 1):
                     try:
                         var_to = float(var_to)
                     except ValueError:
@@ -299,7 +299,7 @@ class Glofrim(EBmi):
             vals /= div
         # SET data
         if add:  # add to current state
-            vals += self.bmimodels[to_mod].set_value(to_vars[0], vals) # TO   
+            vals += self.bmimodels[to_mod].get_value(to_vars[0], vals) # TO   
         self.bmimodels[to_mod].set_value(to_vars[0], vals)
 
     def exchange_at_indices(self, from_mod, to_mod, from_vars, to_vars, coupling, add=False, **kwargs):
