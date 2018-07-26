@@ -50,15 +50,10 @@ class Glofrim(EBmi):
     def _check_dt(self):
         for mod in self.bmimodels:
             dt_mod = self.bmimodels[mod].get_time_step()
-            dt_mod = (dt_mod.days*86400 + dt_mod.seconds)
-            _dt = (self._dt.days*86400 + self._dt.seconds)
-            dt_diff = _dt % dt_mod
-            if dt_diff > 0:
-                msg = 'A whole number of {:s} model timesteps ({:d} sec) should fit in the GLOFRIM exchange time step ({:d} sec). ' \
-                      'Please change the model timestep in the model configuration file'  
+            if not glib.check_dts_divmod(self._dt, dt_mod):
+                msg = "Invalid value for dt in comparison to model dt. Make sure a whole number of model timesteps fit in the set GLOFRIM dt"  
                 self.logger.error(msg)
-                raise AssertionError(msg.format(mod, dt_mod, _dt))
-        return self.initialized
+                raise AssertionError(msg)
 
     """
     Model Control Functions
@@ -249,24 +244,25 @@ class Glofrim(EBmi):
         self.initialize_config(config_fn)
         self.initialize_model()
 
-    def update(self):
+    def update(self, dt=None):
         if not self.initialized:
             raise Warning("models should be initialized first")
         if self._t >= self.get_end_time():
 		    raise Exception("endTime already reached, model not updated")
-        next_t = self.get_current_time() + self.get_time_step()
+        # update all models with combined model dt
+        dt = self._dt.total_seconds() if dt is None else dt
         for item in self.exchanges:
             if item[0] == 'update':
-                self.bmimodels[item[1]].update_until(next_t)
+                self.bmimodels[item[1]].update(dt=dt)
             elif item[0] == 'exchange':
                 self.exchange(**item[1])
-        self._t = next_t
+        self._t = self.get_current_time()
 
-    def update_until(self, t):
+    def update_until(self, t, dt=None):
         if (t<self._t) or t>self.get_end_time():
             raise Exception("wrong time input: smaller than model time or larger than endTime")
         while self._t < t:
-            self.update()
+            self.update(dt=dt)
 
     def spinup(self):
         """PCR specific spinup function"""
@@ -391,6 +387,11 @@ class Glofrim(EBmi):
         return self._startTime
 
     def get_current_time(self):
+        models_t = [self.bmimodels[mod]._t for mod in self.bmimodels]
+        in_sync = not models_t or models_t.count(models_t[0]) == len(models_t)  # check if identical
+        if not in_sync:
+            raise AssertionError("Model times out of sync")
+        self._t = models_t[0]
         return self._t
 
     def get_end_time(self):

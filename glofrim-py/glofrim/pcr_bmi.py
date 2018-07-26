@@ -69,19 +69,28 @@ class PCR(GBmi):
     def initialize(self, config_fn):
         self.initialize_config(config_fn)
         self.initialize_model()
-            
-    def update(self):
+
+    def update(self, dt=None):
+        # dt in seconds. if not given model timestep is used
         if self._t >= self._endTime:
 		    raise Exception("endTime already reached, model not updated")
-        self._bmi.update(dt=self._dt.days)
-        self._t += self._dt
-        self.logger.info('updated model to datetime {}'.format(self._t.strftime("%Y-%m-%d")))
+        if (dt is not None) and (dt != self._dt.total_seconds()):
+            _dt = timedelta(seconds=dt)
+            if not glib.check_dts_divmod(_dt, self._dt):
+                msg = "Invalid value for dt in comparison to model dt. Make sure a whole number of model timesteps ({}) fit in the given dt ({})"
+                raise ValueError(msg.format(self._dt, _dt))
+            self._bmi.update(_dt.days)
+            self._t += _dt
+        else:
+            self._bmi.update(self._dt.days)
+            self._t += self._dt
+        self.logger.info('updated model to datetime {}'.format(self._t.strftime("%Y-%m-%d %H:%M")))
 
-    def update_until(self, t):
+    def update_until(self, t, dt=None):
         if (t<self._t) or t>self._endTime:
             raise Exception("wrong time input: smaller than model time or larger than endTime")
         while self._t < t:
-            self.update()
+            self.update(dt=dt)
 
     def spinup(self):
         """PCR specific spinup function"""

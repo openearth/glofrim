@@ -91,3 +91,8 @@ subcall
 """
 def subcall(msg, cwd='./'):
     output = check_output(msg, stderr=STDOUT, shell=True, cwd=cwd)
+
+## dt check
+def check_dts_divmod(dt, dt_mod):
+    dt_diff = dt.total_seconds() % dt_mod.total_seconds()
+    return dt_diff == 0
