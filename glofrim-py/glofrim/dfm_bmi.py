@@ -83,10 +83,9 @@ class DFM(GBmi):
                 msg = "Invalid value for dt in comparison to model dt. Make sure a whole number of model timesteps ({}) fit in the given dt ({})"
                 raise ValueError(msg.format(self._dt, _dt))
             self._bmi.update(dt)
-            self._t += _dt
         else:
             self._bmi.update()
-            self._t += self._dt
+        self._t = self.get_current_time()
         self.logger.info('updated model to datetime {}'.format(self._t.strftime("%Y-%m-%d %H:%M")))
 
     def update_until(self, t, dt=None):

@@ -256,7 +256,7 @@ class Glofrim(EBmi):
             if item[0] == 'update':
                 # LFP deviates from the set timestep using an adaptive timestep if dt is set to large
                 # calculate the dt to get to the next timestep
-                # NOTE I use update instade of update_until to getter better logging.
+                # NOTE we use "update" instead of "update_until" to getter better logging.
                 dt_mod = (t_next - self.bmimodels[item[1]]._t).total_seconds()
                 self.bmimodels[item[1]].update(dt=dt_mod)
             elif item[0] == 'exchange':

@@ -92,11 +92,10 @@ class WFL(GBmi):
             tt = timedelta(0)
             while tt < dt: # loop required ad self._bmi.update(dt) does not work
                 self._bmi.update()
-                self._t += self._dt
                 tt += self._dt
         else:
             self._bmi.update()
-            self._t += self._dt
+        self._t = self.get_current_time()
         self.logger.info('updated model to datetime {}'.format(self._t.strftime("%Y-%m-%d %H:%M")))
 
     def update_until(self, t, dt=None):
@@ -157,18 +156,24 @@ class WFL(GBmi):
     Variable Getter and Setter Functions
     """
     
-    def get_value(self, long_var_name, **kwargs):
+    def get_value(self, long_var_name, fill_value=-999, **kwargs):
         # additional fill_value argument required to translate pcr maps to numpy arrays
-        return np.asarray(self._bmi.get_value(long_var_name))
+        # NOTE that wflow flips the arrays upside down in the 'wf_supplyMapAsNumpy' function that is called by the bmi. 
+        # TODO: check if we can improve the wflow_bmi and change this
+        var = np.asarray(self._bmi.get_value(long_var_name))[::-1, :] # flip array back to N->S
+        var = np.where(var == fill_value, np.nan, var)
+        return var
 
-    def get_value_at_indices(self, long_var_name, inds, **kwargs):
-        return self.get_value(long_var_name).flat[inds]
+    def get_value_at_indices(self, long_var_name, inds, fill_value=-999, **kwargs):
+        return self.get_value(long_var_name, fill_value=fill_value, **kwargs).flat[inds]
 
-    def set_value(self, long_var_name, src, **kwargs):
-        self._bmi.set_value(long_var_name, src.astype(self.get_var_type(long_var_name)))
+    def set_value(self, long_var_name, src, fill_value=-999):
+        src = np.where(np.isnan(src), fill_value, src).astype(self.get_var_type(long_var_name))
+        # we need to flip the data again! see note in get_value command 
+        self._bmi.set_value(long_var_name, src[::-1, :])
 
-    def set_value_at_indices(self, long_var_name, inds, src, **kwargs):
-        val = self.get_value(long_var_name)
+    def set_value_at_indices(self, long_var_name, inds, src, fill_value=-999):
+        val = self.get_value(long_var_name, fill_value=fill_value)
         val.flat[inds] = src
         self.set_value(long_var_name, val)
         
@@ -188,7 +193,16 @@ class WFL(GBmi):
             if not isfile(_lm_fn): raise IOError('subcatch file not found')
             self.logger.info('Getting rgrid info based on {}'.format(basename(_lm_fn)))
             with rasterio.open(_lm_fn, 'r') as ds:
+                # TODO: change transform instead of flipping the grid every time ..
                 self.grid = RGrid(ds.transform, ds.height, ds.width, crs=ds.crs, mask=ds.read(1)>=1)
+            # river is used for the 1D cells
+            _riv_fn = join(mapdir, 'wflow_river.map')
+            if isfile(_riv_fn):
+                with rasterio.open(_riv_fn, 'r') as ds:
+                    row, col = np.where(ds.read(1)==1)
+                    x, y = self.grid.xy(row=row, col=col)
+                    inds = self.grid.ravel_multi_index(row, col)
+                self.grid.set_1d(nodes=np.array(zip(x, y)), links=None, inds=inds)
             # read file with pcr readmap
             self.logger.info('Getting drainage direction from {}'.format(basename(_ldd_fn)))
             self.grid.set_dd(_ldd_fn, ddtype='ldd', nodata=255)
