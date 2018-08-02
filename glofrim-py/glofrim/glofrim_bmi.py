@@ -251,9 +251,14 @@ class Glofrim(EBmi):
 		    raise Exception("endTime already reached, model not updated")
         # update all models with combined model dt
         dt = self._dt.total_seconds() if dt is None else dt
+        t_next = self._t + timedelta(seconds=dt)
         for item in self.exchanges:
             if item[0] == 'update':
-                self.bmimodels[item[1]].update(dt=dt)
+                # LFP deviates from the set timestep using an adaptive timestep if dt is set to large
+                # calculate the dt to get to the next timestep
+                # NOTE I use update instade of update_until to getter better logging.
+                dt_mod = (t_next - self.bmimodels[item[1]]._t).total_seconds()
+                self.bmimodels[item[1]].update(dt=dt_mod)
             elif item[0] == 'exchange':
                 self.exchange(**item[1])
         self._t = self.get_current_time()
@@ -390,7 +395,8 @@ class Glofrim(EBmi):
         models_t = [self.bmimodels[mod]._t for mod in self.bmimodels]
         in_sync = not models_t or models_t.count(models_t[0]) == len(models_t)  # check if identical
         if not in_sync:
-            raise AssertionError("Model times out of sync")
+            msg = '; '.join(['{}: {}'.format(m, str(t)) for m, t in zip(self.bmimodels, models_t)])
+            self.logger.warning("Model times out of sync: {}".format(msg))
         self._t = models_t[0]
         return self._t
 

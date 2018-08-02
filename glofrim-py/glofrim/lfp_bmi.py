@@ -80,9 +80,10 @@ class LFP(GBmi):
 		    raise Exception("endTime already reached, model not updated")
         if (dt is not None) and (dt != self._dt.total_seconds()):
             dt = timedelta(seconds=dt)
-            if not glib.check_dts_divmod(dt, self._dt):
-                msg = "Invalid value for dt in comparison to model dt. Make sure a whole number of model timesteps ({}) fit in the given dt ({})"
-                raise ValueError(msg.format(self._dt, dt))
+            # because of the adaptive timestep scheme do not check the dt value
+            # if not glib.check_dts_divmod(dt, self._dt):
+            #     msg = "Invalid value for dt in comparison to model dt. Make sure a whole number of model timesteps ({}) fit in the given dt ({})"
+            #     raise ValueError(msg.format(self._dt, dt))
         else:
             dt = self._dt
         t_next = self.get_current_time() + dt
@@ -91,7 +92,7 @@ class LFP(GBmi):
             self._bmi.update()
             self._t = self.get_current_time()
             i += 1
-        self.logger.info('updated model to datetime {} in {:d} iterations'.format(self._t.strftime("%Y-%m-%d %H:%M"), i))
+        self.logger.info('updated model to datetime {} in {:d} iterations'.format(self._t.strftime("%Y-%m-%d %H:%M:%S"), i))
 
     def update_until(self, t, dt=None):
         if (t<self._t) or t>self._endTime:
@@ -266,7 +267,7 @@ class ParConfigParser(ConfigParser):
     def __init__(self, **kwargs):
         self.optionxform = lambda option:option # keep format with capital/lower letters
         defaults = dict(comment_prefixes=('!', '/', '#'),
-                        inline_comment_prefixes=('!'),
+                        inline_comment_prefixes=('!'), allow_no_value=True,
                         delimiters=('='))
         defaults.update(**kwargs)
         super(ParConfigParser, self).__init__(**defaults)
