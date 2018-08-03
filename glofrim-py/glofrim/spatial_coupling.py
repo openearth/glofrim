@@ -116,7 +116,7 @@ class SpatialCoupling(object):
         """
         """
         # no working index yet for UGrid
-        if not (self.from_bmi.grid.type == 1) or (self.from_bmi.grid.type == 2):
+        if self.from_bmi.grid.type == 2:
             msg = 'coupling from grid type {} to 1d has not been implemented'
             raise NotImplementedError(msg.format(self.from_bmi.grid.type))
         if not self.to_bmi.grid.has_1d():
