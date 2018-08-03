@@ -7,7 +7,7 @@ from os.path import join, isfile, abspath, dirname, basename, normpath
 from datetime import datetime, timedelta
 import rasterio
 
-from utils import setlogger
+from utils import setlogger, closelogger
 from gbmi import GBmi
 from grids import RGrid
 import glofrim_lib as glib 
@@ -26,11 +26,15 @@ class WFL(GBmi):
     _area_var_name = 'csize'
     _timeunit = 'seconds'
 
-    def __init__(self):
+    def __init__(self, loglevel=logging.INFO, logger=None):
         # import original PCR bmi 
         import wflow.wflow_bmi as _bmi
         self._bmi = _bmi.wflowbmi_csdms()
-        self.logger = setlogger(None, self._name, thelevel=logging.INFO)
+        if logger:
+            self.logger = logger.getChild(self._name)
+        else:
+            self.logger = setlogger(None, self._name, thelevel=loglevel)
+        self._loglevel = loglevel
         self.initialized = False
         self.grid = None
 
@@ -43,7 +47,7 @@ class WFL(GBmi):
             raise Warning("model already initialized, it's therefore not longer possible to initialize the config")
         self._config_fn = abspath(config_fn)
         self.logger.info('Read ini at {}'.format(self._config_fn))
-        self._bmi.initialize_config(str(self._config_fn))
+        self._bmi.initialize_config(str(self._config_fn), loglevel=self._loglevel)
         self._config = self._bmi.config
         self._datefmt = "%Y-%m-%d %H:%M:%S"
         if self.get_attribute_value('run:runlengthdetermination') == 'steps':
@@ -109,9 +113,9 @@ class WFL(GBmi):
         raise NotImplementedError()
 
     def finalize(self):
+        self.logger.info('finalize bmi. Close logger.')
         self._bmi.finalize()
-
-
+        closelogger(self.logger)
     """
     Variable Information Functions
     """

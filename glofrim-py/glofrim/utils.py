@@ -10,38 +10,45 @@ def setlogger(logfilename=None, loggername='glofrim', thelevel=logging.INFO):
     try:    
         #create logger
         logger = logging.getLogger(loggername)
-        if not isinstance(thelevel, int):
-            logger.setLevel(logging.DEBUG)
-        else:
-            logger.setLevel(thelevel)
+        # remove any existing handlers
+        while logger.handlers:
+            i = logger.handlers[0]
+            logger.removeHandler(i)
+            i.flush()
+            i.close()
+        logger.setLevel(thelevel)
         #create formatter
         formatter = logging.Formatter(
             "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
         # console logger
         console = logging.StreamHandler()
-        console.setLevel(logging.DEBUG)
+        console.setLevel(thelevel)
         console.setFormatter(formatter)
         logger.addHandler(console)
-        #add filehadnler to logger
+        #add filehandler to logger
         if logfilename is not None:
-            ch = logging.FileHandler(logfilename,mode='w')
-            ch.setFormatter(formatter)
-            ch.setLevel(logging.DEBUG)
-            logger.addHandler(ch)
-            logger.debug("File logging to {}".format(logfilename))
+            add_file_handler(logger, logfilename)
         return logger
     except IOError:
         print("ERROR: Failed to initialize logger with logfile: " + logfilename)
         sys.exit(2)
 
-def closeLogger(logger, ch):
-    logger.removeHandler(ch)
-    ch.flush()
-    ch.close()
-    return logger, ch
+def add_file_handler(logger, logfilename):
+    ch = logging.FileHandler(logfilename, mode='w')
+    ch.setFormatter(logger.handlers[0].formatter)
+    ch.setLevel(logger.handlers[0].level)
+    logger.addHandler(ch)
+    logger.debug("File logging to {}".format(logfilename))
 
-def close_with_error(logger, ch, msg):
+def closelogger(logger):
+    while logger.handlers:
+        i = logger.handlers[0]
+        logger.removeHandler(i)
+        i.flush()
+        i.close()
+    return logger
+
+def close_with_error(logger, msg):
     logger.error(msg)
-    logger, ch = closeLogger(logger, ch)
-    del logger, ch
+    closelogger(logger)
     sys.exit(1)

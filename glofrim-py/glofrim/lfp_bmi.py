@@ -10,7 +10,7 @@ import re
 
 from bmi.wrapper import BMIWrapper as _bmi
 
-from utils import setlogger
+from utils import setlogger, closelogger
 from gbmi import GBmi 
 from grids import RGrid
 import glofrim_lib as glib 
@@ -28,9 +28,12 @@ class LFP(GBmi):
     _area_var_name = 'dA'
     _timeunit = 'seconds'
 
-    def __init__(self, engine):
+    def __init__(self, engine, loglevel=logging.INFO, logger=None):
         self._bmi = _bmi(engine = engine)
-        self.logger = setlogger(None, self._name, thelevel=logging.INFO)
+        if logger:
+            self.logger = logger.getChild(self._name)
+        else:
+            self.logger = setlogger(None, self._name, thelevel=loglevel)
         self.initialized = False
         self.grid = None
 
@@ -106,7 +109,9 @@ class LFP(GBmi):
         raise NotImplementedError()
 
     def finalize(self):
+        self.logger.info('finalize bmi. Close logger.')
         self._bmi.finalize()
+        closelogger(self.logger)
 
 
     """

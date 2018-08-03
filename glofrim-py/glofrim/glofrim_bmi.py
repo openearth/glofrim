@@ -6,7 +6,7 @@ from configparser import ConfigParser
 import logging
 import numpy as np
 
-from utils import setlogger
+from utils import setlogger, closelogger, add_file_handler
 from gbmi import EBmi
 import glofrim_lib as glib 
 from pcr_bmi import PCR
@@ -26,20 +26,22 @@ class Glofrim(EBmi):
     _models = {'PCR': PCR, 'CMF': CMF, 'DFM': DFM, 'WFL': WFL, 'LFP': LFP}
     _init_pre_exchange = ['DFM'] # need to initialize before we can know the grid
 
-    def __init__(self):
+    def __init__(self, loglevel=logging.INFO):
         self.bmimodels = OrderedDict()
         self.exchanges = []
         self._var_sep = "."
         self._mult_sep = "*"
         self._ind_sep = "@"
 
-        self.logger = setlogger(None, self._name, thelevel=logging.INFO)
+        self._loglevel = loglevel
+        self.logger = setlogger(None, self._name, thelevel=loglevel)
         self.initialized = False
         self.obs = None
 
     def _check_long_var_name(self, long_var_name):
         if not (len(long_var_name.split(self._var_sep)) == 2):
             msg = 'use "model{}var" syntax for long_var_name'.format(self._var_sep)
+            self.logger.error(msg)
             raise ValueError(msg)
         return long_var_name.split(self._var_sep)
 
@@ -59,17 +61,23 @@ class Glofrim(EBmi):
     Model Control Functions
     """
     def initialize_config(self, config_fn, env_fn=None):       
+        # log to file
+        add_file_handler(self.logger, abspath(config_fn).replace('.ini', '.log'))
         if self.initialized:
-            raise Warning("model already initialized, it's therefore not longer possible to initialize the config")
+            msg = "model already initialized, it's therefore not longer possible to initialize the config"
+            self.logger.warn(msg)
+            raise Warning(msg)
         # config settings
         self._config_fn = abspath(config_fn)
         self._root = dirname(config_fn)
+        self.logger.info('Reading ini file..')
         self._config = glib.configread(self._config_fn, encoding='utf-8', 
                                        cf=ConfigParser(inline_comment_prefixes=('#')))
        
         # environment file -> merge with config if given
         if env_fn is not None and isfile(abspath(env_fn)):
             env_fn = abspath(env_fn)
+            self.logger.info('Reading env file..')
             env = glib.configread(env_fn, encoding='utf-8', 
                                   cf=ConfigParser(inline_comment_prefixes=('#')))
             for sect in env.sections():
@@ -84,17 +92,20 @@ class Glofrim(EBmi):
         ## parse glofrim config
         # initialize bmi component and it's configuration 
         if not self._config.has_section('models'):
-            raise ValueError('GLOFRIM ini misses a "models" section')
+            msg = 'GLOFRIM ini misses a "models" section'
+            self.logger.error(msg)
+            raise ValueError(msg)
         for mod in self._config.options('models'):
-            bmi_kwargs = {}
+            bmi_kwargs = {'logger': self.logger, 'loglevel': self._loglevel}
             _bmi = self._models[mod]
             # check if bmi component requires engine
             if 'engine' in _bmi.__init__.__code__.co_varnames:
                 if not self._config.has_option('engines', mod):
                     msg = 'GLOFRIM ini or environment file misses a "engines" section with {} option'
+                    self.logger.error(msg)
                     raise ValueError(msg.format(mod))
                 engine_path = glib.getabspath(self._config.get('engines', mod), self._root)
-                bmi_kwargs = dict(engine = engine_path)
+                bmi_kwargs.update(engine = engine_path)
             # initialize bmi component
             self.bmimodels[mod] = _bmi(**bmi_kwargs)
             # initialize config of bmi component
@@ -122,9 +133,12 @@ class Glofrim(EBmi):
         self._check_dt()
 
     def set_exchanges(self):
+        self.logger.info('Parsing exchanges..')
         # parse exchanges
         if not self._config.has_section('exchanges'):
-            raise ValueError('GLOFRIM ini misses a "exchanges" section')
+            msg = 'GLOFRIM ini misses a "exchanges" section'
+            self.logger.error(msg)
+            raise ValueError(msg)
         self.exchanges = []
         model_called, vars_set = [], []
         for ex_from in self._config.options('exchanges'):
@@ -140,7 +154,9 @@ class Glofrim(EBmi):
             ex_from = ex_from.split(self._var_sep)
             mod_from, vars_from = ex_from[0], '.'.join(ex_from[1:])
             if not (mod_from in self.bmimodels.keys()):
-                raise ValueError("unkown model name {}".format(mod_from))
+                msg = "unkown model name {}".format(mod_from)
+                self.logger.error9(msg)
+                raise ValueError(msg)
             exdict['from_mod'] = mod_from
             from_bmi =  self.bmimodels[mod_from]
             # variables
@@ -168,7 +184,9 @@ class Glofrim(EBmi):
             ex_to = ex_to.split(self._var_sep)
             mod_to, vars_to = ex_to[0], '.'.join(ex_to[1:])
             if not (mod_to in self.bmimodels.keys()):
-                raise ValueError("unkown model name {}".format(mod_to))
+                msg = "unkown model name {}".format(mod_from)
+                self.logger.error(msg)
+                raise ValueError(msg)
             to_bmi = self.bmimodels[mod_to]
             exdict['to_mod'] = mod_to
             # variables
@@ -216,11 +234,14 @@ class Glofrim(EBmi):
     def _set_spatial_coupling(self):
         for item in self.exchanges:
             if item[0] == 'exchange':
+                self.logger.info('set coupled grids for: {}'.format(str(item[1]['coupling'])))
                 item[1]['coupling'].couple()
 
     def initialize_model(self, **kwargs):
         if not hasattr(self, '_config_fn'):
-            raise Warning('run initialize_config before initialize_model')
+            msg = 'run initialize_config before initialize_model'
+            self.logger.warn(msg)
+            raise Warning(msg)
         # some models (e.g. DFM) need to be intialized before we access it spatial information
         for mod in self.bmimodels:
             if mod in self._init_pre_exchange:
@@ -246,9 +267,13 @@ class Glofrim(EBmi):
 
     def update(self, dt=None):
         if not self.initialized:
-            raise Warning("models should be initialized first")
+            msg = "models should be initialized first"
+            self.logger.warn(msg)
+            raise Warning(msg)
         if self._t >= self.get_end_time():
-		    raise Exception("endTime already reached, model not updated")
+            msg = "endTime already reached, model not updated"
+            self.logger.warn(msg)
+            raise Exception(msg)
         # update all models with combined model dt
         dt = self._dt.total_seconds() if dt is None else dt
         t_next = self._t + timedelta(seconds=dt)
@@ -265,7 +290,9 @@ class Glofrim(EBmi):
 
     def update_until(self, t, dt=None):
         if (t<self._t) or t>self.get_end_time():
-            raise Exception("wrong time input: smaller than model time or larger than endTime")
+            msg = "wrong time input: smaller than model time or larger than endTime"
+            self.logger.error(msg)
+            raise Exception(msg)
         while self._t < t:
             self.update(dt=dt)
 
@@ -274,11 +301,13 @@ class Glofrim(EBmi):
         raise NotImplementedError
 
     def finalize(self):
+        self.logger.info('finalize models bmi. Close loggers.')
         for mod in self.bmimodels:
             self.bmimodels[mod].finalize()
+        closelogger(self.logger)
 
     def exchange(self, from_mod, to_mod, from_vars, to_vars, coupling, add=False, **kwargs):
-        self.logger.debug("get data from {}.{}; set to {}.{}".format(from_mod, from_vars[0], to_mod, to_vars[0]))
+        self.logger.info('{} {}.{} data to coupled {}.{} variable'.format('adding' if add else 'setting', from_mod, from_vars[0], to_mod, to_vars[0]))
         if coupling.at_indices():
             self.exchange_at_indices(from_mod, to_mod, from_vars, to_vars, coupling, add=add, **kwargs)
         else:
@@ -452,10 +481,14 @@ class Glofrim(EBmi):
 
     def index(self, x, y, mod, in1d=False):
         if self.bmimodels[mod].grid is None:
-            raise AssertionError("{}: model grid not set".format(mod))
+            msg = "{}: model grid not set".format(mod)
+            self.logger.error(msg)
+            raise AssertionError(msg)
         if in1d:
             if self.bmimodels[mod].grid._1d is None:
-                raise AssertionError("{}: model 1d network not set".format(mod))
+                msg = "{}: model 1d network not set".format(mod)
+                self.logger.error(msg)
+                raise AssertionError(msg)
             idx = self.bmimodels[mod].grid._1d.index(x,y)
         else:
             idx = self.bmimodels[mod].grid.index(x,y)

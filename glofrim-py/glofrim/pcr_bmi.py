@@ -7,7 +7,7 @@ from os.path import join, isfile, abspath, dirname, basename, normpath
 from datetime import datetime, timedelta
 import rasterio
 
-from utils import setlogger
+from utils import setlogger, closelogger
 from gbmi import GBmi
 from grids import RGrid
 import glofrim_lib as glib 
@@ -27,11 +27,15 @@ class PCR(GBmi):
     _timeunit = 'days'
     _dt = timedelta(days=1) # NOTE: this is not an optoins in PCR
 
-    def __init__(self):
+    def __init__(self, loglevel=logging.INFO, logger=None):
         # import original PCR bmi 
         from pcrglobwb_bmi_v203 import pcrglobwb_bmi as _bmi
         self._bmi = _bmi.pcrglobwbBMI()
-        self.logger = setlogger(None, self._name, thelevel=logging.INFO)
+        if logger:
+            self.logger = logger.getChild(self._name)
+        else:
+            self.logger = setlogger(None, self._name, thelevel=loglevel)
+        self._loglevel = loglevel
         self.initialized = False
         self.grid = None
 
@@ -59,6 +63,11 @@ class PCR(GBmi):
             raise Warning('run initialize_config before initialize_model')
         self.write_config() # write updated config to file as bmi does not allow direct access
         self._bmi.initialize(self._config_fn)
+        # stop pcr double logging.
+        pcr_log = logging.getLogger()
+        # pcr_log.setLevel(self._loglevel)
+        self.logger.info("remove PCR logger because it's making to much noise")
+        pcr_log.handlers = pcr_log.handlers[1:]
         self.initialized = True
         self.logger.info('Model initialized')
         # reset model time to make sure it is consistent with the model
@@ -97,7 +106,9 @@ class PCR(GBmi):
         self._bmi.spinup()
 
     def finalize(self):
+        self.logger.info('finalize bmi. Close logger.')
         self._bmi.finalize()
+        closelogger(self.logger)
 
 
     """
