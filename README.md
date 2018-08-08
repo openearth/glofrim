@@ -50,7 +50,7 @@ GLOFRIM development and applications \
 https://www.geosci-model-dev.net/10/3913/2017/gmd-10-3913-2017.html
 		
 BMI\
-https://csdms.colorado.edu/wiki/BMI_Description\
+https://csdms.colorado.edu/wiki/BMI_Description \
 http://www.sciencedirect.com/science/article/pii/S0098300412001252
 
 BMI-wrapper for Python\
@@ -60,19 +60,19 @@ PCR-GLOBWB\
 https://www.geosci-model-dev.net/11/2429/2018/
 
 Delft3D Flexible Mesh\
-https://link.springer.com/article/10.1007%2Fs10236-011-0423-6\
+https://link.springer.com/article/10.1007%2Fs10236-011-0423-6 \
 https://www.deltares.nl/en/software/delft3d-flexible-mesh-suite/#7
 
 LISFLOOD-FP\
-http://www.sciencedirect.com/science/article/pii/S002216940000278X\
+http://www.sciencedirect.com/science/article/pii/S002216940000278X \
 https://gitlab.com/ChippChapp/LISFLOOD-BMI
 
 CaMa-Flood\
-https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2010wr009726\
+https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2010wr009726 \
 https://github.com/hii600/cama-flood_bmi_v3.6.2
 	
 WFLOW\
-https://wflow.readthedocs.io/en/latest/index.html\
+https://wflow.readthedocs.io/en/latest/index.html \
 https://github.com/openstreams/wflow
 
 ## Disclaimer:
