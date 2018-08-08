@@ -88,6 +88,9 @@ WFLOW\
 https://wflow.readthedocs.io/en/latest/index.html \
 https://github.com/openstreams/wflow
 
+GLOFRIM 1.0 \
+https://doi.org/10.5281/zenodo.597107
+
 ## Disclaimer:
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

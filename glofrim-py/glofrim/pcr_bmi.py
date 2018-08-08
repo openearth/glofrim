@@ -15,10 +15,10 @@ import glofrim_lib as glib
 
 class PCR(GBmi):
     """
-    csdms BMI implementation of the PCR BMI adaptor for GLOFRIM.
+    CSDMS-compliant BMI implementation of the PCR-GLOBWB model for GLOFRIM.
     """
     _name = 'PCR'
-    _long_name = 'PCRGLOB-WB'
+    _long_name = 'PCR-GLOBWB'
     _version = '2.0.3'
     _var_units = {'runoff': 'm/day', 'discharge': 'm3/s', 'cellArea': 'm2'}
     _input_var_names = ['cellArea']
@@ -28,7 +28,7 @@ class PCR(GBmi):
     _dt = timedelta(days=1) # NOTE: this is not an optoins in PCR
 
     def __init__(self, loglevel=logging.INFO, logger=None):
-        # import original PCR bmi 
+        # import PCR-GLOBWB with BMI functions 
         from pcrglobwb_bmi_v203 import pcrglobwb_bmi as _bmi
         self._bmi = _bmi.pcrglobwbBMI()
         if logger:
@@ -39,10 +39,13 @@ class PCR(GBmi):
         self.initialized = False
         self.grid = None
 
-    """
-    Model Control Functions
-    """
+    ###
+    ### Model Control Functions
+    ###
+
     def initialize_config(self, config_fn):
+        """
+        """
         # config settings
         if self.initialized:
             raise Warning("model already initialized, it's therefore not longer possible to initialize the config")
