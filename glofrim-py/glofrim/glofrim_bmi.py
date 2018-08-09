@@ -46,6 +46,12 @@ class Glofrim(EBmi):
         return long_var_name.split(self._var_sep)
 
     def _check_initialized(self):
+        """[summary]
+        
+        Returns:
+            [type] -- [description]
+        """
+
         self.initialized = np.all([self.bmimodels[mod].initialized for mod in self.bmimodels])
         return self.initialized
 
@@ -57,9 +63,10 @@ class Glofrim(EBmi):
                 self.logger.error(msg)
                 raise AssertionError(msg)
 
-    """
-    Model Control Functions
-    """
+    ###
+    ### Model Control Functions
+    ###
+
     def initialize_config(self, config_fn, env_fn=None):       
         # log to file
         add_file_handler(self.logger, abspath(config_fn).replace('.ini', '.log'))
