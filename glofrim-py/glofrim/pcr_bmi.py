@@ -158,7 +158,7 @@ class PCR(GBmi):
             dt {int} -- update time step interval [s] at which information is exchanged between models (default: {None})
         
         Raises:
-            Exception -- [description]
+            Exception -- Raised if specified time is smaller than time step or later than model end time
         """
 
         if (t<self._t) or t>self._endTime:
@@ -271,29 +271,29 @@ class PCR(GBmi):
         return var
 
     def get_value_at_indices(self, long_var_name, inds, fill_value=-999, **kwargs):
-        """[Retrieval of value at a specific index of a certain exposed variable; entries with fill_value are
-        replaced with NaN values]
+        """Retrieval of value at a specific index of a certain exposed variable; entries with fill_value are
+        replaced with NaN values
         
         Arguments:
-            long_var_name {[str]} -- [name of exposed PCR-GLOBWB variable]
-            inds {[int]} -- [Index pointing to entry within entire array of variable values]
+            long_var_name {str} -- name of exposed PCR-GLOBWB variable
+            inds {int} -- Index pointing to entry within entire array of variable values
         
         Keyword Arguments:
-            fill_value {int} -- [fill_value used in PCR-GLOBWB] (default: {-999})
+            fill_value {int} -- fill_value used in PCR-GLOBWB (default: {-999})
         
         Returns:
-            [float] -- [value at specific index of retrieved variable]
+            float -- value at specific index of retrieved variable
         """
 
         return self.get_value(long_var_name, fill_value=fill_value, **kwargs).flat[inds]
 
     def set_value(self, long_var_name, src, fill_value=-999, **kwargs):
-        """[Overwriting of all values of a certain exposed variable with provided new values; entries with NaN value are
-        replaced with fill_value; provided new values must match shape of aim variable]
+        """Overwriting of all values of a certain exposed variable with provided new values; entries with NaN value are
+        replaced with fill_value; provided new values must match shape of aim variable
         
         Arguments:
-            long_var_name {[str]} -- [name of exposed PCR-GLOBWB variable]
-            src {[array]} -- [array with new values]
+            long_var_name {str} -- name of exposed PCR-GLOBWB variable
+            src {array} -- array with new values
         
         Keyword Arguments:
             fill_value {int} -- [fill_value used in PCR-GLOBWB] (default: {-999})
@@ -303,13 +303,13 @@ class PCR(GBmi):
         self._bmi.set_var(long_var_name, src, missingValues=fill_value, **kwargs)
 
     def set_value_at_indices(self, long_var_name, inds, src, fill_value=-999,  **kwargs):
-        """[Overwriting of value at specific entry of a certain exposed variable with provided new values; entries with NaN value are
-        replaced with fill_value]
+        """Overwriting of value at specific entry of a certain exposed variable with provided new values; entries with NaN value are
+        replaced with fill_value
         
         Arguments:
-            long_var_name {[str]} -- [name of exposed PCR-GLOBWB variable]
-            inds {[int]} -- [Index pointing to entry within entire array of variable values]
-            src {[array]} -- [array with new values]
+            long_var_name {str} -- name of exposed PCR-GLOBWB variable
+            inds {int} -- Index pointing to entry within entire array of variable values
+            src {array} -- array with new values
         
         Keyword Arguments:
             fill_value {int} -- [description] (default: {-999})
@@ -358,14 +358,14 @@ class PCR(GBmi):
     ###
 
     def set_start_time(self, start_time):
-        """[Overwriting default model start time with user-specified start time;
-        format of provided start time must be yyyy-mm-dd]
+        """Overwriting default model start time with user-specified start time;
+        format of provided start time must be yyyy-mm-dd
         
         Arguments:
-            start_time {[date]} -- [user-specified start time]
+            start_time {date} -- user-specified start time
         
         Raises:
-            ValueError -- [start time must be yyyy-mm-dd; if not, ValueError is raised]
+            ValueError -- start time must be yyyy-mm-dd; if not, ValueError is raised
         """
 
         if isinstance(start_time, datetime):
@@ -378,11 +378,11 @@ class PCR(GBmi):
         self.set_attribute_value('globalOptions:startTime', start_time)
        
     def set_end_time(self, end_time):
-        """[Overwriting default model end time with user-specified end time;
-        format of provided end time must be yyyy-mm-dd]
+        """Overwriting default model end time with user-specified end time;
+        format of provided end time must be yyyy-mm-dd
         
         Arguments:
-            end_time {[date]} -- [user-specified end time]
+            end_time {date} -- user-specified end time]
         
         Raises:
             ValueError -- [end time must be yyyy-mm-dd; if not, ValueError is raised]
@@ -397,32 +397,33 @@ class PCR(GBmi):
         self.set_attribute_value('globalOptions:endTime', end_time)
 
     def set_out_dir(self, out_dir):
-        """[Setting output directory of PCR-GLOBWB files; overwrites the default output directory]
+        """Setting output directory of PCR-GLOBWB; overwrites the default output directory
         
         Arguments:
-            out_dir {[str]} -- [path to output directory]
+            out_dir {str} -- path to output directory
         """
 
         self.set_attribute_value('globalOptions:outputDir', abspath(out_dir))
 
     def get_attribute_names(self):
-        """[Provides list with all model attribute names from model config file]
+        """Provides list with all model attribute names from model config file
         
         Returns:
-            [list] -- [list with model attribute names]
+            [list] -- list with model attribute names
         """
 
         glib.configcheck(self, self.logger)
         return glib.configattr(self._config)
     
     def get_attribute_value(self, attribute_name):
-        """[Provides value of a specified attribute from model config file]
+        """gets attribute value in in underlying model
+            attribute_name should use the following convention model_name.section_name:attribute_name
         
         Arguments:
-            attribute_name {[str]} -- [Name of BMI attribute]
+            attribute_name {str} -- Name of BMI attribute
         
         Returns:
-            [float] -- [value of attribute]
+            float -- value of attribute
         """
 
         glib.configcheck(self, self.logger)
@@ -430,11 +431,12 @@ class PCR(GBmi):
         return glib.configget(self._config, attribute_name)
     
     def set_attribute_value(self, attribute_name, attribute_value):
-        """[Setting user-specified value for a specified attribute in model config file]
+        """sets attribute value in in underlying model
+            attribute_name should use the following convention model_name.section_name:attribute_name
         
         Arguments:
-            attribute_name {[str]} -- [Name of BMI attribute]
-            attribute_value {[boolean]} -- [boolean value]
+            attribute_name {str} -- Name of BMI attribute
+            attribute_value {float} -- value to be est
         
         Returns:
             [str] -- [no clue]
