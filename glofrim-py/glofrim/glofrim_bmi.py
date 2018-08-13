@@ -17,32 +17,29 @@ from lfp_bmi import LFP
 from spatial_coupling import SpatialCoupling, groupby_sum
 
 class Glofrim(EBmi):
-    """CSDMS-compliant BMI implementation; central script providing function
-    sceleton to other model-specified BMIs; defining main anc central
-    model and BMI information
+    """Central CSDMS-compliant BMI implementation; 
+    generic script providing function sceleton to other model-specified BMIs; 
+    defining main and central model and BMI information
     
     Arguments:
-        EBmi {[type]} -- [description]
+        EBmi {class} -- Interface (abstract base class) for a model that implements the CSDMS BMI (Basic Model Interface).
     
     Raises:
-        ValueError -- [description]
-        AssertionError -- [description]
-        Warning -- [description]
-        ValueError -- [description]
-        ValueError -- [description]
-        ValueError -- [description]
-        ValueError -- [description]
-        ValueError -- [description]
-        Warning -- [description]
-        Warning -- [description]
-        Exception -- [description]
-        Exception -- [description]
-        NotImplementedError -- [description]
-        AssertionError -- [description]
-        AssertionError -- [description]
-    
-    Returns:
-        [type] -- [description]
+        ValueError -- Raised if syntax requesting variable name is not correct
+        AssertionError -- Raised if model dt is not a whole number of GLOFRIM dt
+        Warning -- Warning is raised if two-step model initialization is not correctly executed
+        ValueError -- Raised if config-files of models to be coupled are not defined in ini-file
+        ValueError -- Raised if engines (i.e. executables) for models to be coupled are not specified in ini/env-file
+        ValueError -- Raised if no exchanges are specified in GLOFRIM ini-file
+        ValueError -- Raised if an unspported model is specified
+        ValueError -- Raised if unknown variables are specified
+        Warning -- Warning is raised if two-step model initialization is not correctly executed
+        Warning -- Raised in models are not initialized before updating
+        Exception -- Raised if model end time is already reached; no further updating possible
+        Exception -- Raised if specified time is smaller than time step or later than model end time
+        NotImplementedError -- SpinUp is not implemented for central BMI
+        AssertionError -- Raised if no grid is set before
+        AssertionError -- Raised if no 1D network is set before
     """
 
     _name = 'GLOFRIM'
@@ -63,16 +60,17 @@ class Glofrim(EBmi):
         self.obs = None
 
     def _check_long_var_name(self, long_var_name):
-        """[summary]
+        #TODO: what's the use of this function? You provide a name and get it back split?
+        """Returns the variable name of a user-specified variable
         
         Arguments:
-            long_var_name {[str]} -- [variable long name]
+            long_var_name {str} -- variable long name
         
         Raises:
-            ValueError -- [Raised if syntax is not correct]
+            ValueError -- Raised if syntax requesting variable name is not correct
         
         Returns:
-            [type] -- [description]
+            str -- variable name of specified variable
         """
 
         if not (len(long_var_name.split(self._var_sep)) == 2):
@@ -82,16 +80,24 @@ class Glofrim(EBmi):
         return long_var_name.split(self._var_sep)
 
     def _check_initialized(self):
-        """[summary]
+        """Checks whether a model was already initialized in a previous step;
+        criterion needed since some functions require the model to be in initialized state
         
         Returns:
-            [type] -- [description]
+            boolean -- Boolean value whether model is already initialized
         """
 
         self.initialized = np.all([self.bmimodels[mod].initialized for mod in self.bmimodels])
         return self.initialized
 
     def _check_dt(self):
+        """Checks whether the dt specified for a model is not a whole number of GLOFRIM dt;
+        criterion is needed to ensure updates between models remain in phase
+        
+        Raises:
+            AssertionError -- Raised if model dt is not a whole number of GLOFRIM dt
+        """
+
         for mod in self.bmimodels:
             dt_mod = self.bmimodels[mod].get_time_step()
             if not glib.check_dts_divmod(self._dt, dt_mod):
@@ -104,9 +110,9 @@ class Glofrim(EBmi):
     ###
 
     def initialize_config(self, config_fn, env_fn=None):    
-        """Initializing the model configuration file. Aligning GLOFRIM specs for coupled runs
-        to be consistent with overall run settings; with environment file (env-file)
-        local paths to model engines can be defined
+        """Initializing the model configuration file;
+        aligning GLOFRIM specifications for coupled runs to be consistent with overall run settings; 
+        with environment file (env-file) local paths to model engines can be defined
                 
         Arguments:
             config_fn {str} -- path to model configuration file
@@ -192,11 +198,9 @@ class Glofrim(EBmi):
         self._check_dt()
 
     def set_exchanges(self):
-        """defines the variable exchanges between models together with
-        necessary unit and time conversions; exchanges can be defined in 
-        ini/env-file.
-        It is important that all fluxes/states are converted to m3 for 
-        mass balance.
+        """Defines the variable exchanges between models together with necessary unit and time conversions; 
+        exchanges can be defined in ini/env-file;
+        it is important that all fluxes/states in ini/env-file are to m3 for mass balance.
         
         Raises:
             ValueError -- Raised if no exchanges are specified in GLOFRIM ini-file
@@ -306,8 +310,9 @@ class Glofrim(EBmi):
         return self.exchanges
 
     def _set_spatial_coupling(self):
-        """Spatially couples the grid of the models whose
-        variables are excanged
+        """Spatially couples the grid of the models whose variables are exchanged;
+        for one-way coupling, this is a one-to-many coupling, i.e. one origin cell is coupled
+        to multiple destination cells
         """
 
         for item in self.exchanges:
@@ -317,8 +322,8 @@ class Glofrim(EBmi):
 
     def initialize_model(self, **kwargs):
         """Initializes the model, i.e. loading all files and checking for consistency; 
-        can only be executed after the model-specific config-file was initialized. This is essential
-        for a successful two-step model initialization and aligned model data.
+        can only be executed after the model-specific config-file was initialized;
+        essential for a successful two-step model initialization and aligned model data.
         
         Raises:
             Warning -- Warning is raised if two-step model initialization is not correctly executed
@@ -348,10 +353,9 @@ class Glofrim(EBmi):
         # TODO set observation points
 
     def initialize(self, config_fn):
-        """Initializes the model following a two-step initialization procedure.
-        First, the config-file is initialized and where necessary aligned with
-        overall model settings (e.g. output-dir, start and end time).
-        Second, the model is actually initialized.
+        """Initializes the model following a two-step initialization procedure;
+        first, the config-file is initialized and where necessary aligned with overall model settings (e.g. output-dir, start and end time);
+        second, the model is actually initialized.
         
         Arguments:
             config_fn {str} -- path to model configuration file
@@ -361,12 +365,12 @@ class Glofrim(EBmi):
         self.initialize_model()
 
     def update(self, dt=None):
-        """Updating model for a certain time step interval (default: None).
-        Checks whether model end time is already reached.
-        Requires that model-specific time step is a whole number of update time step.
+        """Updating model for a certain time step interval (default: None);
+        checks whether model end time is already reached;
+        requires that model-specific time step is a whole number of update time step.
         
         Keyword Arguments:
-            dt {int} -- update time step interval [s] at which information is exchanged between models (default: {None})
+            dt {int} -- update time step interval [sec] at which information is exchanged between models (default: {None})
         
         Raises:
             Warning -- Raised in models are not initialized before updating
@@ -416,8 +420,7 @@ class Glofrim(EBmi):
             self.update(dt=dt)
 
     def spinup(self):
-        """PCR-GLOBWB specific function.
-        Runs the in ini-file specified number of spin-up years.
+        """PCR-GLOBWB specific function (see pcr_bmi.py).
         
         Raises:
             NotImplementedError -- SpinUp is not implemented for central BMI
@@ -426,7 +429,8 @@ class Glofrim(EBmi):
         raise NotImplementedError
 
     def finalize(self):
-        """Finalizes the model, i.e. shuts down all operations and closes output files.
+        """Finalizes the model;
+        shuts down all operations and closes output files.
         """
 
         self.logger.info('finalize models bmi. Close loggers.')
@@ -436,18 +440,20 @@ class Glofrim(EBmi):
 
     def exchange(self, from_mod, to_mod, from_vars, to_vars, coupling, add=False, **kwargs):
         """Exchanges variable content from specified source variable in source model to
-        a specified destination variable in the destination model; exchange is
-        possible for entire grid or at specified indices
+        a specified destination variable in the destination model; 
+        exchange is possible for entire grid or at specified indices;
+        coupling either as totals or fractional values depending on exchange;
+        source variable can either add to destination variable or overwrite it
         
         Arguments:
             from_mod {str} -- string defining the source model
             to_mod {str} -- string defining the destination model
             from_vars {str} -- string defining the source variable
             to_vars {str} -- string defining the destination variable
-            coupling {[type]} -- [description]
+            coupling {array} -- array with coupled indices
         
         Keyword Arguments:
-            add {bool} -- [description] (default: {False})
+            add {bool} -- if True, source values are added to destination values; if False, overwritten (default: {False})
         """
 
         self.logger.info('{} {}.{} data to coupled {}.{} variable'.format('adding' if add else 'setting', from_mod, from_vars[0], to_mod, to_vars[0]))
@@ -458,7 +464,8 @@ class Glofrim(EBmi):
 
     def exchange_same_grid(self, from_mod, to_mod, from_vars, to_vars, add=False, **kwargs):
         """Exchanges variable content from specified source variable in source model to
-        a specified destination variable in the destination model for the entire grid
+        a specified destination variable in the destination model for the entire grid;
+        source variable can either add to destination variable or overwrite it
         
         Arguments:
             from_mod {str} -- string defining the source model
@@ -467,7 +474,7 @@ class Glofrim(EBmi):
             to_vars {str} -- string defining the destination variable
         
         Keyword Arguments:
-            add {bool} -- [description] (default: {False})
+            add {bool} -- if True, source values are added to destination values; if False, overwritten (default: {False})
         """
 
         # get FROM data & translate
@@ -494,17 +501,19 @@ class Glofrim(EBmi):
 
     def exchange_at_indices(self, from_mod, to_mod, from_vars, to_vars, coupling, add=False, **kwargs):
         """Exchanges variable content from specified source variable in source model to
-        a specified destination variable in the destination model for user-specified indices
+        a specified destination variable in the destination model for user-specified indices;
+        coupling either as totals or fractional values depending on exchange;
+        source variable can either add to destination variable or overwrite it
            
         Arguments:
             from_mod {str} -- string defining the source model
             to_mod {str} -- string defining the destination model
             from_vars {str} -- string defining the source variable
             to_vars {str} -- string defining the destination variable
-            coupling {[type]} -- [description]
+            coupling {array} -- array with coupled indices
         
         Keyword Arguments:
-            add {bool} -- [description] (default: {False})
+            add {bool} -- if True, source values are added to destination values; if False, overwritten (default: {False})
         """
 
         # get FROM data & translate
@@ -543,8 +552,8 @@ class Glofrim(EBmi):
     ###
 
     def get_model_type(self):
-        """returns type of specified model; possible types are
-        hydrologic, routing, or hydrodynamic model
+        """Returns type of specified model; 
+        possible types are hydrologic, routing, or hydrodynamic model
         
         Returns:
             str -- type of specified model
@@ -553,7 +562,8 @@ class Glofrim(EBmi):
         return {mod: self.bmimodels[mod].get_model_type() for mod in self.bmimodels}
 
     def get_component_name(self):
-        """[summary]
+        #TODO: what are model component in this context?
+        """Returns component name of specified model
         
         Returns:
             str -- name of specified component
@@ -563,7 +573,8 @@ class Glofrim(EBmi):
 
     def get_input_var_names(self):
         """Returns list with all possible input variable names that 
-        can be used as exchange TO the specified model
+        can be used as exchange TO the specified model;
+        must be specified in model specific BMI class.
         
         Returns:
             list -- list of all possible input variables
@@ -573,10 +584,11 @@ class Glofrim(EBmi):
 
     def get_output_var_names(self):
         """Returns list with all possible output variable names that 
-        can be used as exchange FROM the specified model
+        can be used as exchange FROM the specified model;
+        must be specified in model specific BMI class.
         
         Returns:
-            list -- list of all possible input variables
+            list -- list of all possible output variables
         """
 
         return {mod: self.bmimodels[mod].get_output_var_names() for mod in self.bmimodels}
@@ -599,85 +611,85 @@ class Glofrim(EBmi):
         return self.bmimodels[mod].get_var_type(var)
 
     def get_var_units(self, long_var_name):
-        """[summary]
+        """Provides units of specified variable
         
         Arguments:
-            long_var_name {[type]} -- [description]
+            long_var_name {str} -- long name of exposed model variable
         
         Returns:
-            [type] -- [description]
+            str -- units of specified variable
         """
 
         mod, var = self._check_long_var_name(long_var_name)
         return self.bmimodels[mod].get_var_units(var)
 
     def get_var_rank(self, long_var_name):
-        """[summary]
+        """Provides rank (i.e. number of dimensions) of specified variable
         
         Arguments:
-            long_var_name {[type]} -- [description]
+            long_var_name {str} -- long name of exposed model variable
         
         Returns:
-            [type] -- [description]
+            int -- rank of specified variable
         """
 
         mod, var = self._check_long_var_name(long_var_name)
         return self.bmimodels[mod].get_var_rank(var)
 
     def get_var_size(self, long_var_name):
-        """[summary]
+        """Provides size (i.e. total number of values contained) of specified variable
         
         Arguments:
-            long_var_name {[type]} -- [description]
+            long_var_name {str} -- long name of exposed model variable
         
         Returns:
-            [type] -- [description]
+            int -- size of specified variable
         """
 
         mod, var = self._check_long_var_name(long_var_name)
         return self.bmimodels[mod].get_var_size(var)
 
     def get_var_shape(self, long_var_name):
-        """[summary]
+        """Provides shape of specified variable
         
         Arguments:
-            long_var_name {[type]} -- [description]
+            long_var_name {str} -- long name of exposed model variable
         
         Returns:
-            [type] -- [description]
+            tuple -- shape of specified variable
         """
 
         mod, var = self._check_long_var_name(long_var_name)
         return self.bmimodels[mod].get_var_shape(var)
 
     def get_var_nbytes(self, long_var_name):
-        """[summary]
+        """Provides number of bytes of specified variable
         
         Arguments:
-            long_var_name {[type]} -- [description]
+            long_var_name {str} -- long name of exposed model variable
         
         Returns:
-            [type] -- [description]
+            int -- byte number of specified variable
         """
 
         mod, var = self._check_long_var_name(long_var_name)
         return self.bmimodels[mod].get_var_nbytes(var)
 
     def get_start_time(self):
-        """[summary]
+        """Provides start time of model
         
         Returns:
-            [type] -- [description]
+            date -- start time of model
         """
 
         self._startTime = max([self.bmimodels[mod].get_start_time() for mod in self.bmimodels])
         return self._startTime
 
     def get_current_time(self):
-        """[summary]
+        """Provides current model time
         
         Returns:
-            [type] -- [description]
+            date -- current model time of PCR-GLOBWB
         """
 
         models_t = [self.bmimodels[mod]._t for mod in self.bmimodels]
@@ -689,29 +701,29 @@ class Glofrim(EBmi):
         return self._t
 
     def get_end_time(self):
-        """[summary]
+        """Provides end time of model
         
         Returns:
-            [type] -- [description]
+            date -- end time of model
         """
 
         self._endTime = min([self.bmimodels[mod].get_end_time() for mod in self.bmimodels])
         return self._endTime
 
     def get_time_step(self):
-        """[summary]
+        """Provides time step of model
         
         Returns:
-            [type] -- [description]
+            date -- time step of model
         """
         
         return self._dt
         
     def get_time_units(self):
-        """[summary]
+        """Provides time unit of model.
         
         Returns:
-            [type] -- [description]
+            str -- time unit of model
         """
 
         return self._timeunit
@@ -721,21 +733,22 @@ class Glofrim(EBmi):
     ###
     
     def get_value(self, long_var_name, **kwargs):
-        """[summary]
+        """Retrieval of value of a certain exposed variable; 
+        entries with fill_value are replaced with NaN values
         
         Arguments:
-            long_var_name {[type]} -- [description]
+            long_var_name {str} -- name of exposed model variable
         
         Returns:
-            [type] -- [description]
+            array -- array with values
         """
 
         mod, var = self._check_long_var_name(long_var_name)
         return self.bmimodels[mod].get_value(var, **kwargs)
 
     def get_value_at_indices(self, long_var_name, inds, **kwargs):
-        """Retrieval of value at a specific index of a certain exposed variable; entries with fill_value are
-        replaced with NaN values
+        """Retrieval of value at a specific index of a certain exposed variable; 
+        entries with fill_value are replaced with NaN values
         
         Arguments:
             long_var_name {str} -- name of exposed model variable
@@ -749,23 +762,21 @@ class Glofrim(EBmi):
         return self.bmimodels[mod].get_value_at_indices(var, inds, **kwargs)
 
     def set_value(self, long_var_name, src, **kwargs):
-        """Overwriting of all values of a certain exposed variable with provided new values; entries with NaN value are
-        replaced with fill_value; provided new values must match shape of aim variable
+        """Overwriting of all values of a certain exposed variable with provided new values; 
+        entries with NaN value are replaced with fill_value; 
+        provided new values must match shape of aim variable
         
         Arguments:
             long_var_name {str} -- name of exposed model variable
             src {array} -- array with new values
-        
-        Returns:
-            [type] -- [description]
         """
 
         mod, var = self._check_long_var_name(long_var_name)
         return self.bmimodels[mod].set_value(var, src, **kwargs)
 
     def set_value_at_indices(self, long_var_name, inds, src, **kwargs):
-        """Overwriting of value at specific entry of a certain exposed variable with provided new values; entries with NaN value are
-        replaced with fill_value
+        """Overwriting of value at specific entry of a certain exposed variable with provided new values; 
+        entries with NaN value are replaced with fill_value
         
         Arguments:
             long_var_name {str} -- name of exposed model variable
@@ -784,10 +795,11 @@ class Glofrim(EBmi):
     ###
     
     def get_grid_type(self):
-        """[summary]
+        """Provides grid type of model;
+        can be regular, flexible or unit catchment grid
         
         Returns:
-            [type] -- [description]
+            str -- Grid type of model
         """
 
         return {mod: self.bmimodels[mod].get_grid_type() for mod in self.bmimodels}
@@ -797,23 +809,23 @@ class Glofrim(EBmi):
     ###
 
     def get_obs(self):
-        """Under construction:
-        Function to get observation points to read out model
+        """Under construction;
+        function to get observation points to read out model
         output on the fly.
         """
 
         pass
 
     def set_obs(self):
-        """Under construction:
-        Function to set observation points to read out model
+        """Under construction;
+        function to set observation points to read out model
         output on the fly.
         """
 
         pass
 
     def index(self, x, y, mod, in1d=False):
-        """Finds the index in model data structure associated with
+        """Finds the index in model data grid associated with
         coordinates in lat/lon projection of a user-specified point
         
         Arguments:
@@ -873,19 +885,20 @@ class Glofrim(EBmi):
 
         for mod in self.bmimodels:
             self.bmimodels[mod].set_end_time(end_time)
-        self.get_end_time() # sync start time
+        self.get_end_time() # sync end time
 
     def get_attribute_names(self):
         """Provides list with all model attribute names from model config file
         
         Returns:
-            [list] -- list with model attribute names
+            list -- list with model attribute names
         """
 
         return {mod: self.bmimodels[mod].get_attribute_names() for mod in self.bmimodels}
 
     def set_out_dir(self, out_dir):
-        """Setting output directory of model; overwrites the default output directory
+        """Setting output directory of model; 
+        overwrites the default output directory
         
         Arguments:
             out_dir {str} -- path to output directory
@@ -898,29 +911,26 @@ class Glofrim(EBmi):
             self.bmimodels[mod].set_out_dir(path)
 
     def get_attribute_value(self, attribute_name):
-        """gets attribute value in in underlying model
-            attribute_name should use the following convention model_name.section_name:attribute_name
+        """gets attribute value in in underlying model;
+        attribute_name should use the following convention model_name.section_name:attribute_name
         
         Arguments:
             attribute_name {str} -- Name of BMI attribute
         
         Returns:
-            float -- value of attribute
+            float -- value of BMI attribute
         """
 
         mod, attr = self._check_long_var_name(attribute_name)
         return self.bmimodels[mod].get_attribute_value(attr)
     
     def set_attribute_value(self, attribute_name, attribute_value):
-        """sets attribute value in in underlying model
-            attribute_name should use the following convention model_name.section_name:attribute_name
+        """sets attribute value in underlying model;
+        attribute_name should use the following convention model_name.section_name:attribute_name
         
         Arguments:
             attribute_name {str} -- Name of BMI attribute
-            attribute_value {float} -- value to be est
-        
-        Returns:
-            [type] -- [description]
+            attribute_value {float} -- value to be set
         """
 
         mod, attr = self._check_long_var_name(attribute_name)

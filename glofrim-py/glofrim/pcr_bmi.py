@@ -14,24 +14,21 @@ import glofrim_lib as glib
 
 
 class PCR(GBmi):
-    """CSDMS-compliant BMI implementation of the PCR-GLOBWB model for GLOFRIM.
+    """CSDMS-compliant BMI implementation for GLOFRIM.
     
     Arguments:
         GBmi {class} -- Interface (abstract base class) for a model that implements the CSDMS BMI (Basic Model Interface).
     
     Raises:
-        Warning -- [description]
-        Warning -- [description]
-        Exception -- [description]
-        ValueError -- [description]
-        Exception -- [description]
-        IOError -- [description]
-        IOError -- [description]
-        ValueError -- [description]
-        ValueError -- [description]
-    
-    Returns:
-        [class] -- PCR-GLOBWB object with BMI functionality
+        Warning -- Warning is raised if two-step model initialization is not correctly executed
+        Warning -- Warning is raised if two-step model initialization is not correctly executed
+        Exception -- Raised if specified time is smaller than time step or later than model end time
+        ValueError -- Raised if model time step is not whole number of update interval
+        Exception -- Raised if end time is already reached as no further update is possible
+        IOError -- function requires LDD file; if not found, IOerror is raised
+        IOError -- function requires landsmask file; if not found, IOerror is raised
+        ValueError -- start time must be yyyy-mm-dd; if not, ValueError is raised
+        ValueError -- end time must be yyyy-mm-dd; if not, ValueError is raised
     """
 
     _name = 'PCR'
@@ -42,7 +39,7 @@ class PCR(GBmi):
     _output_var_names = ['runoff', 'discharge']
     _area_var_name = 'cellArea'
     _timeunit = 'days'
-    _dt = timedelta(days=1) # NOTE: this is not an optoins in PCR
+    _dt = timedelta(days=1) # NOTE: this is fixed in PCR
 
     def __init__(self, loglevel=logging.INFO, logger=None):
         # import PCR-GLOBWB with BMI functions 
@@ -131,6 +128,10 @@ class PCR(GBmi):
         
         Keyword Arguments:
             dt {int} -- update time step interval [s] at which information is exchanged between models (default: {None})
+        
+        Raises:
+            ValueError -- Raised if model time step is not whole number of update interval
+            Exception -- Raised if end time is already reached as no further update is possible
         """
 
         # dt in seconds. if not given model timestep is used
@@ -186,10 +187,10 @@ class PCR(GBmi):
     ###
     
     def get_start_time(self):
-        """[Allows for retrieving the model start time of PCR-GLOBWB]
+        """Provides start time of PCR-GLOBWB
         
         Returns:
-            [date] -- [start time of PCR-GLOBWB]
+            date -- start time of PCR-GLOBWB
         """
 
         if self.initialized:
@@ -202,10 +203,10 @@ class PCR(GBmi):
         return self._startTime
     
     def get_current_time(self):
-        """[Allows for retrieving the current model time of PCR-GLOBWB]
+        """Provides current model time of PCR-GLOBWB
         
         Returns:
-            [date] -- [current time of PCR-GLOBWB]
+            [date] -- current model time of PCR-GLOBWB
         """
 
         if self.initialized:
@@ -214,10 +215,10 @@ class PCR(GBmi):
             return self.get_start_time()
 
     def get_end_time(self):
-        """[Allows for retrieving the model end time of PCR-GLOBWB]
+        """Provides end time of PCR-GLOBWB
         
         Returns:
-            [date] -- [end time of PCR-GLOBWB]
+            date -- end time of PCR-GLOBWB
         """
 
         if self.initialized:
@@ -230,19 +231,19 @@ class PCR(GBmi):
         return self._endTime
 
     def get_time_step(self):
-        """[returns the time step at which PCR-GLOBWB is updated]
+        """Provides time step of PCR-GLOBWB
         
         Returns:
-            [type] -- [time step of PCR-GLOBWB]
+            date -- time step of PCR-GLOBWB
         """
 
         return self._dt 
         
     def get_time_units(self):
-        """[returns the time unit of PCR-GLOBWB]
+        """Provides time unit of PCR-GLOBWB.
         
         Returns:
-            [str] -- [time unit of PCR-GLOBWB]
+            str -- time unit of model of PCR-GLOBWB
         """
 
         return self._timeunit
@@ -252,17 +253,17 @@ class PCR(GBmi):
     ###
     
     def get_value(self, long_var_name, fill_value=-999, **kwargs):
-        """[Retrieval of all values of a certain exposed variable; entries with fill_value are
-        replaced with NaN values]
+        """Retrieval of all values of a certain exposed variable; 
+        entries with fill_value are replaced with NaN values
         
         Arguments:
-            long_var_name {[str]} -- [name of exposed PCR-GLOBWB variable]
+            long_var_name {str} -- name of exposed PCR-GLOBWB variable
         
         Keyword Arguments:
-            fill_value {int} -- [fill_value used in PCR-GLOBWB] (default: {-999})
+            fill_value {int} -- fill_value used in PCR-GLOBWB (default: {-999})
         
         Returns:
-            [array] -- [array with all entries of retrieved variable]
+            array -- array with all entries of retrieved variable
         """
 
         # additional fill_value argument required to translate pcr maps to numpy arrays
@@ -271,8 +272,8 @@ class PCR(GBmi):
         return var
 
     def get_value_at_indices(self, long_var_name, inds, fill_value=-999, **kwargs):
-        """Retrieval of value at a specific index of a certain exposed variable; entries with fill_value are
-        replaced with NaN values
+        """Retrieval of value at a specific index of a certain exposed variable; 
+        entries with fill_value are replaced with NaN values
         
         Arguments:
             long_var_name {str} -- name of exposed PCR-GLOBWB variable
@@ -288,23 +289,24 @@ class PCR(GBmi):
         return self.get_value(long_var_name, fill_value=fill_value, **kwargs).flat[inds]
 
     def set_value(self, long_var_name, src, fill_value=-999, **kwargs):
-        """Overwriting of all values of a certain exposed variable with provided new values; entries with NaN value are
-        replaced with fill_value; provided new values must match shape of aim variable
+        """Overwriting of all values of a certain exposed variable with provided new values; 
+        entries with NaN value are replaced with fill_value; 
+        provided new values must match shape of aim variable
         
         Arguments:
             long_var_name {str} -- name of exposed PCR-GLOBWB variable
             src {array} -- array with new values
         
         Keyword Arguments:
-            fill_value {int} -- [fill_value used in PCR-GLOBWB] (default: {-999})
+            fill_value {int} -- fill_value used in PCR-GLOBWB (default: {-999})
         """
 
         src = np.where(np.isnan(src), fill_value, src).astype(self.get_var_type(long_var_name))
         self._bmi.set_var(long_var_name, src, missingValues=fill_value, **kwargs)
 
     def set_value_at_indices(self, long_var_name, inds, src, fill_value=-999,  **kwargs):
-        """Overwriting of value at specific entry of a certain exposed variable with provided new values; entries with NaN value are
-        replaced with fill_value
+        """Overwriting of value at specific entry of a certain exposed variable with provided new values; 
+        entries with NaN value are replaced with fill_value
         
         Arguments:
             long_var_name {str} -- name of exposed PCR-GLOBWB variable
@@ -312,7 +314,7 @@ class PCR(GBmi):
             src {array} -- array with new values
         
         Keyword Arguments:
-            fill_value {int} -- [description] (default: {-999})
+            fill_value {int} -- fill_value used in PCR-GLOBWB (default: {-999})
         """
 
         val = self.get_value(long_var_name, fill_value=fill_value, **kwargs)
@@ -324,15 +326,16 @@ class PCR(GBmi):
     ###
 
     def get_grid(self):
-        """[Retreving spatial information about model domain from PCR-GLOBWB landmask file using rasterio
-        operations; also retrieving PCR-GLOBWB drainage direction (LDD) information]
+        """Retreving spatial information about model domain from PCR-GLOBWB landmask file using rasterio
+        operations; 
+        also retrieving PCR-GLOBWB drainage direction (LDD) information
         
         Raises:
-            IOError -- [function requires LDD file; if not found, IOerror is raised]
-            IOError -- [function requires landsmask file; if not found, IOerror is raised]
+            IOError -- function requires LDD file; if not found, IOerror is raised
+            IOError -- function requires landsmask file; if not found, IOerror is raised
         
         Returns:
-            [grid] -- [rasterio grid information]
+            grid -- rasterio grid object
         """
 
 
@@ -382,10 +385,10 @@ class PCR(GBmi):
         format of provided end time must be yyyy-mm-dd
         
         Arguments:
-            end_time {date} -- user-specified end time]
+            end_time {date} -- user-specified end time
         
         Raises:
-            ValueError -- [end time must be yyyy-mm-dd; if not, ValueError is raised]
+            ValueError -- end time must be yyyy-mm-dd; if not, ValueError is raised
         """
 
         if isinstance(end_time, datetime):
@@ -397,7 +400,8 @@ class PCR(GBmi):
         self.set_attribute_value('globalOptions:endTime', end_time)
 
     def set_out_dir(self, out_dir):
-        """Setting output directory of PCR-GLOBWB; overwrites the default output directory
+        """Setting output directory of PCR-GLOBWB; 
+        overwrites the default output directory
         
         Arguments:
             out_dir {str} -- path to output directory
@@ -409,15 +413,15 @@ class PCR(GBmi):
         """Provides list with all model attribute names from model config file
         
         Returns:
-            [list] -- list with model attribute names
+            list -- list with model attribute names
         """
 
         glib.configcheck(self, self.logger)
         return glib.configattr(self._config)
     
     def get_attribute_value(self, attribute_name):
-        """gets attribute value in in underlying model
-            attribute_name should use the following convention model_name.section_name:attribute_name
+        """Gets attribute value in in underlying model;
+        attribute_name should use the following convention model_name.section_name:attribute_name
         
         Arguments:
             attribute_name {str} -- Name of BMI attribute
@@ -431,8 +435,8 @@ class PCR(GBmi):
         return glib.configget(self._config, attribute_name)
     
     def set_attribute_value(self, attribute_name, attribute_value):
-        """sets attribute value in in underlying model
-            attribute_name should use the following convention model_name.section_name:attribute_name
+        """sets attribute value in in underlying model;
+        attribute_name should use the following convention model_name.section_name:attribute_name
         
         Arguments:
             attribute_name {str} -- Name of BMI attribute
@@ -447,7 +451,7 @@ class PCR(GBmi):
         return glib.configset(self._config, attribute_name, attribute_value)
 
     def write_config(self):
-        """Write adapted config to file; just before initializing
+        """Write adapted config to file; just before initializing;
         only for models which do not allow for direct access to model config via bmi
         """
 
