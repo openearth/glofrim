@@ -11,11 +11,7 @@ Welcome to GLOFRIM's documentation!
 
    helloWorld.rst
    running_GLOFRIM.rst
-   :caption: Contents:
-
-   
-
-
+   applications.rst
 
 Indices and tables
 ==================

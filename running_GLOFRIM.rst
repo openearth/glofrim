@@ -5,8 +5,6 @@
 Running GLOFRIM
 ***************
 
-.. _installing-docdir:
-
 Installing your doc directory
 =============================
 

@@ -15,12 +15,6 @@ Headline 2
 So text with '=' as underline is a second headline.
 First headline is with * above and below text (here that would be Hello World.
 
-You can also add an image:
-
-.. image:: _static/GermanDischarge.png
-
-.. _fetching-the-data:
-
 Headline 3
 -----------------
 
