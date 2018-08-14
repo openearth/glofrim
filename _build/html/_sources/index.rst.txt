@@ -9,6 +9,7 @@ Welcome to GLOFRIM's documentation!
 .. toctree::
    :maxdepth: 2
 
+   helloWorld.rst
    running_GLOFRIM.rst
    :caption: Contents:
 
