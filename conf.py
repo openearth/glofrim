@@ -33,7 +33,9 @@
 extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
-    'sphinx.ext.viewcode']
+    'sphinx.ext.viewcode',
+    'IPython.sphinxext.ipython_console_highlighting',
+    'sphinx.ext.mathjax']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -85,11 +87,10 @@ todo_include_todos = True
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'classic'
+html_theme = 'sphinx_rtd_theme'
 
 html_theme_options = {
-    "rightsidebar": "true",
-    "relbarbgcolor": "black"
+    'logo_only': True
 }
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -115,6 +116,7 @@ html_sidebars = {
     ]
 }
 
+html_show_sourcelink = True
 
 # -- Options for HTMLHelp output ------------------------------------------
 

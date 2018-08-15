@@ -67,6 +67,15 @@ and then rebuild the docs::
   cd GLOFRIM
   make html
 
+.. sourcecode:: ipython
+
+    In [69]: lines = plot([1,2,3])
+
+    In [70]: setp(lines)
+      alpha: float
+      animated: [True | False]
+      antialiased or aa: [True | False]
+      ...snip
 
 When you reload the page by refreshing your browser pointing to
 :file:`_build/html/index.html`, you should see a link to the
@@ -78,9 +87,3 @@ with::
 
   .. image::
      _static/GermanDischarge.png
-
-
-Next we'll customize the look and feel of our site to give it a logo,
-some custom css, and update the navigation panels to look more like
-the `sphinx <http://sphinx.pocoo.org/>`_ site itself -- see
-:ref:`custom_look`.
