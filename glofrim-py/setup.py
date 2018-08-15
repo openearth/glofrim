@@ -4,6 +4,7 @@ import os
 install_requires = [
     'setuptools',
     'numpy==1.14.5', # there's an error when using 1.15.
+    'bmi-python>=0.2.6', 
     'rasterio>=1.0',
     'rtree>=0.8.1',
     'click>=6.7',

@@ -38,7 +38,7 @@ Please note that it running it on Windows is currently not supported.
  - glofrim.ini: example ini-file where the models as well as the exchanged fluxes/paths are specified
 
 ## Setting up GLOFRIM
-We recommend you setup glofrim within it's own python environment. You can do so using [conda environments](https://conda.io/docs/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file) with the provided envrionment.yml file in the glofrim-py folder. This should also install the python BMI-wrapper for you. 
+We recommend you setup GLOFRIM within its own python environment. You can do so using [conda environments](https://conda.io/docs/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file) with the provided envrionment.yml file in the glofrim-py folder. This should also install the required python BMI-wrapper for you.
 
 ```
 # create environmnet named glofrim

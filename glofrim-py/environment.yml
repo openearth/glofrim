@@ -1,4 +1,4 @@
-name: glofrim_t2
+name: glofrim
 
 channels:
   - conda-forge
@@ -19,4 +19,4 @@ dependencies:
   - six>=1.6.1
   - pip>=9.0.3
   - pip:
-    - bmi-python
+    - bmi-python>=
