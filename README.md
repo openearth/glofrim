@@ -1,73 +1,149 @@
-# GLOFRIM
+# GLOFRIM 2.0
 Globally Applicable Framework for Integrated Hydrological-Hydrodynamic Modelling (GLOFRIM)
-Development by JMH, DE, HI
 
-## NESTING
-This branch will be used for developed of a coupled hydrology -> routing -> 1d/2d hydrodynamics model framework.
+development by Jannis M. Hoch (Utrecht University, Deltares), Dirk Eilander (VU Amsterdam, Deltares), and Hiroaki Ikeuchi (University of Tokyo) \
+contact: Jannis M. Hoch (j.m.hoch@uu.nl), Dirk Eilander (dirk.eilander@vu.nl)
 
-# Content of package
-	couplingFramework_v1.1.py: script to execute the coupling process
-	default.set: example of the coupling settings-file
-	PCRGLOBWB_30min_GLOFRIM_iniFile.ini: example file to be used with GLOFRIM for PCR-GLOBWB settings
-	coupling: python library containing functions to perform coupling
-	lisflood-bmi-v5.9: BMI-compatible LISFLOOD-FP model at version 5.9
-	pcrglobwb-bmi_v203: BMI-compatible PCR-GLOBWB model supporting application at 30 arcmin resolution
-	cama-flood_bmi: BMI-compatible CaMa-Flood model (CMF)
-	sample_runoff: runoff to force CMF (optional)
-	test_Elbe: test case to test coupling of PCR -> CMF -> DFM
+We also want to acknowledge the contributions of all colleagues at the insitues involved in the development of GLOFRIM.
 
 # Manual
-The script provided can be used to couple PCR-GLOBWB with two hydrodynamic models: Delft3D Flexible Mesh (DFM) and LISFLOOD-FP (LFP).
-The coupling process is facilitated by the use of the Basic Model Interface (BMI).
-Currently, the coupling process in only one-dimensional, i.e. from PCR-GLOBWB to hydrodynamic models.
+GLOFRIM is designed to provide a flexible and modular tool to couple hydrologic, routing, and hydodynamic models across scales.
+The coupling process is spatially explicit (i.e. on grid-to-grid basis) and model information is exchanged per (daily) time step.
+To establish this coupling scheme, the functions of the Basic Model Interface (BMI) are utilized.
+
+While version 1 allowed for coupling PCR-GLOBWB with either Delft3D Flexible Mesh or LISFLOOD-FP, version 2 has a more generic setup and has been extended with the hydrologic modelling suite wflow and the global routing model CaMa-Flood.
+
+With the available models, different hydrologic and hydrodynamic coupled model runs can be done, for instance:
+ - 2-step coupling: hydrology -> 1D routing or hydrology -> full 2D hydrodynamics
+ - 3-step coupling: hydrology -> 1D routing -> full 2D hydrodynamics
+
+Currently, the coupling process in only one-directional, i.e. only downstream along the model cascade.
 Work is currently performed to extend it to a full feedback loop.
 
-So far, the following hydrodynamic models have successfully been coupled:
-First, the in-house Delft3D Flexible Mesh which needs to be at version 1.1.201 or higher.
-Second, the LISFLOOD-FP model from University of Bristol at version 5.9 which has been extended with BMI-functionality.
-Please note that the downloadable LISFLOOD-FP version is not meant for further unauthorized distribution.
+It is important to note that GLOFRIM provides only a tool to coupled models across scales and processes. The quality of simulations therefore still depends on the quality of the model discretizations used.
 
-The set-file provided in the folder is a template where all required paths needs to be set.
-All relevant information regarding model set-ups and settings are provided there.
-The framework has successfully been tested on Linux platforms. Please note that it running it on Windows is currently not supported as no dll is yet compiled for LFP.
+The framework has successfully been tested on Linux platforms. 
+Please note that it running it on Windows is currently not supported.
 
-# Getting started
-Before coupling is possible, a few steps need to be taken.
-First, the packages "coupling" and "pcrglobwb-bmi_v203" need to be converted
-to python library by typing "python setup.py develop" in the respective folders. Besides, a python-compatible BMI-wrapper needs to be downloaded (see link below) and also converted
-to a python library.
-In case PCR shall be coupled to DFM, a DFM version has to be installed first. Currently please contact Deltares (see link below) for receiving one. Please specify which environment you are
-working it (Linux or Windows) and also state your purpose.
-After having received the data, please set the path to the dflowfm.dll-file (Windows) or the libdflowfm.so-file (Linux) in couplingFramework_v1.py.
-In case PCR shall be coupled to LFP, please cd to the folder lisflood-bmi-v5 and "make" the programme. In case you encounter any issues, please consider adjusting the makefile.
-Then set the path to liblisflood.so (Linux) in couplingFramework_v1.py.
+## Model specs
+ - PCR-GLOBWB: since the model does not generically contain BMI function, a bespoke version is provided with the GLOFRIM package.
+ - Delft3D Flexible Mesh: the model is freely available, but currently needs to be requested; version 1.1.201 or higher is required   
+ - LISFLOOD-FP: version 5.9 extended with BMI-functionality is available at GitLab
+ - wflow: the latest version is required for full functionality and can be downloaded from GitHub
+ - CaMa-Flood: a BMI'ed version of CaMa-Flood (v3.6.2) is available upon request
 
-For questions, lessons learnt, experiences made or if any problems are encountered, please contact Jannis Hoch (j.m.hoch@uu.nl)
+## Content of package
+ - glofrim-py: python package containing the functions required to execute the various coupling models
+ - pcrglobwb-bmi_v203: BMI-compatible PCR-GLOBWB model supporting application at 30 arcmin resolution
+ - glofrim.ini: example ini-file where the models as well as the exchanged fluxes/paths are specified
 
-# Literature and sources:
-	BMI
-	https://csdms.colorado.edu/wiki/BMI_Description
-	http://www.sciencedirect.com/science/article/pii/S0098300412001252
+## Setting up GLOFRIM
+We recommend you setup glofrim within it's own python environment. You can do so using [conda environments](https://conda.io/docs/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file) with the provided envrionment.yml file in the glofrim-py folder. This should also install the python BMI-wrapper for you. 
 
-	BMI-wrapper
-	https://github.com/openearth/bmi-python
+```
+# create environmnet named glofrim
+conda env create -f environment.yml
+# activate glofrim environment
+source activate glofrim
+```
 
-	PCR-GLOBWB
-	http://vanbeek.geo.uu.nl/suppinfo/vanbeekbierkens2009.pdf
+To install GLOFRIM do (currently we recommend using the csdms-compliant branch):
+```
+# get copy of source code from git repos
+git clone git@github.com/openearth/glofrim.git@csdms-compliant
+# navigate to the py-glofrim folder
+cd glofrim/py-glofrim
+# install for (the -e links the source code folder for development, this can be left out)
+pip install -e <path/to/glofrim>/py-glofrim
+```
 
-	Delft3D Flexible Mseh
-	https://link.springer.com/article/10.1007%2Fs10236-011-0423-6 (Technical Description)
-	https://www.deltares.nl/en/software/delft3d-flexible-mesh-suite/#7 (Contact page)
+Then,  download and install the required models. More detailed descriptions how to install the models can be found in the model-specific _bmi.py files. For instance, for PCR-GLOBWB, first install [PC-RASTER](http://pcraster.geo.uu.nl/getting-started/pcraster-on-linux/), then:
+```
+# pcr-globwb is provided inside the glofrim distribution (will be changed)
+pip install <path/to/glofrim>/pcrglobwb_bmi_v203
+```
 
-	LISFLOOD-FP
-	http://www.sciencedirect.com/science/article/pii/S002216940000278X
+Note that glofrim has only been tested on Linux. 
 
-# Running the script:
-To run the script, an set-file containing the required specifications and paths is necessary.
-Using python, run this file along with the set-file as follows:
-	python couplingFramework_v1.1.py default_rename.set paths.env
+## Usage
+GLOFRIM exists of a series of uniformed BMI wrappers for each model and a overarching BMI wrapper for running coupled models.
 
-# Disclaimer:
+To run a coupled model from python use the following lines. The glofrim.ini (see example in root directory) configuration file hold the information of the individual model configuration files and exchanges between the models.
+```
+from glofrim import Glofrim 
+cbmi = Glofrim() # initialize coupled bmi
+cbmi.initialize_config(/path/to/glofrim.ini) # initialize the coupling with the glofrim.ini configuration file
+```
+
+A basic model run uses the following statements:
+```
+bmi.get_start_time() # optional: get the model start time
+bmi.initialize_model() # initialize model
+bmi.update_until(bmi.get_end_time()) # run until set endtime
+bmi.finalize()
+```
+
+To run stand alone models via the GLOFRIM BMI wrapper you can use followed by the same statements as before:
+```
+from glofrim import CMF # import the CaMa-Flood bmi wrapper
+bmi = CMF(/path/to/model_engine) # intialize bmi with reference to engine (only for non-python models)
+bmi.initialize_config(/path/to/model_configuration_file)
+```
+
+
+
+## Convenience script:
+The GLOFRIM library contains a script to run combined and single (for testing purposes) models with a single line from a terminal. This script can be found in the glofirm-py/scripts folder 
+
+GLOFRIM can be executed as follows on Linux command line:
+```
+python glofrim_runner.py run /path/to/glofrim.ini --env /path/to/glofrim.env -s 200-01-01 -e 2001-01-01
+```
+
+For more info on coupled runs, check
+```
+python glofrim_runner.py run –help
+```
+
+and for stand-alone runs:
+```
+python glofrim_runner.py run_single –help
+```
+
+## Literature and sources:
+GLOFRIM development and applications \
+https://www.geosci-model-dev.net/10/3913/2017/gmd-10-3913-2017.html
+		
+BMI\
+https://csdms.colorado.edu/wiki/BMI_Description \
+http://www.sciencedirect.com/science/article/pii/S0098300412001252
+
+BMI-wrapper for Python\
+https://github.com/openearth/bmi-python
+
+PCR-GLOBWB\
+https://www.geosci-model-dev.net/11/2429/2018/
+
+Delft3D Flexible Mesh\
+https://link.springer.com/article/10.1007%2Fs10236-011-0423-6 \
+https://www.deltares.nl/en/software/delft3d-flexible-mesh-suite/#7
+
+LISFLOOD-FP\
+http://www.sciencedirect.com/science/article/pii/S002216940000278X \
+https://gitlab.com/ChippChapp/LISFLOOD-BMI
+
+CaMa-Flood\
+https://agupubs.onlinelibrary.wiley.com/doi/abs/10.1029/2010wr009726 \
+https://github.com/hii600/cama-flood_bmi_v3.6.2
+	
+wflow\
+https://wflow.readthedocs.io/en/latest/index.html \
+https://github.com/openstreams/wflow
+
+GLOFRIM 1.0 \
+https://doi.org/10.5281/zenodo.597107
+
+## Disclaimer:
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -81,9 +157,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-Copyright (C) 2017 Jannis Hoch
+Copyright (C) 2017,2018 Jannis Hoch
 
-The disclaimers of each component involved in this coupling (i.e. PCR-GLOBWB, LIFLOOD-FP, Delft3D Flexible Mesh, BMI Wrapper)
+The disclaimers/warranty statements of each component involved in this coupling (i.e. PCR-GLOBWB, LIFLOOD-FP, Delft3D Flexible Mesh, BMI Wrapper, CaMa-Flood, wflow)
 remain valid unless stated otherwise.
 No warranty/responsibility for any outcome of using this coupling script.
 Please ensure to cite the models involved in case of making use of this coupling script.
