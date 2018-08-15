@@ -1,23 +1,37 @@
 from setuptools import setup, find_packages
 import os
 
+install_requires = [
+    'setuptools',
+    'numpy==1.14.5', # there's an error when using 1.15.
+    'rasterio>=1.0',
+    'rtree>=0.8.1',
+    'click>=6.7',
+    'configparser'
+    'python-dateutil'
+]
+
 setup(name='glofrim',
       version='1.1',
-      description="functions to couple hydrology with 1D hydrodynamics",
-      long_desciption="""\
-""",
-      classifiers=[], 
+      description="functions to couple hydrologic and hydrodynamic models using BMI",
+      long_desciption="""""",
+      classifiers=[
+        "Intended Audience :: Science/Research",
+        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+        "Topic :: Scientific/Engineering",
+        "Topic :: Software Development :: Libraries",
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.7',
+      ], 
       keywords='hydro',
       author='J.M. Hoch, D.M. Eilander, H. Ikeuchi',
-      author_email='jannis.hoch@deltares.nl',
+      author_email='j.m.hoch@uu.nl',
       url='',
-      license='',
-      packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
+      license='GPLv3+',
+      packages=find_packages(exclude=['docs', 'scripts', 'tests']),
       include_package_data=True,
       zip_safe=True,
-      install_requires=[
-          # -*- Extra requirements: -*-
-      ]
+      install_requires=install_requires
       )
 
 
