@@ -7,6 +7,8 @@ Welcome to GLOFRIM's documentation!
 ===================================
 
 .. toctree::
+   :caption: Table of Contents
+   :numbered:
    :maxdepth: 2
 
    helloWorld.rst

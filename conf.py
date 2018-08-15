@@ -18,23 +18,25 @@
 #
 # import os
 # import sys
-# sys.path.insert(0, os.path.abspath('.'))
+# sys.path.insert(0, os.path.abspath('./glofrim-py'))
 
 
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
 #
-# needs_sphinx = '1.0'
+needs_sphinx = '1.6'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
-    'sphinx.ext.mathjax']
+    'sphinx.ext.mathjax',
+    'IPython.sphinxext.ipython_console_highlighting']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -80,6 +82,10 @@ pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
 
+autodoc_member_order = 'alphabetical'
+
+autosummary_generate = True
+
 
 # -- Options for HTML output ----------------------------------------------
 
@@ -89,7 +95,6 @@ todo_include_todos = True
 html_theme = 'sphinx_rtd_theme'
 
 html_theme_options = {
-    'logo_only': True
 }
 
 # Theme options are theme-specific and customize the look and feel of a theme

@@ -1,0 +1,371 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>2.1.1.1. glofrim.Glofrim &mdash; GLOFRIM 2 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="GLOFRIM 2 documentation" href="../index.html"/>
+        <link rel="up" title="2. Running GLOFRIM" href="../running_GLOFRIM.html"/>
+        <link rel="next" title="2.1.1.2. glofrim.Glofrim.initialize_config" href="glofrim.Glofrim.initialize_config.html"/>
+        <link rel="prev" title="2. Running GLOFRIM" href="../running_GLOFRIM.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="../index.html" class="fa fa-home"> GLOFRIM</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <p class="caption"><span class="caption-text">Table of Contents</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../helloWorld.html">1. Hello World</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../helloWorld.html#headline-2">1.1. Headline 2</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="../running_GLOFRIM.html">2. Running GLOFRIM</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="../running_GLOFRIM.html#installing-your-doc-directory">2.1. Installing your doc directory</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../applications.html">3. Applications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../applications.html#current-applications">3.1. Current Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../applications.html#future-applications">3.2. Future Applications</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">GLOFRIM</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../running_GLOFRIM.html">2. Running GLOFRIM</a> &raquo;</li>
+      
+    <li>2.1.1.1. glofrim.Glofrim</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          <a href="../_sources/generated/glofrim.Glofrim.rst.txt" rel="nofollow"> View page source</a>
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <div class="section" id="glofrim-glofrim">
+<h1>2.1.1.1. glofrim.Glofrim<a class="headerlink" href="#glofrim-glofrim" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="glofrim.Glofrim">
+<em class="property">class </em><code class="descclassname">glofrim.</code><code class="descname">Glofrim</code><span class="sig-paren">(</span><em>loglevel=20</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/glofrim/glofrim_bmi.html#Glofrim"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#glofrim.Glofrim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Central CSDMS-compliant BMI implementation; 
+generic script providing function sceleton to other model-specified BMIs; 
+defining main and central model and BMI information</p>
+<dl class="docutils">
+<dt>Arguments:</dt>
+<dd>EBmi {class} – Interface (abstract base class) for a model that implements the CSDMS BMI (Basic Model Interface).</dd>
+<dt>Raises:</dt>
+<dd>ValueError – Raised if syntax requesting variable name is not correct
+AssertionError – Raised if model dt is not a whole number of GLOFRIM dt
+Warning – Warning is raised if two-step model initialization is not correctly executed
+ValueError – Raised if config-files of models to be coupled are not defined in ini-file
+ValueError – Raised if engines (i.e. executables) for models to be coupled are not specified in ini/env-file
+ValueError – Raised if no exchanges are specified in GLOFRIM ini-file
+ValueError – Raised if an unspported model is specified
+ValueError – Raised if unknown variables are specified
+Warning – Warning is raised if two-step model initialization is not correctly executed
+Warning – Raised in models are not initialized before updating
+Exception – Raised if model end time is already reached; no further updating possible
+Exception – Raised if specified time is smaller than time step or later than model end time
+NotImplementedError – SpinUp is not implemented for central BMI
+AssertionError – Raised if no grid is set before
+AssertionError – Raised if no 1D network is set before</dd>
+</dl>
+<dl class="method">
+<dt id="glofrim.Glofrim.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>loglevel=20</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/glofrim/glofrim_bmi.html#Glofrim.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#glofrim.Glofrim.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>x.__init__(…) initializes x; see help(type(x)) for signature</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="#glofrim.Glofrim.__init__" title="glofrim.Glofrim.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>([loglevel])</td>
+<td>x.__init__(…) initializes x; see help(type(x)) for signature</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">exchange</span></code>(from_mod,&nbsp;to_mod,&nbsp;from_vars,&nbsp;…[,&nbsp;add])</td>
+<td>Exchanges variable content from specified source variable in source model to a specified destination variable in the destination model;  exchange is possible for entire grid or at specified indices; coupling either as totals or fractional values depending on exchange; source variable can either add to destination variable or overwrite it</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">exchange_at_indices</span></code>(from_mod,&nbsp;to_mod,&nbsp;…[,&nbsp;add])</td>
+<td>Exchanges variable content from specified source variable in source model to a specified destination variable in the destination model for user-specified indices; coupling either as totals or fractional values depending on exchange; source variable can either add to destination variable or overwrite it</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">exchange_same_grid</span></code>(from_mod,&nbsp;to_mod,&nbsp;…[,&nbsp;add])</td>
+<td>Exchanges variable content from specified source variable in source model to a specified destination variable in the destination model for the entire grid; source variable can either add to destination variable or overwrite it</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">finalize</span></code>()</td>
+<td>Finalizes the model; shuts down all operations and closes output files.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_attribute_names</span></code>()</td>
+<td>Provides list with all model attribute names from model config file</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_attribute_value</span></code>(attribute_name)</td>
+<td>gets attribute value in in underlying model; attribute_name should use the following convention model_name.section_name:attribute_name</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_component_name</span></code>()</td>
+<td>Returns component name of specified model</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_current_time</span></code>()</td>
+<td>Provides current model time</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_end_time</span></code>()</td>
+<td>Provides end time of model</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_grid_type</span></code>()</td>
+<td>Provides grid type of model; can be regular, flexible or unit catchment grid</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_input_var_names</span></code>()</td>
+<td>Returns list with all possible input variable names that  can be used as exchange TO the specified model; must be specified in model specific BMI class.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_model_type</span></code>()</td>
+<td>Returns type of specified model;  possible types are hydrologic, routing, or hydrodynamic model</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_obs</span></code>()</td>
+<td>Under construction; function to get observation points to read out model output on the fly.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_output_var_names</span></code>()</td>
+<td>Returns list with all possible output variable names that  can be used as exchange FROM the specified model; must be specified in model specific BMI class.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_start_time</span></code>()</td>
+<td>Provides start time of model</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_time_step</span></code>()</td>
+<td>Provides time step of model</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_time_units</span></code>()</td>
+<td>Provides time unit of model.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_value</span></code>(long_var_name,&nbsp;**kwargs)</td>
+<td>Retrieval of value of a certain exposed variable;  entries with fill_value are replaced with NaN values</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_value_at_indices</span></code>(long_var_name,&nbsp;inds,&nbsp;…)</td>
+<td>Retrieval of value at a specific index of a certain exposed variable;  entries with fill_value are replaced with NaN values</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_var_nbytes</span></code>(long_var_name)</td>
+<td>Provides number of bytes of specified variable</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_var_rank</span></code>(long_var_name)</td>
+<td>Provides rank (i.e.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_var_shape</span></code>(long_var_name)</td>
+<td>Provides shape of specified variable</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_var_size</span></code>(long_var_name)</td>
+<td>Provides size (i.e.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_var_type</span></code>(long_var_name)</td>
+<td>Returns the type of a user-specified model variable exposed via BMI</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_var_units</span></code>(long_var_name)</td>
+<td>Provides units of specified variable</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">index</span></code>(x,&nbsp;y,&nbsp;mod[,&nbsp;in1d])</td>
+<td>Finds the index in model data grid associated with coordinates in lat/lon projection of a user-specified point</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize</span></code>(config_fn)</td>
+<td>Initializes the model following a two-step initialization procedure; first, the config-file is initialized and where necessary aligned with overall model settings (e.g.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="glofrim.Glofrim.initialize_config.html#glofrim.Glofrim.initialize_config" title="glofrim.Glofrim.initialize_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize_config</span></code></a>(config_fn[,&nbsp;env_fn])</td>
+<td>Initializing the model configuration file; aligning GLOFRIM specifications for coupled runs to be consistent with overall run settings;  with environment file (env-file) local paths to model engines can be defined</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="glofrim.Glofrim.initialize_model.html#glofrim.Glofrim.initialize_model" title="glofrim.Glofrim.initialize_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initialize_model</span></code></a>(**kwargs)</td>
+<td>Initializes the model, i.e.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_attribute_value</span></code>(attribute_name,&nbsp;…)</td>
+<td>sets attribute value in underlying model; attribute_name should use the following convention model_name.section_name:attribute_name</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_end_time</span></code>(end_time)</td>
+<td>Overwriting default model end time with user-specified end time; format of provided end time must be yyyy-mm-dd</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="glofrim.Glofrim.set_exchanges.html#glofrim.Glofrim.set_exchanges" title="glofrim.Glofrim.set_exchanges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_exchanges</span></code></a>()</td>
+<td>Defines the variable exchanges between models together with necessary unit and time conversions;  exchanges can be defined in ini/env-file; it is important that all fluxes/states in ini/env-file are to m3 for mass balance.</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_obs</span></code>()</td>
+<td>Under construction; function to set observation points to read out model output on the fly.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_out_dir</span></code>(out_dir)</td>
+<td>Setting output directory of model;  overwrites the default output directory</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_start_time</span></code>(start_time)</td>
+<td>Overwriting default model start time with user-specified start time; format of provided start time must be yyyy-mm-dd</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_value</span></code>(long_var_name,&nbsp;src,&nbsp;**kwargs)</td>
+<td>Overwriting of all values of a certain exposed variable with provided new values;  entries with NaN value are replaced with fill_value;  provided new values must match shape of aim variable</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_value_at_indices</span></code>(long_var_name,&nbsp;inds,&nbsp;…)</td>
+<td>Overwriting of value at specific entry of a certain exposed variable with provided new values;  entries with NaN value are replaced with fill_value</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">spinup</span></code>()</td>
+<td>PCR-GLOBWB specific function (see pcr_bmi.py).</td>
+</tr>
+<tr class="row-even"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">update</span></code>([dt])</td>
+<td>Updating model for a certain time step interval (default: None); checks whether model end time is already reached; requires that model-specific time step is a whole number of update time step.</td>
+</tr>
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">update_until</span></code>(t[,&nbsp;dt])</td>
+<td>Updates the model until a certain time t is reached with an update time step dt.</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Attributes</p>
+<table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><code class="xref py py-obj docutils literal notranslate"><span class="pre">grid</span></code></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="glofrim.Glofrim.initialize_config.html" class="btn btn-neutral float-right" title="2.1.1.2. glofrim.Glofrim.initialize_config">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../running_GLOFRIM.html" class="btn btn-neutral" title="2. Running GLOFRIM"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, J.M. Hoch, D. Eilander, H. Ikeuchi.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

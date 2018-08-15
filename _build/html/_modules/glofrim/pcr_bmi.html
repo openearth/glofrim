@@ -1,0 +1,636 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>glofrim.pcr_bmi &mdash; GLOFRIM 2 documentation</title>
+  
+
+  
+  
+
+  
+  <link href='https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic|Roboto+Slab:400,700|Inconsolata:400,700&subset=latin,cyrillic' rel='stylesheet' type='text/css'>
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../genindex.html"/>
+        <link rel="search" title="Search" href="../../search.html"/>
+    <link rel="top" title="GLOFRIM 2 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-nav-search">
+        
+          <a href="../../index.html" class="fa fa-home"> GLOFRIM</a>
+        
+        
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+        
+          
+          
+              <p class="caption"><span class="caption-text">Table of Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../helloWorld.html">1. Hello World</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../helloWorld.html#headline-2">1.1. Headline 2</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../running_GLOFRIM.html">2. Running GLOFRIM</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../running_GLOFRIM.html#installing-your-doc-directory">2.1. Installing your doc directory</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../applications.html">3. Applications</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../applications.html#current-applications">3.1. Current Applications</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../applications.html#future-applications">3.2. Future Applications</a></li>
+</ul>
+</li>
+</ul>
+
+          
+        
+      </div>
+      &nbsp;
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">GLOFRIM</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>glofrim.pcr_bmi</li>
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document">
+            
+  <h1>Source code for glofrim.pcr_bmi</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">configparser</span> <span class="k">import</span> <span class="n">ConfigParser</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">join</span><span class="p">,</span> <span class="n">isfile</span><span class="p">,</span> <span class="n">abspath</span><span class="p">,</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">basename</span><span class="p">,</span> <span class="n">normpath</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">import</span> <span class="nn">rasterio</span>
+
+<span class="kn">from</span> <span class="nn">utils</span> <span class="k">import</span> <span class="n">setlogger</span><span class="p">,</span> <span class="n">closelogger</span>
+<span class="kn">from</span> <span class="nn">gbmi</span> <span class="k">import</span> <span class="n">GBmi</span>
+<span class="kn">from</span> <span class="nn">grids</span> <span class="k">import</span> <span class="n">RGrid</span>
+<span class="kn">import</span> <span class="nn">glofrim_lib</span> <span class="k">as</span> <span class="nn">glib</span> 
+
+
+<div class="viewcode-block" id="PCR"><a class="viewcode-back" href="../../running_GLOFRIM.html#glofrim.PCR">[docs]</a><span class="k">class</span> <span class="nc">PCR</span><span class="p">(</span><span class="n">GBmi</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;CSDMS-compliant BMI implementation for GLOFRIM.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        GBmi {class} -- Interface (abstract base class) for a model that implements the CSDMS BMI (Basic Model Interface).</span>
+<span class="sd">    </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        Warning -- Warning is raised if two-step model initialization is not correctly executed</span>
+<span class="sd">        Warning -- Warning is raised if two-step model initialization is not correctly executed</span>
+<span class="sd">        Exception -- Raised if specified time is smaller than time step or later than model end time</span>
+<span class="sd">        ValueError -- Raised if model time step is not whole number of update interval</span>
+<span class="sd">        Exception -- Raised if end time is already reached as no further update is possible</span>
+<span class="sd">        IOError -- function requires LDD file; if not found, IOerror is raised</span>
+<span class="sd">        IOError -- function requires landsmask file; if not found, IOerror is raised</span>
+<span class="sd">        ValueError -- start time must be yyyy-mm-dd; if not, ValueError is raised</span>
+<span class="sd">        ValueError -- end time must be yyyy-mm-dd; if not, ValueError is raised</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s">&#39;PCR&#39;</span>
+    <span class="n">_long_name</span> <span class="o">=</span> <span class="s">&#39;PCR-GLOBWB&#39;</span>
+    <span class="n">_version</span> <span class="o">=</span> <span class="s">&#39;2.0.3&#39;</span>
+    <span class="n">_var_units</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;runoff&#39;</span><span class="p">:</span> <span class="s">&#39;m/day&#39;</span><span class="p">,</span> <span class="s">&#39;discharge&#39;</span><span class="p">:</span> <span class="s">&#39;m3/s&#39;</span><span class="p">,</span> <span class="s">&#39;cellArea&#39;</span><span class="p">:</span> <span class="s">&#39;m2&#39;</span><span class="p">}</span>
+    <span class="n">_input_var_names</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;cellArea&#39;</span><span class="p">]</span>
+    <span class="n">_output_var_names</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;runoff&#39;</span><span class="p">,</span> <span class="s">&#39;discharge&#39;</span><span class="p">]</span>
+    <span class="n">_area_var_name</span> <span class="o">=</span> <span class="s">&#39;cellArea&#39;</span>
+    <span class="n">_timeunit</span> <span class="o">=</span> <span class="s">&#39;days&#39;</span>
+    <span class="n">_dt</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="c"># NOTE: this is fixed in PCR</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="k">None</span><span class="p">):</span>
+        <span class="c"># import PCR-GLOBWB with BMI functions </span>
+        <span class="kn">from</span> <span class="nn">pcrglobwb_bmi_v203</span> <span class="k">import</span> <span class="n">pcrglobwb_bmi</span> <span class="k">as</span> <span class="n">_bmi</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bmi</span> <span class="o">=</span> <span class="n">_bmi</span><span class="o">.</span><span class="n">pcrglobwbBMI</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">logger</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">setlogger</span><span class="p">(</span><span class="k">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">thelevel</span><span class="o">=</span><span class="n">loglevel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loglevel</span> <span class="o">=</span> <span class="n">loglevel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="k">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="k">None</span>
+
+    <span class="c">###</span>
+    <span class="c">### Model Control Functions</span>
+    <span class="c">###</span>
+
+    <span class="k">def</span> <span class="nf">initialize_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_fn</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initializing the model configuration file. Aligning GLOFRIM specs for coupled runs</span>
+<span class="sd">        to be consistent with overall run settings.</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            config_fn {str} -- path to model configuration file (for PCR-GLOBWB: ini-file)</span>
+<span class="sd">        </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            Warning -- Warning is raised if two-step model initialization is not correctly executed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c"># config settings</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Warning</span><span class="p">(</span><span class="s">&quot;model already initialized, it&#39;s therefore not longer possible to initialize the config&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_fn</span> <span class="o">=</span> <span class="n">abspath</span><span class="p">(</span><span class="n">config_fn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">glib</span><span class="o">.</span><span class="n">configread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config_fn</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s">&#39;utf-8&#39;</span><span class="p">,</span> 
+                                       <span class="n">cf</span><span class="o">=</span><span class="n">ConfigParser</span><span class="p">(</span><span class="n">inline_comment_prefixes</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;#&#39;</span><span class="p">)))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_datefmt</span> <span class="o">=</span> <span class="s">&quot;%Y-%m-%d&quot;</span>
+        <span class="c"># model time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_startTime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_start_time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_endTime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_startTime</span>
+        <span class="c"># model files</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_outdir</span><span class="o">=</span> <span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_attribute_value</span><span class="p">(</span><span class="s">&#39;globalOptions:outputDir&#39;</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Config initialized&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">initialize_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initializes the model, i.e. loading all files and checking for consistency; </span>
+<span class="sd">        can only be executed after the model-specific config-file was initialized. This is essential</span>
+<span class="sd">        for a successful two-step model initialization and aligned model data.</span>
+<span class="sd">        </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            Warning -- Warning is raised if two-step model initialization is not correctly executed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;_config_fn&#39;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Warning</span><span class="p">(</span><span class="s">&#39;run initialize_config before initialize_model&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">write_config</span><span class="p">()</span> <span class="c"># write updated config to file as bmi does not allow direct access</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bmi</span><span class="o">.</span><span class="n">initialize</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config_fn</span><span class="p">)</span>
+        <span class="c"># stop pcr double logging.</span>
+        <span class="n">pcr_log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">()</span>
+        <span class="c"># pcr_log.setLevel(self._loglevel)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&quot;remove PCR logger because it&#39;s making to much noise&quot;</span><span class="p">)</span>
+        <span class="n">pcr_log</span><span class="o">.</span><span class="n">handlers</span> <span class="o">=</span> <span class="n">pcr_log</span><span class="o">.</span><span class="n">handlers</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="k">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Model initialized&#39;</span><span class="p">)</span>
+        <span class="c"># reset model time to make sure it is consistent with the model</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_startTime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_start_time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_endTime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_startTime</span>
+
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_fn</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initializes the model following a two-step initialization procedure.</span>
+<span class="sd">        First, the config-file is initialized and where necessary aligned with</span>
+<span class="sd">        overall model settings (e.g. output-dir, start and end time).</span>
+<span class="sd">        Second, the model is actually initialized.</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            config_fn {str} -- path to model configuration file (for PCR-GLOBWB: ini-file)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_config</span><span class="p">(</span><span class="n">config_fn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_model</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="k">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Updating model for a certain time step interval (default: None).</span>
+<span class="sd">        Checks whether model end time is already reached.</span>
+<span class="sd">        Requires that model-specific time step is a whole number of update time step.</span>
+<span class="sd">        </span>
+<span class="sd">        Keyword Arguments:</span>
+<span class="sd">            dt {int} -- update time step interval [s] at which information is exchanged between models (default: {None})</span>
+<span class="sd">        </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError -- Raised if model time step is not whole number of update interval</span>
+<span class="sd">            Exception -- Raised if end time is already reached as no further update is possible</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c"># dt in seconds. if not given model timestep is used</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endTime</span><span class="p">:</span>
+		    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;endTime already reached, model not updated&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">dt</span> <span class="ow">is</span> <span class="ow">not</span> <span class="k">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">dt</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()):</span>
+            <span class="n">_dt</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">glib</span><span class="o">.</span><span class="n">check_dts_divmod</span><span class="p">(</span><span class="n">_dt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span><span class="p">):</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Invalid value for dt in comparison to model dt. Make sure a whole number of model timesteps ({}) fit in the given dt ({})&quot;</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dt</span><span class="p">,</span> <span class="n">_dt</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_bmi</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">_dt</span><span class="o">.</span><span class="n">days</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">+=</span> <span class="n">_dt</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_bmi</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dt</span><span class="o">.</span><span class="n">days</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;updated model to datetime {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_t</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;%Y-%m-%d %H:%M&quot;</span><span class="p">)))</span>
+
+    <span class="k">def</span> <span class="nf">update_until</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="k">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Updates the model until a certain time t is reached with an update time step dt.</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            t {int} -- Model time until which the model is updated</span>
+<span class="sd">        </span>
+<span class="sd">        Keyword Arguments:</span>
+<span class="sd">            dt {int} -- update time step interval [s] at which information is exchanged between models (default: {None})</span>
+<span class="sd">        </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            Exception -- Raised if specified time is smaller than time step or later than model end time</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">t</span><span class="o">&lt;</span><span class="bp">self</span><span class="o">.</span><span class="n">_t</span><span class="p">)</span> <span class="ow">or</span> <span class="n">t</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">_endTime</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;wrong time input: smaller than model time or larger than endTime&quot;</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">&lt;</span> <span class="n">t</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">spinup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;PCR-GLOBWB specific function.</span>
+<span class="sd">        Runs the in ini-file specified number of spin-up years.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bmi</span><span class="o">.</span><span class="n">spinup</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Finalizes the model, i.e. shuts down all operations and closes output files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;finalize bmi. Close logger.&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bmi</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
+        <span class="n">closelogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+
+    <span class="c">###</span>
+    <span class="c">### Variable Information Functions</span>
+    <span class="c">###</span>
+    
+    <span class="k">def</span> <span class="nf">get_start_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides start time of PCR-GLOBWB</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            date -- start time of PCR-GLOBWB</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
+            <span class="c"># date to datetime object</span>
+            <span class="n">startTime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bmi</span><span class="o">.</span><span class="n">get_start_time</span><span class="p">(),</span> <span class="n">datetime</span><span class="o">.</span><span class="n">min</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">startTime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_attribute_value</span><span class="p">(</span><span class="s">&#39;globalOptions:startTime&#39;</span><span class="p">)</span>
+            <span class="n">startTime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">startTime</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datefmt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_startTime</span> <span class="o">=</span> <span class="n">startTime</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_startTime</span>
+    
+    <span class="k">def</span> <span class="nf">get_current_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides current model time of PCR-GLOBWB</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            [date] -- current model time of PCR-GLOBWB</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_start_time</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides end time of PCR-GLOBWB</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            date -- end time of PCR-GLOBWB</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
+            <span class="c"># date to datetime object</span>
+            <span class="n">endTime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">combine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bmi</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">(),</span> <span class="n">datetime</span><span class="o">.</span><span class="n">min</span><span class="o">.</span><span class="n">time</span><span class="p">())</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">endTime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_attribute_value</span><span class="p">(</span><span class="s">&#39;globalOptions:endTime&#39;</span><span class="p">)</span>
+            <span class="n">endTime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">endTime</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datefmt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_endTime</span> <span class="o">=</span> <span class="n">endTime</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endTime</span>
+
+    <span class="k">def</span> <span class="nf">get_time_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides time step of PCR-GLOBWB</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            date -- time step of PCR-GLOBWB</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> 
+        
+    <span class="k">def</span> <span class="nf">get_time_units</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides time unit of PCR-GLOBWB.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str -- time unit of model of PCR-GLOBWB</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeunit</span>
+
+    <span class="c">###</span>
+    <span class="c">### Variable Getter and Setter Functions</span>
+    <span class="c">###</span>
+    
+    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=-</span><span class="mi">999</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieval of all values of a certain exposed variable; </span>
+<span class="sd">        entries with fill_value are replaced with NaN values</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            long_var_name {str} -- name of exposed PCR-GLOBWB variable</span>
+<span class="sd">        </span>
+<span class="sd">        Keyword Arguments:</span>
+<span class="sd">            fill_value {int} -- fill_value used in PCR-GLOBWB (default: {-999})</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            array -- array with all entries of retrieved variable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c"># additional fill_value argument required to translate pcr maps to numpy arrays</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_bmi</span><span class="o">.</span><span class="n">get_var</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">,</span> <span class="n">missingValues</span><span class="o">=</span><span class="n">fill_value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">))</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">var</span> <span class="o">==</span> <span class="n">fill_value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">var</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">var</span>
+
+    <span class="k">def</span> <span class="nf">get_value_at_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=-</span><span class="mi">999</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieval of value at a specific index of a certain exposed variable; </span>
+<span class="sd">        entries with fill_value are replaced with NaN values</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            long_var_name {str} -- name of exposed PCR-GLOBWB variable</span>
+<span class="sd">            inds {int} -- Index pointing to entry within entire array of variable values</span>
+<span class="sd">        </span>
+<span class="sd">        Keyword Arguments:</span>
+<span class="sd">            fill_value {int} -- fill_value used in PCR-GLOBWB (default: {-999})</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            float -- value at specific index of retrieved variable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">fill_value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=-</span><span class="mi">999</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwriting of all values of a certain exposed variable with provided new values; </span>
+<span class="sd">        entries with NaN value are replaced with fill_value; </span>
+<span class="sd">        provided new values must match shape of aim variable</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            long_var_name {str} -- name of exposed PCR-GLOBWB variable</span>
+<span class="sd">            src {array} -- array with new values</span>
+<span class="sd">        </span>
+<span class="sd">        Keyword Arguments:</span>
+<span class="sd">            fill_value {int} -- fill_value used in PCR-GLOBWB (default: {-999})</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">src</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">src</span><span class="p">),</span> <span class="n">fill_value</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_var_type</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_bmi</span><span class="o">.</span><span class="n">set_var</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">missingValues</span><span class="o">=</span><span class="n">fill_value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set_value_at_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=-</span><span class="mi">999</span><span class="p">,</span>  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwriting of value at specific entry of a certain exposed variable with provided new values; </span>
+<span class="sd">        entries with NaN value are replaced with fill_value</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            long_var_name {str} -- name of exposed PCR-GLOBWB variable</span>
+<span class="sd">            inds {int} -- Index pointing to entry within entire array of variable values</span>
+<span class="sd">            src {array} -- array with new values</span>
+<span class="sd">        </span>
+<span class="sd">        Keyword Arguments:</span>
+<span class="sd">            fill_value {int} -- fill_value used in PCR-GLOBWB (default: {-999})</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="n">fill_value</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">val</span><span class="o">.</span><span class="n">flat</span><span class="p">[</span><span class="n">inds</span><span class="p">]</span> <span class="o">=</span> <span class="n">src</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">,</span> <span class="n">val</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        
+    <span class="c">###</span>
+    <span class="c">### Grid Information Functions</span>
+    <span class="c">###</span>
+
+    <span class="k">def</span> <span class="nf">get_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retreving spatial information about model domain from PCR-GLOBWB landmask file using rasterio</span>
+<span class="sd">        operations; </span>
+<span class="sd">        also retrieving PCR-GLOBWB drainage direction (LDD) information</span>
+<span class="sd">        </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            IOError -- function requires LDD file; if not found, IOerror is raised</span>
+<span class="sd">            IOError -- function requires landsmask file; if not found, IOerror is raised</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            grid -- rasterio grid object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;grid&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="ow">is</span> <span class="k">None</span><span class="p">):</span>
+            <span class="c"># ldd is used for coupling to routing / flood model</span>
+            <span class="n">_indir</span> <span class="o">=</span> <span class="n">abspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_attribute_value</span><span class="p">(</span><span class="s">&#39;globalOptions:inputDir&#39;</span><span class="p">))</span>
+            <span class="n">_ldd_fn</span> <span class="o">=</span> <span class="n">glib</span><span class="o">.</span><span class="n">getabspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_attribute_value</span><span class="p">(</span><span class="s">&#39;routingOptions:lddMap&#39;</span><span class="p">),</span> <span class="n">_indir</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">isfile</span><span class="p">(</span><span class="n">_ldd_fn</span><span class="p">):</span> <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s">&#39;ldd file not found&#39;</span><span class="p">)</span>
+            <span class="c"># landmask used for masking out coordinates outside mask</span>
+            <span class="n">_lm_fn</span> <span class="o">=</span> <span class="n">glib</span><span class="o">.</span><span class="n">getabspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_attribute_value</span><span class="p">(</span><span class="s">&#39;globalOptions:landmask&#39;</span><span class="p">),</span> <span class="n">_indir</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">isfile</span><span class="p">(</span><span class="n">_lm_fn</span><span class="p">):</span> <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="s">&#39;landmask file not found&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Getting rgrid info based on {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">basename</span><span class="p">(</span><span class="n">_lm_fn</span><span class="p">)))</span>
+            <span class="k">with</span> <span class="n">rasterio</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">_lm_fn</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">ds</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">RGrid</span><span class="p">(</span><span class="n">ds</span><span class="o">.</span><span class="n">transform</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">height</span><span class="p">,</span> <span class="n">ds</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="n">crs</span><span class="o">=</span><span class="n">ds</span><span class="o">.</span><span class="n">crs</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">ds</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span>
+
+            <span class="c"># read file with pcr readmap</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Getting drainage direction from {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">basename</span><span class="p">(</span><span class="n">_ldd_fn</span><span class="p">)))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">set_dd</span><span class="p">(</span><span class="n">_ldd_fn</span><span class="p">,</span> <span class="n">ddtype</span><span class="o">=</span><span class="s">&#39;ldd&#39;</span><span class="p">,</span> <span class="n">nodata</span><span class="o">=</span><span class="mi">255</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span>
+
+    <span class="c">###</span>
+    <span class="c">### set and get attribute / config </span>
+    <span class="c">###</span>
+
+    <span class="k">def</span> <span class="nf">set_start_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwriting default model start time with user-specified start time;</span>
+<span class="sd">        format of provided start time must be yyyy-mm-dd</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            start_time {date} -- user-specified start time</span>
+<span class="sd">        </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError -- start time must be yyyy-mm-dd; if not, ValueError is raised</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">start_time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_datefmt</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_startTime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datefmt</span><span class="p">)</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_startTime</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;wrong date format, use &quot;yyyy-mm-dd&quot;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_attribute_value</span><span class="p">(</span><span class="s">&#39;globalOptions:startTime&#39;</span><span class="p">,</span> <span class="n">start_time</span><span class="p">)</span>
+       
+    <span class="k">def</span> <span class="nf">set_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">end_time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwriting default model end time with user-specified end time;</span>
+<span class="sd">        format of provided end time must be yyyy-mm-dd</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            end_time {date} -- user-specified end time</span>
+<span class="sd">        </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError -- end time must be yyyy-mm-dd; if not, ValueError is raised</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">end_time</span><span class="p">,</span> <span class="n">datetime</span><span class="p">):</span>
+            <span class="n">end_time</span> <span class="o">=</span> <span class="n">end_time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_datefmt</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_endTime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">end_time</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_datefmt</span><span class="p">)</span> 
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s">&#39;wrong date format, use &quot;yyyy-mm-dd&quot;&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_attribute_value</span><span class="p">(</span><span class="s">&#39;globalOptions:endTime&#39;</span><span class="p">,</span> <span class="n">end_time</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set_out_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Setting output directory of PCR-GLOBWB; </span>
+<span class="sd">        overwrites the default output directory</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            out_dir {str} -- path to output directory</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_attribute_value</span><span class="p">(</span><span class="s">&#39;globalOptions:outputDir&#39;</span><span class="p">,</span> <span class="n">abspath</span><span class="p">(</span><span class="n">out_dir</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">get_attribute_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides list with all model attribute names from model config file</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list -- list with model attribute names</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">glib</span><span class="o">.</span><span class="n">configcheck</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">glib</span><span class="o">.</span><span class="n">configattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">get_attribute_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets attribute value in in underlying model;</span>
+<span class="sd">        attribute_name should use the following convention model_name.section_name:attribute_name</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            attribute_name {str} -- Name of BMI attribute</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            float -- value of attribute</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">glib</span><span class="o">.</span><span class="n">configcheck</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;get_attribute_value: &quot;</span> <span class="o">+</span> <span class="n">attribute_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">glib</span><span class="o">.</span><span class="n">configget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">set_attribute_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">,</span> <span class="n">attribute_value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;sets attribute value in in underlying model;</span>
+<span class="sd">        attribute_name should use the following convention model_name.section_name:attribute_name</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            attribute_name {str} -- Name of BMI attribute</span>
+<span class="sd">            attribute_value {float} -- value to be est</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            [str] -- [no clue]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">glib</span><span class="o">.</span><span class="n">configcheck</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&quot;set_attribute_value: &quot;</span> <span class="o">+</span> <span class="n">attribute_value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">glib</span><span class="o">.</span><span class="n">configset</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">,</span> <span class="n">attribute_value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">write_config</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Write adapted config to file; just before initializing;</span>
+<span class="sd">        only for models which do not allow for direct access to model config via bmi</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_fn</span> <span class="o">=</span> <span class="n">glib</span><span class="o">.</span><span class="n">write_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config_fn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2018, J.M. Hoch, D. Eilander, H. Ikeuchi.
+    </p>
+  </div>
+
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+  
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'2',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

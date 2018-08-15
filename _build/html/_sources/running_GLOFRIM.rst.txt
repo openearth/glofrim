@@ -26,64 +26,34 @@ You can also add an image:
 Fetching the data
 -----------------
 
-Now we will start to customize out docs.  Grab a couple of files from
-the `web site <https://github.com/matplotlib/GLOFRIM>`_
-or git.  You will need :file:`getting_started.rst` and
-:file:`_static/basic_screenshot.png`.  All of the files live in the
-"completed" version of this tutorial, but since this is a tutorial,
-we'll just grab them one at a time, so you can learn what needs to be
-changed where.  Since we have more files to come, I'm going to grab
-the whole git directory and just copy the files I need over for now.
-First, I'll cd up back into the directory containing my project, check
-out the "finished" product from git, and then copy in just the files I
-need into my :file:`GLOFRIM` directory::
-
-  home:~/tmp/GLOFRIM> pwd
-  /Users/jdhunter/tmp/GLOFRIM
-  home:~/tmp/GLOFRIM> cd ..
-  home:~/tmp> git clone https://github.com/matplotlib/GLOFRIM.git tutorial
-  Cloning into 'tutorial'...
-  remote: Counting objects: 87, done.
-  remote: Compressing objects: 100% (43/43), done.
-  remote: Total 87 (delta 45), reused 83 (delta 41)
-  Unpacking objects: 100% (87/87), done.
-  Checking connectivity... done
-  home:~/tmp> cp tutorial/getting_started.rst GLOFRIM/
-  home:~/tmp> cp tutorial/_static/basic_screenshot.png GLOFRIM/_static/
-
-The last step is to modify :file:`index.rst` to include the
-:file:`getting_started.rst` file (be careful with the indentation, the
-"g" in "getting_started" should line up with the ':' in ``:maxdepth``::
-
-  Contents:
-
-  .. toctree::
-     :maxdepth: 2
-
-     getting_started.rst
-
-and then rebuild the docs::
-
-  cd GLOFRIM
-  make html
-
 .. sourcecode:: ipython
 
-    In [69]: lines = plot([1,2,3])
+   In [1]: x = 2
 
-    In [70]: setp(lines)
-      alpha: float
-      animated: [True | False]
-      antialiased or aa: [True | False]
-      ...snip
+   In [2]: x**3
+   Out[2]: 8
 
 When you reload the page by refreshing your browser pointing to
 :file:`_build/html/index.html`, you should see a link to the
 "Getting Started" docs, and in there this page with the screenshot.
 `Voila!`
 
-We can also use the image directive in :file:`index.rst` to include to the screenshot above
+We can also use the image directive in :file:`running_GLOFRIM.rst` to include to the screenshot above
 with::
 
   .. image::
      _static/GermanDischarge.png
+
+.. automodule:: glofrim
+
+.. currentmodule:: glofrim
+
+.. autosummary::
+   :toctree: generated/
+   :nosignatures:
+
+   Glofrim.initialize_config
+   Glofrim.set_exchanges
+   Glofrim.initialize_model
+
+   
