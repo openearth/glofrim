@@ -6,8 +6,14 @@
 Welcome to GLOFRIM's documentation!
 ===================================
 
+.. note::
+
+    GLOFRIM was developed as part of my PhD Thesis at Utrecht University
+    in the Netherlands.
+
+Structure
+=========================
 .. toctree::
-   :caption: Table of Contents
    :numbered:
    :maxdepth: 2
 
@@ -21,3 +27,10 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+References
+==========
+
+.. [HESS2017] Hoch et al.: Assessing floodwave propgation in the Amazon River basin, GMD, 2017.
+.. [GMD2017] Hoch et al.: GLOFRIM v1.0 - a globally applicable framework for integrated \
+                hydrologic-hydrodynamic inundation modelling, GMD, 2017.

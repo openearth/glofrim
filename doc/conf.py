@@ -12,31 +12,31 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os
+# import sys, os
 
-from mock import Mock as MagicMock
+# from mock import Mock as MagicMock
 
-class Mock(MagicMock):
-    __all__ = []
-    __version__ = "1.6"
-    @classmethod
-    def __getattr__(cls, name):
-            return Mock()
+# class Mock(MagicMock):
+#     __all__ = []
+#     __version__ = "1.6"
+#     @classmethod
+#     def __getattr__(cls, name):
+#             return Mock()
 
-# Mock modules so that we can build on readthedocs.org
-MOCK_MODULES = ['_pcraster','_pcraster_modflow','PCRaster.NumPy',
-                'osgeo.gdal','osgeo.gdalconst','osgeo','osgeo.ogr','netCDF4',
-                'netCDF4_utils','netcdftime','PCRaster','PCRaster.Framework','pyproj','numpy']
+# # Mock modules so that we can build on readthedocs.org
+# MOCK_MODULES = ['_pcraster','_pcraster_modflow','PCRaster.NumPy',
+#                 'osgeo.gdal','osgeo.gdalconst','osgeo','osgeo.ogr','netCDF4',
+#                 'netCDF4_utils','netcdftime','PCRaster','PCRaster.Framework','pyproj','numpy']
 
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+# sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
-# If extensions (or modules to document with autodoc) are in another directory,
-# add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
+# # If extensions (or modules to document with autodoc) are in another directory,
+# # add these directories to sys.path here. If the directory is relative to the
+# # documentation root, use os.path.abspath to make it absolute, like shown here.
 
-sys.path.insert(0, os.path.abspath('../glofrim-py/'))
+# sys.path.insert(0, os.path.abspath('../glofrim-py/'))
 
-import glofrim
+# import glofrim
 
 
 # -- General configuration ------------------------------------------------
