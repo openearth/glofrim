@@ -26,7 +26,7 @@ class Mock(MagicMock):
 # Mock modules so that we can build on readthedocs.org
 MOCK_MODULES = ['_pcraster','_pcraster_modflow','PCRaster.NumPy',
                 'osgeo.gdal','osgeo.gdalconst','osgeo','osgeo.ogr','netCDF4',
-                'netCDF4_utils','netcdftime','PCRaster','PCRaster.Framework','pyproj']
+                'netCDF4_utils','netcdftime','PCRaster','PCRaster.Framework','pyproj','numpy']
 
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
@@ -54,7 +54,13 @@ extensions = ['sphinx.ext.autodoc',
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
     'sphinx.ext.mathjax',
+    'numpydoc',
+    'sphinx.ext.napoleon',
     ]
+
+napoleon_google_docstring = False
+napoleon_use_param = False
+napoleon_use_ivar = True
 
 todo_include_todos=True
 
