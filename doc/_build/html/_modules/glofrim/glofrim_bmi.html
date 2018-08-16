@@ -1,0 +1,1021 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>glofrim.glofrim_bmi &#8212; GLOFRIM 2 documentation</title>
+    <link rel="stylesheet" href="../../_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">GLOFRIM 2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="../../index.html">
+              <img class="logo" src="../../_static/bridge.png" alt="Logo"/>
+            </a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for glofrim.glofrim_bmi</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">OrderedDict</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">os.path</span> <span class="k">import</span> <span class="n">join</span><span class="p">,</span> <span class="n">isfile</span><span class="p">,</span> <span class="n">abspath</span><span class="p">,</span> <span class="n">dirname</span><span class="p">,</span> <span class="n">basename</span><span class="p">,</span> <span class="n">normpath</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">configparser</span> <span class="k">import</span> <span class="n">ConfigParser</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">utils</span> <span class="k">import</span> <span class="n">setlogger</span><span class="p">,</span> <span class="n">closelogger</span><span class="p">,</span> <span class="n">add_file_handler</span>
+<span class="kn">from</span> <span class="nn">gbmi</span> <span class="k">import</span> <span class="n">EBmi</span>
+<span class="kn">import</span> <span class="nn">glofrim_lib</span> <span class="k">as</span> <span class="nn">glib</span> 
+<span class="kn">from</span> <span class="nn">pcr_bmi</span> <span class="k">import</span> <span class="n">PCR</span>
+<span class="kn">from</span> <span class="nn">cmf_bmi</span> <span class="k">import</span> <span class="n">CMF</span>
+<span class="kn">from</span> <span class="nn">dfm_bmi</span> <span class="k">import</span> <span class="n">DFM</span>
+<span class="kn">from</span> <span class="nn">wfl_bmi</span> <span class="k">import</span> <span class="n">WFL</span>
+<span class="kn">from</span> <span class="nn">lfp_bmi</span> <span class="k">import</span> <span class="n">LFP</span>
+<span class="kn">from</span> <span class="nn">spatial_coupling</span> <span class="k">import</span> <span class="n">SpatialCoupling</span><span class="p">,</span> <span class="n">groupby_sum</span>
+
+<span class="k">class</span> <span class="nc">Glofrim</span><span class="p">(</span><span class="n">EBmi</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Central CSDMS-compliant BMI implementation; </span>
+<span class="sd">    generic script providing function sceleton to other model-specified BMIs; </span>
+<span class="sd">    defining main and central model and BMI information</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        EBmi {class} -- Interface (abstract base class) for a model that implements the CSDMS BMI (Basic Model Interface).</span>
+<span class="sd">    </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError -- Raised if syntax requesting variable name is not correct</span>
+<span class="sd">        AssertionError -- Raised if model dt is not a whole number of GLOFRIM dt</span>
+<span class="sd">        Warning -- Warning is raised if two-step model initialization is not correctly executed</span>
+<span class="sd">        ValueError -- Raised if config-files of models to be coupled are not defined in ini-file</span>
+<span class="sd">        ValueError -- Raised if engines (i.e. executables) for models to be coupled are not specified in ini/env-file</span>
+<span class="sd">        ValueError -- Raised if no exchanges are specified in GLOFRIM ini-file</span>
+<span class="sd">        ValueError -- Raised if an unspported model is specified</span>
+<span class="sd">        ValueError -- Raised if unknown variables are specified</span>
+<span class="sd">        Warning -- Warning is raised if two-step model initialization is not correctly executed</span>
+<span class="sd">        Warning -- Raised in models are not initialized before updating</span>
+<span class="sd">        Exception -- Raised if model end time is already reached; no further updating possible</span>
+<span class="sd">        Exception -- Raised if specified time is smaller than time step or later than model end time</span>
+<span class="sd">        NotImplementedError -- SpinUp is not implemented for central BMI</span>
+<span class="sd">        AssertionError -- Raised if no grid is set before</span>
+<span class="sd">        AssertionError -- Raised if no 1D network is set before</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_name</span> <span class="o">=</span> <span class="s">&#39;GLOFRIM&#39;</span>
+    <span class="n">_version</span> <span class="o">=</span> <span class="s">&#39;2.0&#39;</span>
+    <span class="n">_models</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;PCR&#39;</span><span class="p">:</span> <span class="n">PCR</span><span class="p">,</span> <span class="s">&#39;CMF&#39;</span><span class="p">:</span> <span class="n">CMF</span><span class="p">,</span> <span class="s">&#39;DFM&#39;</span><span class="p">:</span> <span class="n">DFM</span><span class="p">,</span> <span class="s">&#39;WFL&#39;</span><span class="p">:</span> <span class="n">WFL</span><span class="p">,</span> <span class="s">&#39;LFP&#39;</span><span class="p">:</span> <span class="n">LFP</span><span class="p">}</span>
+    <span class="n">_init_pre_exchange</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;DFM&#39;</span><span class="p">]</span> <span class="c"># need to initialize before we can know the grid</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">loglevel</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span> <span class="o">=</span> <span class="n">OrderedDict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exchanges</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_var_sep</span> <span class="o">=</span> <span class="s">&quot;.&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_mult_sep</span> <span class="o">=</span> <span class="s">&quot;*&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ind_sep</span> <span class="o">=</span> <span class="s">&quot;@&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_loglevel</span> <span class="o">=</span> <span class="n">loglevel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">setlogger</span><span class="p">(</span><span class="k">None</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="p">,</span> <span class="n">thelevel</span><span class="o">=</span><span class="n">loglevel</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="k">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obs</span> <span class="o">=</span> <span class="k">None</span>
+
+    <span class="k">def</span> <span class="nf">_check_long_var_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">):</span>
+        <span class="c">#TODO: what&#39;s the use of this function? You provide a name and get it back split?</span>
+        <span class="sd">&quot;&quot;&quot;Returns the variable name of a user-specified variable</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            long_var_name {str} -- variable long name</span>
+<span class="sd">        </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError -- Raised if syntax requesting variable name is not correct</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str -- variable name of specified variable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">long_var_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_var_sep</span><span class="p">))</span> <span class="o">==</span> <span class="mi">2</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;use &quot;model{}var&quot; syntax for long_var_name&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_var_sep</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">long_var_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_var_sep</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_check_initialized</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Checks whether a model was already initialized in a previous step;</span>
+<span class="sd">        criterion needed since some functions require the model to be in initialized state</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            boolean -- Boolean value whether model is already initialized</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">initialized</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span>
+
+    <span class="k">def</span> <span class="nf">_check_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Checks whether the dt specified for a model is not a whole number of GLOFRIM dt;</span>
+<span class="sd">        criterion is needed to ensure updates between models remain in phase</span>
+<span class="sd">        </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            AssertionError -- Raised if model dt is not a whole number of GLOFRIM dt</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">:</span>
+            <span class="n">dt_mod</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_time_step</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">glib</span><span class="o">.</span><span class="n">check_dts_divmod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dt</span><span class="p">,</span> <span class="n">dt_mod</span><span class="p">):</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Invalid value for dt in comparison to model dt. Make sure a whole number of model timesteps fit in the set GLOFRIM dt&quot;</span>  
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+    <span class="c">###</span>
+    <span class="c">### Model Control Functions</span>
+    <span class="c">###</span>
+
+<div class="viewcode-block" id="Glofrim.initialize_config"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.initialize_config.html#glofrim.Glofrim.initialize_config">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_fn</span><span class="p">,</span> <span class="n">env_fn</span><span class="o">=</span><span class="k">None</span><span class="p">):</span>    
+        <span class="sd">&quot;&quot;&quot;Initializing the model configuration file;</span>
+<span class="sd">        aligning GLOFRIM specifications for coupled runs to be consistent with overall run settings; </span>
+<span class="sd">        with environment file (env-file) local paths to model engines can be defined</span>
+<span class="sd">                </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            config_fn {str} -- path to model configuration file</span>
+<span class="sd">        </span>
+<span class="sd">        Keyword Arguments:</span>
+<span class="sd">            env_fn {str} -- path to environment file (default: {None})</span>
+<span class="sd">        </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            Warning -- Warning is raised if two-step model initialization is not correctly executed</span>
+<span class="sd">            ValueError -- Raised if config-files of models to be coupled are not defined in ini-file</span>
+<span class="sd">            ValueError -- Raised if engines (i.e. executables) for models to be coupled are not specified in ini/env-file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c"># log to file</span>
+        <span class="n">add_file_handler</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="n">abspath</span><span class="p">(</span><span class="n">config_fn</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;.ini&#39;</span><span class="p">,</span> <span class="s">&#39;.log&#39;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;model already initialized, it&#39;s therefore not longer possible to initialize the config&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="c"># config settings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config_fn</span> <span class="o">=</span> <span class="n">abspath</span><span class="p">(</span><span class="n">config_fn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_root</span> <span class="o">=</span> <span class="n">dirname</span><span class="p">(</span><span class="n">config_fn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Reading ini file..&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_config</span> <span class="o">=</span> <span class="n">glib</span><span class="o">.</span><span class="n">configread</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config_fn</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s">&#39;utf-8&#39;</span><span class="p">,</span> 
+                                       <span class="n">cf</span><span class="o">=</span><span class="n">ConfigParser</span><span class="p">(</span><span class="n">inline_comment_prefixes</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;#&#39;</span><span class="p">)))</span>
+       
+        <span class="c"># environment file -&gt; merge with config if given</span>
+        <span class="k">if</span> <span class="n">env_fn</span> <span class="ow">is</span> <span class="ow">not</span> <span class="k">None</span> <span class="ow">and</span> <span class="n">isfile</span><span class="p">(</span><span class="n">abspath</span><span class="p">(</span><span class="n">env_fn</span><span class="p">)):</span>
+            <span class="n">env_fn</span> <span class="o">=</span> <span class="n">abspath</span><span class="p">(</span><span class="n">env_fn</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Reading env file..&#39;</span><span class="p">)</span>
+            <span class="n">env</span> <span class="o">=</span> <span class="n">glib</span><span class="o">.</span><span class="n">configread</span><span class="p">(</span><span class="n">env_fn</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s">&#39;utf-8&#39;</span><span class="p">,</span> 
+                                  <span class="n">cf</span><span class="o">=</span><span class="n">ConfigParser</span><span class="p">(</span><span class="n">inline_comment_prefixes</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;#&#39;</span><span class="p">)))</span>
+            <span class="k">for</span> <span class="n">sect</span> <span class="ow">in</span> <span class="n">env</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">sect</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">sections</span><span class="p">():</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="n">sect</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">opt</span> <span class="ow">in</span> <span class="n">env</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="n">sect</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">sect</span><span class="p">,</span> <span class="n">opt</span><span class="p">,</span> <span class="n">glib</span><span class="o">.</span><span class="n">getabspath</span><span class="p">(</span><span class="n">env</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sect</span><span class="p">,</span> <span class="n">opt</span><span class="p">),</span> <span class="n">dirname</span><span class="p">(</span><span class="n">env_fn</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s">&#39;models&#39;</span><span class="p">,</span> <span class="s">&#39;root_dir&#39;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_root</span> <span class="o">=</span> <span class="n">glib</span><span class="o">.</span><span class="n">getabspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;models&#39;</span><span class="p">,</span> <span class="s">&#39;root_dir&#39;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">remove_option</span><span class="p">(</span><span class="s">&#39;models&#39;</span><span class="p">,</span> <span class="s">&#39;root_dir&#39;</span><span class="p">)</span>
+        
+        <span class="c">## parse glofrim config</span>
+        <span class="c"># initialize bmi component and it&#39;s configuration </span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">has_section</span><span class="p">(</span><span class="s">&#39;models&#39;</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;GLOFRIM ini misses a &quot;models&quot; section&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="s">&#39;models&#39;</span><span class="p">):</span>
+            <span class="n">bmi_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;logger&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">,</span> <span class="s">&#39;loglevel&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loglevel</span><span class="p">}</span>
+            <span class="n">_bmi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_models</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span>
+            <span class="c"># check if bmi component requires engine</span>
+            <span class="k">if</span> <span class="s">&#39;engine&#39;</span> <span class="ow">in</span> <span class="n">_bmi</span><span class="o">.</span><span class="n">__init__</span><span class="o">.</span><span class="n">__code__</span><span class="o">.</span><span class="n">co_varnames</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s">&#39;engines&#39;</span><span class="p">,</span> <span class="n">mod</span><span class="p">):</span>
+                    <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;GLOFRIM ini or environment file misses a &quot;engines&quot; section with {} option&#39;</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mod</span><span class="p">))</span>
+                <span class="n">engine_path</span> <span class="o">=</span> <span class="n">glib</span><span class="o">.</span><span class="n">getabspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;engines&#39;</span><span class="p">,</span> <span class="n">mod</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="p">)</span>
+                <span class="n">bmi_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">engine</span> <span class="o">=</span> <span class="n">engine_path</span><span class="p">)</span>
+            <span class="c"># initialize bmi component</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span> <span class="o">=</span> <span class="n">_bmi</span><span class="p">(</span><span class="o">**</span><span class="n">bmi_kwargs</span><span class="p">)</span>
+            <span class="c"># initialize config of bmi component</span>
+            <span class="n">modconf</span> <span class="o">=</span> <span class="n">glib</span><span class="o">.</span><span class="n">getabspath</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;models&#39;</span><span class="p">,</span> <span class="n">mod</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">_root</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">initialize_config</span><span class="p">(</span><span class="n">modconf</span><span class="p">)</span>
+
+        <span class="c"># parse echanges section</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exchanges</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_exchanges</span><span class="p">()</span>
+
+        <span class="c"># combined model time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span> <span class="o">=</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;coupling&#39;</span> <span class="p">,</span><span class="s">&#39;dt&#39;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="mi">86400</span><span class="p">)))</span>
+        <span class="c"># set start_time &amp; end_time if given</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s">&#39;coupling&#39;</span><span class="p">,</span> <span class="s">&#39;start_time&#39;</span><span class="p">):</span>
+            <span class="n">start_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;coupling&#39;</span><span class="p">,</span> <span class="s">&#39;start_time&#39;</span><span class="p">),</span> <span class="s">&quot;%Y-%m-%d&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_start_time</span><span class="p">(</span><span class="n">start_time</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">has_option</span><span class="p">(</span><span class="s">&#39;coupling&#39;</span><span class="p">,</span> <span class="s">&#39;end_time&#39;</span><span class="p">):</span>
+            <span class="n">end_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;coupling&#39;</span><span class="p">,</span> <span class="s">&#39;end_time&#39;</span><span class="p">),</span> <span class="s">&quot;%Y-%m-%d&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_end_time</span><span class="p">(</span><span class="n">end_time</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_timeunit</span> <span class="o">=</span> <span class="s">&#39;sec&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_startTime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_start_time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_endTime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_startTime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="o">=</span><span class="k">False</span>
+        <span class="c"># check model dt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_dt</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Glofrim.set_exchanges"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.set_exchanges.html#glofrim.Glofrim.set_exchanges">[docs]</a>    <span class="k">def</span> <span class="nf">set_exchanges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Defines the variable exchanges between models together with necessary unit and time conversions; </span>
+<span class="sd">        exchanges can be defined in ini/env-file;</span>
+<span class="sd">        it is important that all fluxes/states in ini/env-file are to m3 for mass balance.</span>
+<span class="sd">        </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            ValueError -- Raised if no exchanges are specified in GLOFRIM ini-file</span>
+<span class="sd">            ValueError -- Raised if an unspported model is specified</span>
+<span class="sd">            ValueError -- Raised if unknown variables are specified</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list -- list describing all models, states, and fluxes that will be exchanged</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;Parsing exchanges..&#39;</span><span class="p">)</span>
+        <span class="c"># parse exchanges</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">has_section</span><span class="p">(</span><span class="s">&#39;exchanges&#39;</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;GLOFRIM ini misses a &quot;exchanges&quot; section&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">exchanges</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">model_called</span><span class="p">,</span> <span class="n">vars_set</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ex_from</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">options</span><span class="p">(</span><span class="s">&#39;exchanges&#39;</span><span class="p">):</span>
+            <span class="n">ex_to</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&#39;exchanges&#39;</span><span class="p">,</span> <span class="n">ex_from</span><span class="p">)</span>
+            <span class="c"># break up starting from back</span>
+            <span class="n">exdict</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="c">## FROM</span>
+            <span class="c"># model</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ind_sep</span> <span class="ow">in</span> <span class="n">ex_from</span><span class="p">:</span>
+                <span class="n">ex_from</span><span class="p">,</span> <span class="n">ind_from</span> <span class="o">=</span> <span class="n">ex_from</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ind_sep</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ind_from</span> <span class="o">=</span> <span class="s">&#39;grid&#39;</span>
+            <span class="n">ex_from</span> <span class="o">=</span> <span class="n">ex_from</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_var_sep</span><span class="p">)</span>
+            <span class="n">mod_from</span><span class="p">,</span> <span class="n">vars_from</span> <span class="o">=</span> <span class="n">ex_from</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ex_from</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">mod_from</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;unkown model name {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mod_from</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error9</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">exdict</span><span class="p">[</span><span class="s">&#39;from_mod&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod_from</span>
+            <span class="n">from_bmi</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod_from</span><span class="p">]</span>
+            <span class="c"># variables</span>
+            <span class="n">exdict</span><span class="p">[</span><span class="s">&#39;from_vars&#39;</span><span class="p">],</span> <span class="n">exdict</span><span class="p">[</span><span class="s">&#39;from_unit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+            <span class="n">vars_from</span> <span class="o">=</span> <span class="n">vars_from</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;*&#39;</span><span class="p">)</span>
+            <span class="n">from_model_vars</span> <span class="o">=</span> <span class="n">from_bmi</span><span class="o">.</span><span class="n">_input_var_names</span> <span class="o">+</span> <span class="n">from_bmi</span><span class="o">.</span><span class="n">_output_var_names</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">var_from</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">vars_from</span><span class="p">):</span>
+                <span class="c"># last var may be a scalar multiplier</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> <span class="c"># and i == (len(vars_from) - 1):</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">var_from</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">var_from</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                        <span class="k">pass</span>
+                <span class="n">exdict</span><span class="p">[</span><span class="s">&#39;from_vars&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var_from</span><span class="p">)</span> <span class="c"># model variable</span>
+                <span class="n">exdict</span><span class="p">[</span><span class="s">&#39;from_unit&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">from_bmi</span><span class="o">.</span><span class="n">get_var_units</span><span class="p">(</span><span class="n">var_from</span><span class="p">))</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var_from</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">var_from</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">from_model_vars</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Unkonwn variable {} for model {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">var_from</span><span class="p">,</span> <span class="n">from_bmi</span><span class="o">.</span><span class="n">_name</span><span class="p">))</span>
+            <span class="c">## TO</span>
+            <span class="c"># index</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ind_sep</span> <span class="ow">in</span> <span class="n">ex_to</span><span class="p">:</span>
+                <span class="n">ex_to</span><span class="p">,</span> <span class="n">ind_to</span> <span class="o">=</span> <span class="n">ex_to</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ind_sep</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">ind_to</span> <span class="o">=</span> <span class="s">&#39;grid&#39;</span>
+            <span class="c"># model</span>
+            <span class="n">ex_to</span> <span class="o">=</span> <span class="n">ex_to</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_var_sep</span><span class="p">)</span>
+            <span class="n">mod_to</span><span class="p">,</span> <span class="n">vars_to</span> <span class="o">=</span> <span class="n">ex_to</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">&#39;.&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">ex_to</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">mod_to</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;unkown model name {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mod_from</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">to_bmi</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod_to</span><span class="p">]</span>
+            <span class="n">exdict</span><span class="p">[</span><span class="s">&#39;to_mod&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mod_to</span>
+            <span class="c"># variables</span>
+            <span class="n">exdict</span><span class="p">[</span><span class="s">&#39;to_vars&#39;</span><span class="p">],</span>  <span class="n">exdict</span><span class="p">[</span><span class="s">&#39;to_unit&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+            <span class="n">vars_to</span> <span class="o">=</span> <span class="n">vars_to</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;*&#39;</span><span class="p">)</span>
+            <span class="n">to_model_vars</span> <span class="o">=</span> <span class="n">to_bmi</span><span class="o">.</span><span class="n">_input_var_names</span> <span class="o">+</span> <span class="n">to_bmi</span><span class="o">.</span><span class="n">_output_var_names</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">var_to</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">vars_to</span><span class="p">):</span>
+                <span class="c"># last var may be a scalar multiplier</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span> <span class="c"># and i == (len(vars_to) - 1):</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">var_to</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">var_to</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                        <span class="k">pass</span>
+                <span class="n">exdict</span><span class="p">[</span><span class="s">&#39;to_vars&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var_to</span><span class="p">)</span> <span class="c"># model variable</span>
+                <span class="n">exdict</span><span class="p">[</span><span class="s">&#39;to_unit&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to_bmi</span><span class="o">.</span><span class="n">get_var_units</span><span class="p">(</span><span class="n">var_to</span><span class="p">))</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var_to</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">var_to</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">to_model_vars</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">Warning</span><span class="p">(</span><span class="s">&quot;Unkonwn variable {} for model {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">var_to</span><span class="p">,</span> <span class="n">to_bmi</span><span class="o">.</span><span class="n">_name</span><span class="p">))</span>
+            <span class="c"># with second call to set variable add instead of replace</span>
+            <span class="k">if</span> <span class="n">exdict</span><span class="p">[</span><span class="s">&#39;to_vars&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">vars_set</span><span class="p">:</span>
+                <span class="n">exdict</span><span class="p">[</span><span class="s">&#39;add&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="k">True</span> 
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">vars_set</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">exdict</span><span class="p">[</span><span class="s">&#39;to_vars&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+            <span class="c">## SpatialCoupling</span>
+            <span class="c"># create SpatialCoupling object. Actual coupling happens later</span>
+            <span class="n">sc_kwargs</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">to_bmi</span><span class="o">=</span><span class="n">to_bmi</span><span class="p">,</span> <span class="n">from_bmi</span><span class="o">=</span><span class="n">from_bmi</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">isfile</span><span class="p">(</span><span class="n">ind_to</span><span class="p">):</span>
+                <span class="n">sc_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">filename</span><span class="o">=</span><span class="n">ind_to</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s">&#39;from_file&#39;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">coupling_method</span> <span class="o">=</span> <span class="s">&#39;{}_2_{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ind_from</span><span class="p">,</span> <span class="n">ind_to</span><span class="p">)</span>
+                <span class="n">sc_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="n">coupling_method</span><span class="p">)</span>
+            <span class="n">exdict</span><span class="p">[</span><span class="s">&#39;coupling&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">SpatialCoupling</span><span class="p">(</span><span class="o">**</span><span class="n">sc_kwargs</span><span class="p">)</span>
+            <span class="c">## UPDATE</span>
+            <span class="c">#  update model before first time it is called in mod_from</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">mod_from</span> <span class="ow">in</span> <span class="n">model_called</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">exchanges</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;update&#39;</span><span class="p">,</span> <span class="n">mod_from</span><span class="p">))</span>
+                <span class="n">model_called</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mod_from</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">exchanges</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;exchange&#39;</span><span class="p">,</span> <span class="n">exdict</span><span class="p">))</span>
+        <span class="c"># add last model updates</span>
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">mod</span> <span class="ow">in</span> <span class="n">model_called</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">exchanges</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s">&#39;update&#39;</span><span class="p">,</span> <span class="n">mod</span><span class="p">))</span>
+                <span class="n">model_called</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">exchanges</span></div>
+
+    <span class="k">def</span> <span class="nf">_set_spatial_coupling</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Spatially couples the grid of the models whose variables are exchanged;</span>
+<span class="sd">        for one-way coupling, this is a one-to-many coupling, i.e. one origin cell is coupled</span>
+<span class="sd">        to multiple destination cells</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exchanges</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;exchange&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;set coupled grids for: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;coupling&#39;</span><span class="p">])))</span>
+                <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;coupling&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">couple</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Glofrim.initialize_model"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.initialize_model.html#glofrim.Glofrim.initialize_model">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initializes the model, i.e. loading all files and checking for consistency; </span>
+<span class="sd">        can only be executed after the model-specific config-file was initialized;</span>
+<span class="sd">        essential for a successful two-step model initialization and aligned model data.</span>
+<span class="sd">        </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            Warning -- Warning is raised if two-step model initialization is not correctly executed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s">&#39;_config_fn&#39;</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;run initialize_config before initialize_model&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="c"># some models (e.g. DFM) need to be intialized before we access it spatial information</span>
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_pre_exchange</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">initialize_model</span><span class="p">()</span>
+        <span class="c"># set spatial coupling</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_spatial_coupling</span><span class="p">()</span>
+        <span class="c"># initialize other models (CMF needs to be initialized after spatial coupling!)</span>
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">mod</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_pre_exchange</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">initialize_model</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_initialized</span><span class="p">()</span>
+        <span class="c"># sync start and endtimes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_startTime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_start_time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_endTime</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_startTime</span>
+        <span class="c"># check model dt</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_check_dt</span><span class="p">()</span></div>
+        <span class="c"># TODO set observation points</span>
+
+    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_fn</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initializes the model following a two-step initialization procedure;</span>
+<span class="sd">        first, the config-file is initialized and where necessary aligned with overall model settings (e.g. output-dir, start and end time);</span>
+<span class="sd">        second, the model is actually initialized.</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            config_fn {str} -- path to model configuration file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_config</span><span class="p">(</span><span class="n">config_fn</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_model</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="k">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Updating model for a certain time step interval (default: None);</span>
+<span class="sd">        checks whether model end time is already reached;</span>
+<span class="sd">        requires that model-specific time step is a whole number of update time step.</span>
+<span class="sd">        </span>
+<span class="sd">        Keyword Arguments:</span>
+<span class="sd">            dt {int} -- update time step interval [sec] at which information is exchanged between models (default: {None})</span>
+<span class="sd">        </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            Warning -- Raised in models are not initialized before updating</span>
+<span class="sd">            Exception -- Raised if model end time is already reached; no further updating possible</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;models should be initialized first&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Warning</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">():</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;endTime already reached, model not updated&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="c"># update all models with combined model dt</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="k">if</span> <span class="n">dt</span> <span class="ow">is</span> <span class="k">None</span> <span class="k">else</span> <span class="n">dt</span>
+        <span class="n">t_next</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exchanges</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;update&#39;</span><span class="p">:</span>
+                <span class="c"># LFP deviates from the set timestep using an adaptive timestep if dt is set to large</span>
+                <span class="c"># calculate the dt to get to the next timestep</span>
+                <span class="c"># NOTE we use &quot;update&quot; instead of &quot;update_until&quot; to getter better logging.</span>
+                <span class="n">dt_mod</span> <span class="o">=</span> <span class="p">(</span><span class="n">t_next</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">_t</span><span class="p">)</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt_mod</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;exchange&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">exchange</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_time</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">update_until</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="k">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Updates the model until a certain time t is reached with an update time step dt.</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            t {int} -- Model time until which the model is update</span>
+<span class="sd">        </span>
+<span class="sd">        Keyword Arguments:</span>
+<span class="sd">            dt {int} -- update time step interval [s] at which information is exchanged between models (default: {None})</span>
+<span class="sd">        </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            Exception -- Raised if specified time is smaller than time step or later than model end time</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="p">(</span><span class="n">t</span><span class="o">&lt;</span><span class="bp">self</span><span class="o">.</span><span class="n">_t</span><span class="p">)</span> <span class="ow">or</span> <span class="n">t</span><span class="o">&gt;</span><span class="bp">self</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">():</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;wrong time input: smaller than model time or larger than endTime&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">&lt;</span> <span class="n">t</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">spinup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;PCR-GLOBWB specific function (see pcr_bmi.py).</span>
+<span class="sd">        </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError -- SpinUp is not implemented for central BMI</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Finalizes the model;</span>
+<span class="sd">        shuts down all operations and closes output files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;finalize models bmi. Close loggers.&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
+        <span class="n">closelogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">exchange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_mod</span><span class="p">,</span> <span class="n">to_mod</span><span class="p">,</span> <span class="n">from_vars</span><span class="p">,</span> <span class="n">to_vars</span><span class="p">,</span> <span class="n">coupling</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="k">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Exchanges variable content from specified source variable in source model to</span>
+<span class="sd">        a specified destination variable in the destination model; </span>
+<span class="sd">        exchange is possible for entire grid or at specified indices;</span>
+<span class="sd">        coupling either as totals or fractional values depending on exchange;</span>
+<span class="sd">        source variable can either add to destination variable or overwrite it</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            from_mod {str} -- string defining the source model</span>
+<span class="sd">            to_mod {str} -- string defining the destination model</span>
+<span class="sd">            from_vars {str} -- string defining the source variable</span>
+<span class="sd">            to_vars {str} -- string defining the destination variable</span>
+<span class="sd">            coupling {array} -- array with coupled indices</span>
+<span class="sd">        </span>
+<span class="sd">        Keyword Arguments:</span>
+<span class="sd">            add {bool} -- if True, source values are added to destination values; if False, overwritten (default: {False})</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;{} {}.{} data to coupled {}.{} variable&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s">&#39;adding&#39;</span> <span class="k">if</span> <span class="n">add</span> <span class="k">else</span> <span class="s">&#39;setting&#39;</span><span class="p">,</span> <span class="n">from_mod</span><span class="p">,</span> <span class="n">from_vars</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">to_mod</span><span class="p">,</span> <span class="n">to_vars</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="k">if</span> <span class="n">coupling</span><span class="o">.</span><span class="n">at_indices</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">exchange_at_indices</span><span class="p">(</span><span class="n">from_mod</span><span class="p">,</span> <span class="n">to_mod</span><span class="p">,</span> <span class="n">from_vars</span><span class="p">,</span> <span class="n">to_vars</span><span class="p">,</span> <span class="n">coupling</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="n">add</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">exchange_same_grid</span><span class="p">(</span><span class="n">from_mod</span><span class="p">,</span> <span class="n">to_mod</span><span class="p">,</span> <span class="n">from_vars</span><span class="p">,</span> <span class="n">to_vars</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="n">add</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">exchange_same_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_mod</span><span class="p">,</span> <span class="n">to_mod</span><span class="p">,</span> <span class="n">from_vars</span><span class="p">,</span> <span class="n">to_vars</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="k">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Exchanges variable content from specified source variable in source model to</span>
+<span class="sd">        a specified destination variable in the destination model for the entire grid;</span>
+<span class="sd">        source variable can either add to destination variable or overwrite it</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            from_mod {str} -- string defining the source model</span>
+<span class="sd">            to_mod {str} -- string defining the destination model</span>
+<span class="sd">            from_vars {str} -- string defining the source variable</span>
+<span class="sd">            to_vars {str} -- string defining the destination variable</span>
+<span class="sd">        </span>
+<span class="sd">        Keyword Arguments:</span>
+<span class="sd">            add {bool} -- if True, source values are added to destination values; if False, overwritten (default: {False})</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c"># get FROM data &amp; translate</span>
+        <span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">from_mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_var_shape</span><span class="p">(</span><span class="n">from_vars</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">vals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">from_var</span> <span class="ow">in</span> <span class="n">from_vars</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">from_var</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span> <span class="c"># scalar multiplier</span>
+                <span class="n">vals</span> <span class="o">*=</span> <span class="n">from_var</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">vals</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">from_mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">from_var</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;total get {:3f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">vals</span><span class="p">)))</span>
+        <span class="c"># get TO data &amp; translate</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">to_vars</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+                <span class="n">div</span> <span class="o">=</span> <span class="n">var</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">div</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">to_mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">var</span><span class="p">)</span> 
+            <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">not_equal</span><span class="p">(</span><span class="n">div</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="c"># make sure not to divide by zero</span>
+            <span class="n">vals</span> <span class="o">/=</span> <span class="n">div</span>
+        <span class="c"># SET data</span>
+        <span class="k">if</span> <span class="n">add</span><span class="p">:</span>  <span class="c"># add to current state</span>
+            <span class="n">vals</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">to_mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">to_vars</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">vals</span><span class="p">)</span> <span class="c"># TO   </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">to_mod</span><span class="p">]</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">to_vars</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">vals</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">exchange_at_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_mod</span><span class="p">,</span> <span class="n">to_mod</span><span class="p">,</span> <span class="n">from_vars</span><span class="p">,</span> <span class="n">to_vars</span><span class="p">,</span> <span class="n">coupling</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="k">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Exchanges variable content from specified source variable in source model to</span>
+<span class="sd">        a specified destination variable in the destination model for user-specified indices;</span>
+<span class="sd">        coupling either as totals or fractional values depending on exchange;</span>
+<span class="sd">        source variable can either add to destination variable or overwrite it</span>
+<span class="sd">           </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            from_mod {str} -- string defining the source model</span>
+<span class="sd">            to_mod {str} -- string defining the destination model</span>
+<span class="sd">            from_vars {str} -- string defining the source variable</span>
+<span class="sd">            to_vars {str} -- string defining the destination variable</span>
+<span class="sd">            coupling {array} -- array with coupled indices</span>
+<span class="sd">        </span>
+<span class="sd">        Keyword Arguments:</span>
+<span class="sd">            add {bool} -- if True, source values are added to destination values; if False, overwritten (default: {False})</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c"># get FROM data &amp; translate</span>
+        <span class="n">vals_get</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">coupling</span><span class="o">.</span><span class="n">from_ind</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">from_var</span> <span class="ow">in</span> <span class="n">from_vars</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">from_var</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span> <span class="c"># scalar multiplier</span>
+                <span class="n">vals_get</span> <span class="o">*=</span> <span class="n">from_var</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">vals_get</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">from_mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_value_at_indices</span><span class="p">(</span><span class="n">from_var</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">from_ind</span><span class="p">)</span>
+        <span class="c"># TRANSFORM data from coupling.from_ind.size &gt; coupling.to_ind.size</span>
+        <span class="k">if</span> <span class="n">coupling</span><span class="o">.</span><span class="n">from_grp_n</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span> <span class="c"># aggregate data from</span>
+            <span class="n">vals_get</span> <span class="o">=</span> <span class="n">groupby_sum</span><span class="p">(</span><span class="n">vals_get</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">from_grp</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">coupling</span><span class="o">.</span><span class="n">to_grp_n</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span> <span class="c"># split using fractions</span>
+            <span class="n">vals_set</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">vals_get</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">to_grp_n</span><span class="p">)</span> <span class="o">*</span> <span class="n">coupling</span><span class="o">.</span><span class="n">get_frac</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">vals_set</span> <span class="o">=</span> <span class="n">vals_get</span>
+        <span class="n">vol_diff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">vals_get</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">vals_set</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">vol_diff</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="n">E</span><span class="o">-</span><span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warming</span><span class="p">(</span><span class="s">&#39;Large difference in water volume from and to: {:.4f} m3&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">vol_diff</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s">&#39;total get {:3f}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nansum</span><span class="p">(</span><span class="n">vals_get</span><span class="p">)))</span>
+        <span class="c"># get TO data &amp; translate</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">to_vars</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="nb">float</span><span class="p">):</span>
+                <span class="n">div</span> <span class="o">=</span> <span class="n">var</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">div</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">to_mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_value_at_indices</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">coupling</span><span class="o">.</span><span class="n">to_ind</span><span class="p">)</span>
+            <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">not_equal</span><span class="p">(</span><span class="n">div</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span> <span class="c"># make sure not to divide by zero</span>
+            <span class="n">vals_set</span> <span class="o">/=</span> <span class="n">div</span>
+        <span class="c"># SET data</span>
+        <span class="k">if</span> <span class="n">add</span><span class="p">:</span> <span class="c"># add to current state</span>
+            <span class="n">vals_set</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">to_mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_value_at_indices</span><span class="p">(</span><span class="n">to_vars</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">coupling</span><span class="o">.</span><span class="n">to_ind</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">to_mod</span><span class="p">]</span><span class="o">.</span><span class="n">set_value_at_indices</span><span class="p">(</span><span class="n">to_vars</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">coupling</span><span class="o">.</span><span class="n">to_ind</span><span class="p">,</span> <span class="n">vals_set</span><span class="p">)</span>
+
+    <span class="c">###</span>
+    <span class="c">### Model Information Functions</span>
+    <span class="c">###</span>
+
+    <span class="k">def</span> <span class="nf">get_model_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns type of specified model; </span>
+<span class="sd">        possible types are hydrologic, routing, or hydrodynamic model</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str -- type of specified model</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="n">mod</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_model_type</span><span class="p">()</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">get_component_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c">#TODO: what are model component in this context?</span>
+        <span class="sd">&quot;&quot;&quot;Returns component name of specified model</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str -- name of specified component</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="n">mod</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_component_name</span><span class="p">()</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">get_input_var_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns list with all possible input variable names that </span>
+<span class="sd">        can be used as exchange TO the specified model;</span>
+<span class="sd">        must be specified in model specific BMI class.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list -- list of all possible input variables</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="n">mod</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_input_var_names</span><span class="p">()</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">get_output_var_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns list with all possible output variable names that </span>
+<span class="sd">        can be used as exchange FROM the specified model;</span>
+<span class="sd">        must be specified in model specific BMI class.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list -- list of all possible output variables</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="n">mod</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_output_var_names</span><span class="p">()</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">}</span>
+
+    <span class="c">###</span>
+    <span class="c">### Variable Information Functions</span>
+    <span class="c">###</span>
+
+    <span class="k">def</span> <span class="nf">get_var_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the type of a user-specified model variable exposed via BMI</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            long_var_name {str} -- long name of exposed model variable</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str -- type of specified variable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">mod</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_var_type</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_var_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides units of specified variable</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            long_var_name {str} -- long name of exposed model variable</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str -- units of specified variable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">mod</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_var_units</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_var_rank</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides rank (i.e. number of dimensions) of specified variable</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            long_var_name {str} -- long name of exposed model variable</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int -- rank of specified variable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">mod</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_var_rank</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_var_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides size (i.e. total number of values contained) of specified variable</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            long_var_name {str} -- long name of exposed model variable</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int -- size of specified variable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">mod</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_var_size</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_var_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides shape of specified variable</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            long_var_name {str} -- long name of exposed model variable</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            tuple -- shape of specified variable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">mod</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_var_shape</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_var_nbytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides number of bytes of specified variable</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            long_var_name {str} -- long name of exposed model variable</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int -- byte number of specified variable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">mod</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_var_nbytes</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_start_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides start time of model</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            date -- start time of model</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_startTime</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_start_time</span><span class="p">()</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_startTime</span>
+
+    <span class="k">def</span> <span class="nf">get_current_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides current model time</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            date -- current model time of PCR-GLOBWB</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">models_t</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">_t</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">]</span>
+        <span class="n">in_sync</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">models_t</span> <span class="ow">or</span> <span class="n">models_t</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">models_t</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">models_t</span><span class="p">)</span>  <span class="c"># check if identical</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">in_sync</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s">&#39;{}: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">))</span> <span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">,</span> <span class="n">models_t</span><span class="p">)])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Model times out of sync: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">=</span> <span class="n">models_t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span>
+
+    <span class="k">def</span> <span class="nf">get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides end time of model</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            date -- end time of model</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_endTime</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">()</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">])</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endTime</span>
+
+    <span class="k">def</span> <span class="nf">get_time_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides time step of model</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            date -- time step of model</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span>
+        
+    <span class="k">def</span> <span class="nf">get_time_units</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides time unit of model.</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str -- time unit of model</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeunit</span>
+
+    <span class="c">###</span>
+    <span class="c">### Variable Getter and Setter Functions</span>
+    <span class="c">###</span>
+    
+    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieval of value of a certain exposed variable; </span>
+<span class="sd">        entries with fill_value are replaced with NaN values</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            long_var_name {str} -- name of exposed model variable</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            array -- array with values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">mod</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_value_at_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Retrieval of value at a specific index of a certain exposed variable; </span>
+<span class="sd">        entries with fill_value are replaced with NaN values</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            long_var_name {str} -- name of exposed model variable</span>
+<span class="sd">            inds {int} -- Index pointing to entry within entire array of variable values</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            float -- value at specific index of retrieved variable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">mod</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_value_at_indices</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwriting of all values of a certain exposed variable with provided new values; </span>
+<span class="sd">        entries with NaN value are replaced with fill_value; </span>
+<span class="sd">        provided new values must match shape of aim variable</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            long_var_name {str} -- name of exposed model variable</span>
+<span class="sd">            src {array} -- array with new values</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">mod</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set_value_at_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwriting of value at specific entry of a certain exposed variable with provided new values; </span>
+<span class="sd">        entries with NaN value are replaced with fill_value</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            long_var_name {str} -- name of exposed model variable</span>
+<span class="sd">            inds {int} -- Index pointing to entry within entire array of variable values</span>
+<span class="sd">            src {array} -- array with new values</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            [type] -- [description]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">mod</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">set_value_at_indices</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="c">###</span>
+    <span class="c">### Grid Information Functions</span>
+    <span class="c">###</span>
+    
+    <span class="k">def</span> <span class="nf">get_grid_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides grid type of model;</span>
+<span class="sd">        can be regular, flexible or unit catchment grid</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            str -- Grid type of model</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="n">mod</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_grid_type</span><span class="p">()</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">}</span>
+
+    <span class="c">###</span>
+    <span class="c">### Observation points</span>
+    <span class="c">###</span>
+
+    <span class="k">def</span> <span class="nf">get_obs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Under construction;</span>
+<span class="sd">        function to get observation points to read out model</span>
+<span class="sd">        output on the fly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">set_obs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Under construction;</span>
+<span class="sd">        function to set observation points to read out model</span>
+<span class="sd">        output on the fly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">pass</span>
+
+    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">mod</span><span class="p">,</span> <span class="n">in1d</span><span class="o">=</span><span class="k">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Finds the index in model data grid associated with</span>
+<span class="sd">        coordinates in lat/lon projection of a user-specified point</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            x {float} -- x-coordinate of point</span>
+<span class="sd">            y {float} -- y-coordinate of point</span>
+<span class="sd">            mod {str} -- model abbreviation</span>
+<span class="sd">        </span>
+<span class="sd">        Keyword Arguments:</span>
+<span class="sd">            in1d {bool} -- True if point is on a 1D network in model (default: {False})</span>
+<span class="sd">        </span>
+<span class="sd">        Raises:</span>
+<span class="sd">            AssertionError -- Raised if no grid is set before</span>
+<span class="sd">            AssertionError -- Raised if no 1D network is set before</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            int -- index associated to x/y coordinates</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span> <span class="ow">is</span> <span class="k">None</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;{}: model grid not set&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">in1d</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">_1d</span> <span class="ow">is</span> <span class="k">None</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;{}: model 1d network not set&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">_1d</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">idx</span>
+    
+    <span class="c">###</span>
+    <span class="c">### set and get attribute / config </span>
+    <span class="c">###</span>
+
+    <span class="k">def</span> <span class="nf">set_start_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwriting default model start time with user-specified start time;</span>
+<span class="sd">        format of provided start time must be yyyy-mm-dd</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            start_time {date} -- user-specified start time</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">set_start_time</span><span class="p">(</span><span class="n">start_time</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_start_time</span><span class="p">()</span> <span class="c"># sync start time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_startTime</span>
+       
+    <span class="k">def</span> <span class="nf">set_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">end_time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwriting default model end time with user-specified end time;</span>
+<span class="sd">        format of provided end time must be yyyy-mm-dd</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            end_time {date} -- user-specified end time</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">set_end_time</span><span class="p">(</span><span class="n">end_time</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">()</span> <span class="c"># sync end time</span>
+
+    <span class="k">def</span> <span class="nf">get_attribute_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides list with all model attribute names from model config file</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list -- list with model attribute names</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">{</span><span class="n">mod</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_attribute_names</span><span class="p">()</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">set_out_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Setting output directory of model; </span>
+<span class="sd">        overwrites the default output directory</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            out_dir {str} -- path to output directory</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="n">mod</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">set_out_dir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_attribute_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;gets attribute value in in underlying model;</span>
+<span class="sd">        attribute_name should use the following convention model_name.section_name:attribute_name</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            attribute_name {str} -- Name of BMI attribute</span>
+<span class="sd">        </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            float -- value of BMI attribute</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">mod</span><span class="p">,</span> <span class="n">attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">attribute_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_attribute_value</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">set_attribute_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">,</span> <span class="n">attribute_value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;sets attribute value in underlying model;</span>
+<span class="sd">        attribute_name should use the following convention model_name.section_name:attribute_name</span>
+<span class="sd">        </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            attribute_name {str} -- Name of BMI attribute</span>
+<span class="sd">            attribute_value {float} -- value to be set</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">mod</span><span class="p">,</span> <span class="n">attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">attribute_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">set_attribute_value</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">attribute_value</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">GLOFRIM 2 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, J.M. Hoch, D. Eilander, H. Ikeuchi.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.6.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,152 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>2. Running GLOFRIM &#8212; GLOFRIM 2 documentation</title>
+    <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="2.1.1.1. glofrim.Glofrim.initialize_config" href="generated/glofrim.Glofrim.initialize_config.html" />
+    <link rel="prev" title="1. Hello World" href="helloWorld.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="generated/glofrim.Glofrim.initialize_config.html" title="2.1.1.1. glofrim.Glofrim.initialize_config"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="helloWorld.html" title="1. Hello World"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">GLOFRIM 2 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="_static/bridge.png" alt="Logo"/>
+            </a></p>
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="helloWorld.html"
+                        title="previous chapter">1. Hello World</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="generated/glofrim.Glofrim.initialize_config.html"
+                        title="next chapter">2.1.1.1. glofrim.Glofrim.initialize_config</a></p>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="running-glofrim">
+<span id="id1"></span><h1>2. Running GLOFRIM<a class="headerlink" href="#running-glofrim" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installing-your-doc-directory">
+<h2>2.1. Installing your doc directory<a class="headerlink" href="#installing-your-doc-directory" title="Permalink to this headline">¶</a></h2>
+<p>GLOFRIM in da house whoop whoop what’s up and hello World!</p>
+<p>You may already have sphinx <a class="reference external" href="http://sphinx.pocoo.org/">sphinx</a>
+installed – you can check by doing:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span class="n">python</span> <span class="n">glofrim_runner</span><span class="o">.</span><span class="n">py</span> <span class="n">run</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">glofrim</span><span class="o">.</span><span class="n">ini</span>
+</pre></div>
+</div>
+<p>Or otherwise try something else.</p>
+<p>You can also add an image:</p>
+<img alt="_images/GermanDischarge.png" src="_images/GermanDischarge.png" />
+<div class="section" id="fetching-the-data">
+<span id="id2"></span><h3>2.1.1. Fetching the data<a class="headerlink" href="#fetching-the-data" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-ipython notranslate"><div class="highlight"><pre>In [1]: x = 2
+
+In [2]: x**3
+Out[2]: 8
+</pre></div>
+</div>
+<p>When you reload the page by refreshing your browser pointing to
+<code class="file docutils literal notranslate"><span class="pre">_build/html/index.html</span></code>, you should see a link to the
+“Getting Started” docs, and in there this page with the screenshot.
+<cite>Voila!</cite></p>
+<p>We can also use the image directive in <code class="file docutils literal notranslate"><span class="pre">running_GLOFRIM.rst</span></code> to include to the screenshot above
+with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span class="o">..</span> <span class="n">image</span><span class="p">::</span>
+   <span class="n">_static</span><span class="o">/</span><span class="n">GermanDischarge</span><span class="o">.</span><span class="n">png</span>
+</pre></div>
+</div>
+<span class="target" id="module-glofrim"></span><table border="1" class="longtable docutils">
+<colgroup>
+<col width="10%" />
+<col width="90%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><a class="reference internal" href="generated/glofrim.Glofrim.initialize_config.html#glofrim.Glofrim.initialize_config" title="glofrim.Glofrim.initialize_config"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Glofrim.initialize_config</span></code></a></td>
+<td>Initializing the model configuration file; aligning GLOFRIM specifications for coupled runs to be consistent with overall run settings;  with environment file (env-file) local paths to model engines can be defined</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="generated/glofrim.Glofrim.set_exchanges.html#glofrim.Glofrim.set_exchanges" title="glofrim.Glofrim.set_exchanges"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Glofrim.set_exchanges</span></code></a></td>
+<td>Defines the variable exchanges between models together with necessary unit and time conversions;  exchanges can be defined in ini/env-file; it is important that all fluxes/states in ini/env-file are to m3 for mass balance.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="generated/glofrim.Glofrim.initialize_model.html#glofrim.Glofrim.initialize_model" title="glofrim.Glofrim.initialize_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Glofrim.initialize_model</span></code></a></td>
+<td>Initializes the model, i.e.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="generated/glofrim.Glofrim.initialize_config.html" title="2.1.1.1. glofrim.Glofrim.initialize_config"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="helloWorld.html" title="1. Hello World"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">GLOFRIM 2 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, J.M. Hoch, D. Eilander, H. Ikeuchi.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.6.
+    </div>
+  </body>
+</html>
