@@ -44,16 +44,6 @@ with::
   .. image::
      _static/GermanDischarge.png
 
-.. automodule:: glofrim
 
-.. currentmodule:: glofrim
-
-.. autosummary::
-   :toctree: generated/
-   :nosignatures:
-
-   Glofrim.initialize_config
-   Glofrim.set_exchanges
-   Glofrim.initialize_model
 
    

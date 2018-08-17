@@ -41,8 +41,8 @@ GLOFRIM requires the following packages
 
 * Package 3
 
-It is easy to make a link to `GitHub <https://github.com/openearth/glofrim>`_ or to some
+It is easy to make a link to  or to some
 section inside this document (see :ref:`Fetching-the-data`) or another
 document.
 
-GLOFRIM is documented so far in [HESS2017]_ and [GMD2017]_
+
