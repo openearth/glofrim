@@ -5,45 +5,64 @@
 Running GLOFRIM
 ***************
 
-Installing your doc directory
-=============================
+GLOFRIM exists of a series of uniformed BMI wrappers for each model and a overarching BMI wrapper for running coupled models.
 
-GLOFRIM in da house whoop whoop what's up and hello World!
+Coupled run
+===========
 
-You may already have sphinx `sphinx <http://sphinx.pocoo.org/>`_
-installed -- you can check by doing::
+To run a coupled model from python use the following lines. 
+The glofrim.ini (see example in root directory) configuration file hold the information of the individual model configuration files and exchanges between the models::
 
-  python glofrim_runner.py run /path/to/glofrim.ini
+  # import GLOFRIM
+  from glofrim import Glofrim 
+  # initialize coupled bmi
+  cbmi = Glofrim() 
+  # initialize the coupling with the glofrim.ini configuration file
+  cbmi.initialize_config(/path/to/glofrim.ini) 
 
-Or otherwise try something else.
+A basic model run uses the following statements::
 
-You can also add an image:
+  # optional: get the model start time
+  bmi.get_start_time() 
+  # initialize model
+  bmi.initialize_model() 
+  # run until set endtime
+  bmi.update_until(bmi.get_end_time()) 
+  # finalize model
+  bmi.finalize()
 
-.. image:: _static/GermanDischarge.png
+Stand-alone run
+===============
 
-.. _fetching-the-data:
+To run stand alone models via the GLOFRIM BMI wrapper you can use followed by the same statements as before::
 
-Fetching the data
------------------
+  # import the CaMa-Flood bmi wrapper
+  from glofrim import CMF 
+  # intialize bmi with reference to engine (only for non-python models)
+  bmi = CMF(/path/to/model_engine) 
+  bmi.initialize_config(/path/to/model_configuration_file)
 
-.. sourcecode:: ipython
+Convenience script
+==================
+The GLOFRIM library contains a script to run combined and single (for testing purposes) models with a single line from a terminal. 
+This script can be found in the glofirm-py/scripts folder.
 
-   In [1]: x = 2
+GLOFRIM can be executed as follows on Linux command line::
 
-   In [2]: x**3
-   Out[2]: 8
+  python glofrim_runner.py run /path/to/glofrim.ini --env /path/to/glofrim.env -s startdate -e enddate
 
-When you reload the page by refreshing your browser pointing to
-:file:`_build/html/index.html`, you should see a link to the
-"Getting Started" docs, and in there this page with the screenshot.
-`Voila!`
+Both *startdate* and *enddate* must be in yyyy-mm-dd format.
 
-We can also use the image directive in :file:`running_GLOFRIM.rst` to include to the screenshot above
-with::
+Help
+====
 
-  .. image::
-     _static/GermanDischarge.png
+For more info on coupled runs, check::
 
+  python glofrim_runner.py run –help
+
+and for stand-alone runs::
+
+  python glofrim_runner.py run_single –help
 
 
    

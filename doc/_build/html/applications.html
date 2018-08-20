@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>6. Applications &#8212; GLOFRIM 2 documentation</title>
+    <title>5. Applications &#8212; GLOFRIM 2 documentation</title>
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -16,8 +16,8 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="7. References" href="references.html" />
-    <link rel="prev" title="5. Running GLOFRIM" href="running_GLOFRIM.html" /> 
+    <link rel="next" title="6. References" href="references.html" />
+    <link rel="prev" title="4. Running GLOFRIM" href="running_GLOFRIM.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,10 +29,10 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="references.html" title="7. References"
+          <a href="references.html" title="6. References"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="running_GLOFRIM.html" title="5. Running GLOFRIM"
+          <a href="running_GLOFRIM.html" title="4. Running GLOFRIM"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">GLOFRIM 2 documentation</a> &#187;</li> 
       </ul>
@@ -44,10 +44,10 @@
             </a></p>
   <h4>Previous topic</h4>
   <p class="topless"><a href="running_GLOFRIM.html"
-                        title="previous chapter">5. Running GLOFRIM</a></p>
+                        title="previous chapter">4. Running GLOFRIM</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="references.html"
-                        title="next chapter">7. References</a></p>
+                        title="next chapter">6. References</a></p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <div class="searchformwrapper">
@@ -69,17 +69,51 @@
           <div class="body" role="main">
             
   <div class="section" id="applications">
-<span id="id1"></span><h1>6. Applications<a class="headerlink" href="#applications" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="current-applications">
-<h2>6.1. Current Applications<a class="headerlink" href="#current-applications" title="Permalink to this headline">¶</a></h2>
-<p>In this paper benchmarking DFM with LFP.
-And in another paper benchmarking different grid discretizations of DFM.</p>
+<span id="id1"></span><h1>5. Applications<a class="headerlink" href="#applications" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="past-applications">
+<h2>5.1. Past Applications<a class="headerlink" href="#past-applications" title="Permalink to this headline">¶</a></h2>
+<p>The previous version, GLOFRIM 1.0, was successfully applied for replacing the routing scheme of PCR <a class="reference internal" href="references.html#hoch2017a" id="id2">[Hoch2017a]</a> and for benchmarking the
+hydrodynamic models DFM and LFP <a class="reference internal" href="references.html#hoch2017b" id="id3">[Hoch2017b]</a>.</p>
+<p>Results of a test case in the Amazon River basin show that by applying the full shallow water equations instead of the kinematic wave approximation
+increases the accuracy of simulated discharge:</p>
+<a class="reference internal image-reference" href="_images/fig_06.png"><img alt="alternate text" class="align-center" src="_images/fig_06.png" style="width: 750.0px; height: 375.0px;" /></a>
+<p>Benchmarking the hydrodynamic models revealed similar performace with respect to simulated discharge:</p>
+<a class="reference internal image-reference" href="_images/Fig5_qsim_DFMvsLFP.png"><img alt="alternate text" class="align-center" src="_images/Fig5_qsim_DFMvsLFP.png" style="width: 750.0px; height: 375.0px;" /></a>
+<div class="admonition-todo admonition" id="index-0">
+<p class="first admonition-title">Todo</p>
+<p class="last">align layout of figures</p>
 </div>
-<div class="section" id="future-applications">
-<h2>6.2. Future Applications<a class="headerlink" href="#future-applications" title="Permalink to this headline">¶</a></h2>
-<p>We are planning to some more crazy stuff with GLOFRIM.
-Stay tuned!</p>
-<p>By the way, the underline of titles should not be too short, otherwise warning is raised</p>
+<p>However, simulated flood extent differs locally due to the different gridding schemes applied, yielding a low critical success index <em>C</em>:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Hit rate</th>
+<th class="head">False alarm ration</th>
+<th class="head">Critical Succes Index</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0.85</td>
+<td>0.50</td>
+<td>0.46</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="current-developments-and-future-applications">
+<h2>5.2. Current developments and future applications<a class="headerlink" href="#current-developments-and-future-applications" title="Permalink to this headline">¶</a></h2>
+<p>We are planning to some more crazy stuff with GLOFRIM.</p>
+<p>These include amongst others:</p>
+<ul class="simple">
+<li>Coupling PCR with CMF at a global scale</li>
+<li>Further becnhmarking of models</li>
+<li>Using nested models for compound flood modelling.</li>
+</ul>
+<p>Stay tuned!</p>
 </div>
 </div>
 
@@ -99,10 +133,10 @@ Stay tuned!</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="references.html" title="7. References"
+          <a href="references.html" title="6. References"
              >next</a> |</li>
         <li class="right" >
-          <a href="running_GLOFRIM.html" title="5. Running GLOFRIM"
+          <a href="running_GLOFRIM.html" title="4. Running GLOFRIM"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">GLOFRIM 2 documentation</a> &#187;</li> 
       </ul>

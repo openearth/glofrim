@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>5. Running GLOFRIM &#8212; GLOFRIM 2 documentation</title>
+    <title>4. Running GLOFRIM &#8212; GLOFRIM 2 documentation</title>
     <link rel="stylesheet" href="_static/sphinxdoc.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -16,8 +16,8 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="6. Applications" href="applications.html" />
-    <link rel="prev" title="4. Hello World" href="helloWorld.html" /> 
+    <link rel="next" title="5. Applications" href="applications.html" />
+    <link rel="prev" title="3. GLOFRIM requirements and set-up" href="requirements.html" /> 
   </head><body>
     <div class="related" role="navigation" aria-label="related navigation">
       <h3>Navigation</h3>
@@ -29,10 +29,10 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="applications.html" title="6. Applications"
+          <a href="applications.html" title="5. Applications"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="helloWorld.html" title="4. Hello World"
+          <a href="requirements.html" title="3. GLOFRIM requirements and set-up"
              accesskey="P">previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">GLOFRIM 2 documentation</a> &#187;</li> 
       </ul>
@@ -43,11 +43,11 @@
               <img class="logo" src="_static/logo.png" alt="Logo"/>
             </a></p>
   <h4>Previous topic</h4>
-  <p class="topless"><a href="helloWorld.html"
-                        title="previous chapter">4. Hello World</a></p>
+  <p class="topless"><a href="requirements.html"
+                        title="previous chapter">3. GLOFRIM requirements and set-up</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="applications.html"
-                        title="next chapter">6. Applications</a></p>
+                        title="next chapter">5. Applications</a></p>
 <div id="searchbox" style="display: none" role="search">
   <h3>Quick search</h3>
     <div class="searchformwrapper">
@@ -69,36 +69,62 @@
           <div class="body" role="main">
             
   <div class="section" id="running-glofrim">
-<span id="id1"></span><h1>5. Running GLOFRIM<a class="headerlink" href="#running-glofrim" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="installing-your-doc-directory">
-<h2>5.1. Installing your doc directory<a class="headerlink" href="#installing-your-doc-directory" title="Permalink to this headline">¶</a></h2>
-<p>GLOFRIM in da house whoop whoop what’s up and hello World!</p>
-<p>You may already have sphinx <a class="reference external" href="http://sphinx.pocoo.org/">sphinx</a>
-installed – you can check by doing:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span class="n">python</span> <span class="n">glofrim_runner</span><span class="o">.</span><span class="n">py</span> <span class="n">run</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">glofrim</span><span class="o">.</span><span class="n">ini</span>
+<span id="id1"></span><h1>4. Running GLOFRIM<a class="headerlink" href="#running-glofrim" title="Permalink to this headline">¶</a></h1>
+<p>GLOFRIM exists of a series of uniformed BMI wrappers for each model and a overarching BMI wrapper for running coupled models.</p>
+<div class="section" id="coupled-run">
+<h2>4.1. Coupled run<a class="headerlink" href="#coupled-run" title="Permalink to this headline">¶</a></h2>
+<p>To run a coupled model from python use the following lines.
+The glofrim.ini (see example in root directory) configuration file hold the information of the individual model configuration files and exchanges between the models:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span class="c"># import GLOFRIM</span>
+<span class="kn">from</span> <span class="nn">glofrim</span> <span class="k">import</span> <span class="n">Glofrim</span>
+<span class="c"># initialize coupled bmi</span>
+<span class="n">cbmi</span> <span class="o">=</span> <span class="n">Glofrim</span><span class="p">()</span>
+<span class="c"># initialize the coupling with the glofrim.ini configuration file</span>
+<span class="n">cbmi</span><span class="o">.</span><span class="n">initialize_config</span><span class="p">(</span><span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">glofrim</span><span class="o">.</span><span class="n">ini</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Or otherwise try something else.</p>
-<p>You can also add an image:</p>
-<img alt="_images/GermanDischarge.png" src="_images/GermanDischarge.png" />
-<div class="section" id="fetching-the-data">
-<span id="id2"></span><h3>5.1.1. Fetching the data<a class="headerlink" href="#fetching-the-data" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-ipython notranslate"><div class="highlight"><pre>In [1]: x = 2
-
-In [2]: x**3
-Out[2]: 8
+<p>A basic model run uses the following statements:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span class="c"># optional: get the model start time</span>
+<span class="n">bmi</span><span class="o">.</span><span class="n">get_start_time</span><span class="p">()</span>
+<span class="c"># initialize model</span>
+<span class="n">bmi</span><span class="o">.</span><span class="n">initialize_model</span><span class="p">()</span>
+<span class="c"># run until set endtime</span>
+<span class="n">bmi</span><span class="o">.</span><span class="n">update_until</span><span class="p">(</span><span class="n">bmi</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">())</span>
+<span class="c"># finalize model</span>
+<span class="n">bmi</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
 </pre></div>
 </div>
-<p>When you reload the page by refreshing your browser pointing to
-<code class="file docutils literal notranslate"><span class="pre">_build/html/index.html</span></code>, you should see a link to the
-“Getting Started” docs, and in there this page with the screenshot.
-<cite>Voila!</cite></p>
-<p>We can also use the image directive in <code class="file docutils literal notranslate"><span class="pre">running_GLOFRIM.rst</span></code> to include to the screenshot above
-with:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span class="o">..</span> <span class="n">image</span><span class="p">::</span>
-   <span class="n">_static</span><span class="o">/</span><span class="n">GermanDischarge</span><span class="o">.</span><span class="n">png</span>
+</div>
+<div class="section" id="stand-alone-run">
+<h2>4.2. Stand-alone run<a class="headerlink" href="#stand-alone-run" title="Permalink to this headline">¶</a></h2>
+<p>To run stand alone models via the GLOFRIM BMI wrapper you can use followed by the same statements as before:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span class="c"># import the CaMa-Flood bmi wrapper</span>
+<span class="kn">from</span> <span class="nn">glofrim</span> <span class="k">import</span> <span class="n">CMF</span>
+<span class="c"># intialize bmi with reference to engine (only for non-python models)</span>
+<span class="n">bmi</span> <span class="o">=</span> <span class="n">CMF</span><span class="p">(</span><span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">model_engine</span><span class="p">)</span>
+<span class="n">bmi</span><span class="o">.</span><span class="n">initialize_config</span><span class="p">(</span><span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">model_configuration_file</span><span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="convenience-script">
+<h2>4.3. Convenience script<a class="headerlink" href="#convenience-script" title="Permalink to this headline">¶</a></h2>
+<p>The GLOFRIM library contains a script to run combined and single (for testing purposes) models with a single line from a terminal.
+This script can be found in the glofirm-py/scripts folder.</p>
+<p>GLOFRIM can be executed as follows on Linux command line:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span class="n">python</span> <span class="n">glofrim_runner</span><span class="o">.</span><span class="n">py</span> <span class="n">run</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">glofrim</span><span class="o">.</span><span class="n">ini</span> <span class="o">--</span><span class="n">env</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">glofrim</span><span class="o">.</span><span class="n">env</span> <span class="o">-</span><span class="n">s</span> <span class="n">startdate</span> <span class="o">-</span><span class="n">e</span> <span class="n">enddate</span>
+</pre></div>
+</div>
+<p>Both <em>startdate</em> and <em>enddate</em> must be in yyyy-mm-dd format.</p>
+</div>
+<div class="section" id="help">
+<h2>4.4. Help<a class="headerlink" href="#help" title="Permalink to this headline">¶</a></h2>
+<p>For more info on coupled runs, check:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre>python glofrim_runner.py run –help
+</pre></div>
+</div>
+<p>and for stand-alone runs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre>python glofrim_runner.py run_single –help
+</pre></div>
 </div>
 </div>
 </div>
@@ -119,10 +145,10 @@ with:</p>
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="applications.html" title="6. Applications"
+          <a href="applications.html" title="5. Applications"
              >next</a> |</li>
         <li class="right" >
-          <a href="helloWorld.html" title="4. Hello World"
+          <a href="requirements.html" title="3. GLOFRIM requirements and set-up"
              >previous</a> |</li>
         <li class="nav-item nav-item-0"><a href="index.html">GLOFRIM 2 documentation</a> &#187;</li> 
       </ul>

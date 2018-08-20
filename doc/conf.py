@@ -34,9 +34,9 @@
 # # add these directories to sys.path here. If the directory is relative to the
 # # documentation root, use os.path.abspath to make it absolute, like shown here.
 
-# sys.path.insert(0, os.path.abspath('../glofrim-py/'))
+sys.path.insert(0, os.path.abspath('../glofrim-py/'))
 
-# import glofrim
+import glofrim
 
 
 # -- General configuration ------------------------------------------------
@@ -119,6 +119,9 @@ autosummary_generate = True
 #
 # html_theme = 'sphinx_rtd_theme'
 html_theme = 'sphinxdoc'
+# html_theme = 'pyramid'
+# html_theme = 'bootstrap'
+# html_theme = 'alabaster'
 
 html_theme_options = {
 }

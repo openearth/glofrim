@@ -19,6 +19,9 @@ GLOFRIM download
 
 GLOFRIM can be downloaded from `GitHub <https://github.com/openearth/glofrim>`_.
 
+.. note::
+    The currently working branch is "csdms-compliant". Use with care.
+
 Acknowledgments
 ===============
 
@@ -47,11 +50,27 @@ Structure
    intro.rst
    models.rst
    requirements.rst
-   helloWorld.rst
    running_GLOFRIM.rst
    applications.rst
    references.rst  
    codeDocumentation.rst
+
+.. |logo_CKIC| image:: _images/ClimateKIC.png
+    :width: 50pt
+    :height: 50pt
+    :align: bottom
+
+.. |logo_Bris| image:: _images/Bristol.png
+    :width: 80pt
+    :height: 35pt
+    :align: bottom
+
+.. |logo_Toky| image:: _images/logo_UoT_2.png
+    :width: 35pt
+    :height: 35pt
+    :align: bottom
+
+|logo_Bris|         |logo_Toky|
 
 Indices and tables
 ==================
