@@ -24,7 +24,7 @@ class Mock(MagicMock):
             return Mock()
 
 # Mock modules so that we can build on readthedocs.org
-MOCK_MODULES = ['numpy']
+MOCK_MODULES = ['pcraster']
 
 sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
