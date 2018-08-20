@@ -87,7 +87,7 @@
 <span class="sd">        AssertionError -- Raised if model dt is not a whole number of GLOFRIM dt</span>
 <span class="sd">        Warning -- Warning is raised if two-step model initialization is not correctly executed</span>
 <span class="sd">        ValueError -- Raised if config-files of models to be coupled are not defined in ini-file</span>
-<span class="sd">        ValueError -- Raised if engines (i.e. executables) for models to be coupled are not specified in ini/env-file</span>
+<span class="sd">        ValueError -- Raised if engines (ie executables) for models to be coupled are not specified in ini/env-file</span>
 <span class="sd">        ValueError -- Raised if no exchanges are specified in GLOFRIM ini-file</span>
 <span class="sd">        ValueError -- Raised if an unspported model is specified</span>
 <span class="sd">        ValueError -- Raised if unknown variables are specified</span>
@@ -117,9 +117,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="k">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">obs</span> <span class="o">=</span> <span class="k">None</span>
 
-    <span class="k">def</span> <span class="nf">_check_long_var_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">):</span>
+<div class="viewcode-block" id="Glofrim._check_long_var_name"><a class="viewcode-back" href="../../generated/glofrim.Glofrim._check_long_var_name.html#glofrim.Glofrim._check_long_var_name">[docs]</a>    <span class="k">def</span> <span class="nf">_check_long_var_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">):</span>
         <span class="c">#TODO: what&#39;s the use of this function? You provide a name and get it back split?</span>
-        <span class="sd">&quot;&quot;&quot;Returns the variable name of a user-specified variable</span>
+        <span class="sd">&quot;&quot;&quot;Returns variable name of a user-specified variable.</span>
 <span class="sd">        </span>
 <span class="sd">        Arguments:</span>
 <span class="sd">            long_var_name {str} -- variable long name</span>
@@ -135,10 +135,10 @@
             <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;use &quot;model{}var&quot; syntax for long_var_name&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_var_sep</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">long_var_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_var_sep</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">long_var_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_var_sep</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_check_initialized</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Checks whether a model was already initialized in a previous step;</span>
+<div class="viewcode-block" id="Glofrim._check_initialized"><a class="viewcode-back" href="../../generated/glofrim.Glofrim._check_initialized.html#glofrim.Glofrim._check_initialized">[docs]</a>    <span class="k">def</span> <span class="nf">_check_initialized</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Checks whether model was already initialized previously.</span>
 <span class="sd">        criterion needed since some functions require the model to be in initialized state</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
@@ -146,10 +146,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">initialized</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">])</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialized</span></div>
 
-    <span class="k">def</span> <span class="nf">_check_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Checks whether the dt specified for a model is not a whole number of GLOFRIM dt;</span>
+<div class="viewcode-block" id="Glofrim._check_dt"><a class="viewcode-back" href="../../generated/glofrim.Glofrim._check_dt.html#glofrim.Glofrim._check_dt">[docs]</a>    <span class="k">def</span> <span class="nf">_check_dt</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Checks whether the dt specified for a model is not a whole number of GLOFRIM dt.</span>
 <span class="sd">        criterion is needed to ensure updates between models remain in phase</span>
 <span class="sd">        </span>
 <span class="sd">        Raises:</span>
@@ -161,14 +161,14 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">glib</span><span class="o">.</span><span class="n">check_dts_divmod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_dt</span><span class="p">,</span> <span class="n">dt_mod</span><span class="p">):</span>
                 <span class="n">msg</span> <span class="o">=</span> <span class="s">&quot;Invalid value for dt in comparison to model dt. Make sure a whole number of model timesteps fit in the set GLOFRIM dt&quot;</span>  
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-                <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 
     <span class="c">###</span>
     <span class="c">### Model Control Functions</span>
     <span class="c">###</span>
 
 <div class="viewcode-block" id="Glofrim.initialize_config"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.initialize_config.html#glofrim.Glofrim.initialize_config">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_fn</span><span class="p">,</span> <span class="n">env_fn</span><span class="o">=</span><span class="k">None</span><span class="p">):</span>    
-        <span class="sd">&quot;&quot;&quot;Initializing the model configuration file;</span>
+        <span class="sd">&quot;&quot;&quot;Initializing the model configuration file.</span>
 <span class="sd">        aligning GLOFRIM specifications for coupled runs to be consistent with overall run settings; </span>
 <span class="sd">        with environment file (env-file) local paths to model engines can be defined</span>
 <span class="sd">                </span>
@@ -181,7 +181,7 @@
 <span class="sd">        Raises:</span>
 <span class="sd">            Warning -- Warning is raised if two-step model initialization is not correctly executed</span>
 <span class="sd">            ValueError -- Raised if config-files of models to be coupled are not defined in ini-file</span>
-<span class="sd">            ValueError -- Raised if engines (i.e. executables) for models to be coupled are not specified in ini/env-file</span>
+<span class="sd">            ValueError -- Raised if engines (ie executables) for models to be coupled are not specified in ini/env-file</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c"># log to file</span>
@@ -256,7 +256,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_dt</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Glofrim.set_exchanges"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.set_exchanges.html#glofrim.Glofrim.set_exchanges">[docs]</a>    <span class="k">def</span> <span class="nf">set_exchanges</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Defines the variable exchanges between models together with necessary unit and time conversions; </span>
+        <span class="sd">&quot;&quot;&quot;Defines variable exchanges between models as well as unit and time conversions. </span>
 <span class="sd">        exchanges can be defined in ini/env-file;</span>
 <span class="sd">        it is important that all fluxes/states in ini/env-file are to m3 for mass balance.</span>
 <span class="sd">        </span>
@@ -367,19 +367,19 @@
                 <span class="n">model_called</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mod</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">exchanges</span></div>
 
-    <span class="k">def</span> <span class="nf">_set_spatial_coupling</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Spatially couples the grid of the models whose variables are exchanged;</span>
-<span class="sd">        for one-way coupling, this is a one-to-many coupling, i.e. one origin cell is coupled</span>
+<div class="viewcode-block" id="Glofrim._set_spatial_coupling"><a class="viewcode-back" href="../../generated/glofrim.Glofrim._set_spatial_coupling.html#glofrim.Glofrim._set_spatial_coupling">[docs]</a>    <span class="k">def</span> <span class="nf">_set_spatial_coupling</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Couples model grids.</span>
+<span class="sd">        for one-way coupling, this is a one-to-many coupling, ie one origin cell is coupled</span>
 <span class="sd">        to multiple destination cells</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">exchanges</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;exchange&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;set coupled grids for: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;coupling&#39;</span><span class="p">])))</span>
-                <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;coupling&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">couple</span><span class="p">()</span>
+                <span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;coupling&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">couple</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Glofrim.initialize_model"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.initialize_model.html#glofrim.Glofrim.initialize_model">[docs]</a>    <span class="k">def</span> <span class="nf">initialize_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initializes the model, i.e. loading all files and checking for consistency; </span>
+        <span class="sd">&quot;&quot;&quot;Initializes the model, ie loading all files and checking for consistency. </span>
 <span class="sd">        can only be executed after the model-specific config-file was initialized;</span>
 <span class="sd">        essential for a successful two-step model initialization and aligned model data.</span>
 <span class="sd">        </span>
@@ -410,8 +410,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_dt</span><span class="p">()</span></div>
         <span class="c"># TODO set observation points</span>
 
-    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_fn</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Initializes the model following a two-step initialization procedure;</span>
+<div class="viewcode-block" id="Glofrim.initialize"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.initialize.html#glofrim.Glofrim.initialize">[docs]</a>    <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config_fn</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initializes the model following a two-step initialization procedure.</span>
 <span class="sd">        first, the config-file is initialized and where necessary aligned with overall model settings (e.g. output-dir, start and end time);</span>
 <span class="sd">        second, the model is actually initialized.</span>
 <span class="sd">        </span>
@@ -420,10 +420,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">initialize_config</span><span class="p">(</span><span class="n">config_fn</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_model</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_model</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="k">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Updating model for a certain time step interval (default: None);</span>
+<div class="viewcode-block" id="Glofrim.update"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.update.html#glofrim.Glofrim.update">[docs]</a>    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="k">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Updating model for a certain time step interval (default: None).</span>
 <span class="sd">        checks whether model end time is already reached;</span>
 <span class="sd">        requires that model-specific time step is a whole number of update time step.</span>
 <span class="sd">        </span>
@@ -455,10 +455,10 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt_mod</span><span class="p">)</span>
             <span class="k">elif</span> <span class="n">item</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;exchange&#39;</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">exchange</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_time</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_current_time</span><span class="p">()</span></div>
 
-    <span class="k">def</span> <span class="nf">update_until</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="k">None</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Updates the model until a certain time t is reached with an update time step dt.</span>
+<div class="viewcode-block" id="Glofrim.update_until"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.update_until.html#glofrim.Glofrim.update_until">[docs]</a>    <span class="k">def</span> <span class="nf">update_until</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="k">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Updates the model until time t is reached with an update time step dt.</span>
 <span class="sd">        </span>
 <span class="sd">        Arguments:</span>
 <span class="sd">            t {int} -- Model time until which the model is update</span>
@@ -475,7 +475,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">&lt;</span> <span class="n">t</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">spinup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;PCR-GLOBWB specific function (see pcr_bmi.py).</span>
@@ -486,19 +486,19 @@
 
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
-    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Finalizes the model;</span>
+<div class="viewcode-block" id="Glofrim.finalize"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.finalize.html#glofrim.Glofrim.finalize">[docs]</a>    <span class="k">def</span> <span class="nf">finalize</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Finalizes the model.</span>
 <span class="sd">        shuts down all operations and closes output files.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s">&#39;finalize models bmi. Close loggers.&#39;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
-        <span class="n">closelogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span>
+        <span class="n">closelogger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">exchange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_mod</span><span class="p">,</span> <span class="n">to_mod</span><span class="p">,</span> <span class="n">from_vars</span><span class="p">,</span> <span class="n">to_vars</span><span class="p">,</span> <span class="n">coupling</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="k">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Glofrim.exchange"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.exchange.html#glofrim.Glofrim.exchange">[docs]</a>    <span class="k">def</span> <span class="nf">exchange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_mod</span><span class="p">,</span> <span class="n">to_mod</span><span class="p">,</span> <span class="n">from_vars</span><span class="p">,</span> <span class="n">to_vars</span><span class="p">,</span> <span class="n">coupling</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="k">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Exchanges variable content from specified source variable in source model to</span>
-<span class="sd">        a specified destination variable in the destination model; </span>
+<span class="sd">        a specified destination variable in the destination model. </span>
 <span class="sd">        exchange is possible for entire grid or at specified indices;</span>
 <span class="sd">        coupling either as totals or fractional values depending on exchange;</span>
 <span class="sd">        source variable can either add to destination variable or overwrite it</span>
@@ -518,11 +518,11 @@
         <span class="k">if</span> <span class="n">coupling</span><span class="o">.</span><span class="n">at_indices</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">exchange_at_indices</span><span class="p">(</span><span class="n">from_mod</span><span class="p">,</span> <span class="n">to_mod</span><span class="p">,</span> <span class="n">from_vars</span><span class="p">,</span> <span class="n">to_vars</span><span class="p">,</span> <span class="n">coupling</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="n">add</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">exchange_same_grid</span><span class="p">(</span><span class="n">from_mod</span><span class="p">,</span> <span class="n">to_mod</span><span class="p">,</span> <span class="n">from_vars</span><span class="p">,</span> <span class="n">to_vars</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="n">add</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">exchange_same_grid</span><span class="p">(</span><span class="n">from_mod</span><span class="p">,</span> <span class="n">to_mod</span><span class="p">,</span> <span class="n">from_vars</span><span class="p">,</span> <span class="n">to_vars</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="n">add</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">exchange_same_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_mod</span><span class="p">,</span> <span class="n">to_mod</span><span class="p">,</span> <span class="n">from_vars</span><span class="p">,</span> <span class="n">to_vars</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="k">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Glofrim.exchange_same_grid"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.exchange_same_grid.html#glofrim.Glofrim.exchange_same_grid">[docs]</a>    <span class="k">def</span> <span class="nf">exchange_same_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_mod</span><span class="p">,</span> <span class="n">to_mod</span><span class="p">,</span> <span class="n">from_vars</span><span class="p">,</span> <span class="n">to_vars</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="k">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Exchanges variable content from specified source variable in source model to</span>
-<span class="sd">        a specified destination variable in the destination model for the entire grid;</span>
+<span class="sd">        a specified destination variable in the destination model for the entire grid.</span>
 <span class="sd">        source variable can either add to destination variable or overwrite it</span>
 <span class="sd">        </span>
 <span class="sd">        Arguments:</span>
@@ -555,11 +555,11 @@
         <span class="c"># SET data</span>
         <span class="k">if</span> <span class="n">add</span><span class="p">:</span>  <span class="c"># add to current state</span>
             <span class="n">vals</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">to_mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">to_vars</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">vals</span><span class="p">)</span> <span class="c"># TO   </span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">to_mod</span><span class="p">]</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">to_vars</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">vals</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">to_mod</span><span class="p">]</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">to_vars</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">vals</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">exchange_at_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_mod</span><span class="p">,</span> <span class="n">to_mod</span><span class="p">,</span> <span class="n">from_vars</span><span class="p">,</span> <span class="n">to_vars</span><span class="p">,</span> <span class="n">coupling</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="k">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="Glofrim.exchange_at_indices"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.exchange_at_indices.html#glofrim.Glofrim.exchange_at_indices">[docs]</a>    <span class="k">def</span> <span class="nf">exchange_at_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_mod</span><span class="p">,</span> <span class="n">to_mod</span><span class="p">,</span> <span class="n">from_vars</span><span class="p">,</span> <span class="n">to_vars</span><span class="p">,</span> <span class="n">coupling</span><span class="p">,</span> <span class="n">add</span><span class="o">=</span><span class="k">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Exchanges variable content from specified source variable in source model to</span>
-<span class="sd">        a specified destination variable in the destination model for user-specified indices;</span>
+<span class="sd">        a specified destination variable in the destination model for user-specified indices.</span>
 <span class="sd">        coupling either as totals or fractional values depending on exchange;</span>
 <span class="sd">        source variable can either add to destination variable or overwrite it</span>
 <span class="sd">           </span>
@@ -603,60 +603,60 @@
         <span class="c"># SET data</span>
         <span class="k">if</span> <span class="n">add</span><span class="p">:</span> <span class="c"># add to current state</span>
             <span class="n">vals_set</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">to_mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_value_at_indices</span><span class="p">(</span><span class="n">to_vars</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">coupling</span><span class="o">.</span><span class="n">to_ind</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">to_mod</span><span class="p">]</span><span class="o">.</span><span class="n">set_value_at_indices</span><span class="p">(</span><span class="n">to_vars</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">coupling</span><span class="o">.</span><span class="n">to_ind</span><span class="p">,</span> <span class="n">vals_set</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">to_mod</span><span class="p">]</span><span class="o">.</span><span class="n">set_value_at_indices</span><span class="p">(</span><span class="n">to_vars</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">coupling</span><span class="o">.</span><span class="n">to_ind</span><span class="p">,</span> <span class="n">vals_set</span><span class="p">)</span></div>
 
     <span class="c">###</span>
     <span class="c">### Model Information Functions</span>
     <span class="c">###</span>
 
-    <span class="k">def</span> <span class="nf">get_model_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns type of specified model; </span>
+<div class="viewcode-block" id="Glofrim.get_model_type"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.get_model_type.html#glofrim.Glofrim.get_model_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_model_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns type of model. </span>
 <span class="sd">        possible types are hydrologic, routing, or hydrodynamic model</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            str -- type of specified model</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="p">{</span><span class="n">mod</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_model_type</span><span class="p">()</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">mod</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_model_type</span><span class="p">()</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">}</span></div>
 
-    <span class="k">def</span> <span class="nf">get_component_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Glofrim.get_component_name"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.get_component_name.html#glofrim.Glofrim.get_component_name">[docs]</a>    <span class="k">def</span> <span class="nf">get_component_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c">#TODO: what are model component in this context?</span>
-        <span class="sd">&quot;&quot;&quot;Returns component name of specified model</span>
+        <span class="sd">&quot;&quot;&quot;Returns component name of specified model.</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            str -- name of specified component</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="p">{</span><span class="n">mod</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_component_name</span><span class="p">()</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">mod</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_component_name</span><span class="p">()</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">}</span></div>
 
-    <span class="k">def</span> <span class="nf">get_input_var_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Glofrim.get_input_var_names"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.get_input_var_names.html#glofrim.Glofrim.get_input_var_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_input_var_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns list with all possible input variable names that </span>
-<span class="sd">        can be used as exchange TO the specified model;</span>
+<span class="sd">        can be used as exchange TO the specified model.</span>
 <span class="sd">        must be specified in model specific BMI class.</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            list -- list of all possible input variables</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="p">{</span><span class="n">mod</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_input_var_names</span><span class="p">()</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">mod</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_input_var_names</span><span class="p">()</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">}</span></div>
 
-    <span class="k">def</span> <span class="nf">get_output_var_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Glofrim.get_output_var_names"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.get_output_var_names.html#glofrim.Glofrim.get_output_var_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_output_var_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Returns list with all possible output variable names that </span>
-<span class="sd">        can be used as exchange FROM the specified model;</span>
+<span class="sd">        can be used as exchange FROM the specified model.</span>
 <span class="sd">        must be specified in model specific BMI class.</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            list -- list of all possible output variables</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="p">{</span><span class="n">mod</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_output_var_names</span><span class="p">()</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">mod</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_output_var_names</span><span class="p">()</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">}</span></div>
 
     <span class="c">###</span>
     <span class="c">### Variable Information Functions</span>
     <span class="c">###</span>
 
-    <span class="k">def</span> <span class="nf">get_var_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Returns the type of a user-specified model variable exposed via BMI</span>
+<div class="viewcode-block" id="Glofrim.get_var_type"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.get_var_type.html#glofrim.Glofrim.get_var_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_var_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns the type of a user-specified model variable exposed via BMI.</span>
 <span class="sd">        </span>
 <span class="sd">        Arguments:</span>
 <span class="sd">            long_var_name {str} -- long name of exposed model variable</span>
@@ -666,10 +666,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">mod</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_var_type</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_var_type</span><span class="p">(</span><span class="n">var</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">get_var_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Provides units of specified variable</span>
+<div class="viewcode-block" id="Glofrim.get_var_units"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.get_var_units.html#glofrim.Glofrim.get_var_units">[docs]</a>    <span class="k">def</span> <span class="nf">get_var_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides units of variable.</span>
 <span class="sd">        </span>
 <span class="sd">        Arguments:</span>
 <span class="sd">            long_var_name {str} -- long name of exposed model variable</span>
@@ -679,10 +679,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">mod</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_var_units</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_var_units</span><span class="p">(</span><span class="n">var</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">get_var_rank</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Provides rank (i.e. number of dimensions) of specified variable</span>
+<div class="viewcode-block" id="Glofrim.get_var_rank"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.get_var_rank.html#glofrim.Glofrim.get_var_rank">[docs]</a>    <span class="k">def</span> <span class="nf">get_var_rank</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides number of dimensions of variable.</span>
 <span class="sd">        </span>
 <span class="sd">        Arguments:</span>
 <span class="sd">            long_var_name {str} -- long name of exposed model variable</span>
@@ -692,10 +692,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">mod</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_var_rank</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_var_rank</span><span class="p">(</span><span class="n">var</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">get_var_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Provides size (i.e. total number of values contained) of specified variable</span>
+<div class="viewcode-block" id="Glofrim.get_var_size"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.get_var_size.html#glofrim.Glofrim.get_var_size">[docs]</a>    <span class="k">def</span> <span class="nf">get_var_size</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Providestotal number of values contained in variable.</span>
 <span class="sd">        </span>
 <span class="sd">        Arguments:</span>
 <span class="sd">            long_var_name {str} -- long name of exposed model variable</span>
@@ -705,10 +705,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">mod</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_var_size</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_var_size</span><span class="p">(</span><span class="n">var</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">get_var_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Provides shape of specified variable</span>
+<div class="viewcode-block" id="Glofrim.get_var_shape"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.get_var_shape.html#glofrim.Glofrim.get_var_shape">[docs]</a>    <span class="k">def</span> <span class="nf">get_var_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides shape of variable.</span>
 <span class="sd">        </span>
 <span class="sd">        Arguments:</span>
 <span class="sd">            long_var_name {str} -- long name of exposed model variable</span>
@@ -718,10 +718,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">mod</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_var_shape</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_var_shape</span><span class="p">(</span><span class="n">var</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">get_var_nbytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Provides number of bytes of specified variable</span>
+<div class="viewcode-block" id="Glofrim.get_var_nbytes"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.get_var_nbytes.html#glofrim.Glofrim.get_var_nbytes">[docs]</a>    <span class="k">def</span> <span class="nf">get_var_nbytes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides number of bytes of variable.</span>
 <span class="sd">        </span>
 <span class="sd">        Arguments:</span>
 <span class="sd">            long_var_name {str} -- long name of exposed model variable</span>
@@ -731,20 +731,20 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">mod</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_var_nbytes</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_var_nbytes</span><span class="p">(</span><span class="n">var</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">get_start_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Provides start time of model</span>
+<div class="viewcode-block" id="Glofrim.get_start_time"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.get_start_time.html#glofrim.Glofrim.get_start_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_start_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides start time of model.</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            date -- start time of model</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_startTime</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_start_time</span><span class="p">()</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">])</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_startTime</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_startTime</span></div>
 
-    <span class="k">def</span> <span class="nf">get_current_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Provides current model time</span>
+<div class="viewcode-block" id="Glofrim.get_current_time"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.get_current_time.html#glofrim.Glofrim.get_current_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_current_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides current model time.</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            date -- current model time of PCR-GLOBWB</span>
@@ -756,42 +756,42 @@
             <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s">&#39;{}: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">))</span> <span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">,</span> <span class="n">models_t</span><span class="p">)])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s">&quot;Model times out of sync: {}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">msg</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">=</span> <span class="n">models_t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_t</span></div>
 
-    <span class="k">def</span> <span class="nf">get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Provides end time of model</span>
+<div class="viewcode-block" id="Glofrim.get_end_time"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.get_end_time.html#glofrim.Glofrim.get_end_time">[docs]</a>    <span class="k">def</span> <span class="nf">get_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides end time of model.</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            date -- end time of model</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_endTime</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">()</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">])</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endTime</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_endTime</span></div>
 
-    <span class="k">def</span> <span class="nf">get_time_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Provides time step of model</span>
+<div class="viewcode-block" id="Glofrim.get_time_step"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.get_time_step.html#glofrim.Glofrim.get_time_step">[docs]</a>    <span class="k">def</span> <span class="nf">get_time_step</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides time step of model.</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            date -- time step of model</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_dt</span></div>
         
-    <span class="k">def</span> <span class="nf">get_time_units</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Glofrim.get_time_units"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.get_time_units.html#glofrim.Glofrim.get_time_units">[docs]</a>    <span class="k">def</span> <span class="nf">get_time_units</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Provides time unit of model.</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            str -- time unit of model</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeunit</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_timeunit</span></div>
 
     <span class="c">###</span>
     <span class="c">### Variable Getter and Setter Functions</span>
     <span class="c">###</span>
     
-    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Retrieval of value of a certain exposed variable; </span>
+<div class="viewcode-block" id="Glofrim.get_value"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.get_value.html#glofrim.Glofrim.get_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets values of a certain exposed variable. </span>
 <span class="sd">        entries with fill_value are replaced with NaN values</span>
 <span class="sd">        </span>
 <span class="sd">        Arguments:</span>
@@ -802,10 +802,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">mod</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">get_value_at_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Retrieval of value at a specific index of a certain exposed variable; </span>
+<div class="viewcode-block" id="Glofrim.get_value_at_indices"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.get_value_at_indices.html#glofrim.Glofrim.get_value_at_indices">[docs]</a>    <span class="k">def</span> <span class="nf">get_value_at_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets values at a specific index of a certain exposed variable. </span>
 <span class="sd">        entries with fill_value are replaced with NaN values</span>
 <span class="sd">        </span>
 <span class="sd">        Arguments:</span>
@@ -817,10 +817,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">mod</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_value_at_indices</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_value_at_indices</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Overwriting of all values of a certain exposed variable with provided new values; </span>
+<div class="viewcode-block" id="Glofrim.set_value"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.set_value.html#glofrim.Glofrim.set_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwriting of all values of a certain exposed variable with provided new values. </span>
 <span class="sd">        entries with NaN value are replaced with fill_value; </span>
 <span class="sd">        provided new values must match shape of aim variable</span>
 <span class="sd">        </span>
@@ -830,10 +830,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">mod</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">set_value_at_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Overwriting of value at specific entry of a certain exposed variable with provided new values; </span>
+<div class="viewcode-block" id="Glofrim.set_value_at_indices"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.set_value_at_indices.html#glofrim.Glofrim.set_value_at_indices">[docs]</a>    <span class="k">def</span> <span class="nf">set_value_at_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">long_var_name</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwriting of value at specific entry of a certain exposed variable with provided new values. </span>
 <span class="sd">        entries with NaN value are replaced with fill_value</span>
 <span class="sd">        </span>
 <span class="sd">        Arguments:</span>
@@ -846,21 +846,21 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">mod</span><span class="p">,</span> <span class="n">var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">long_var_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">set_value_at_indices</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">set_value_at_indices</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="n">inds</span><span class="p">,</span> <span class="n">src</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
     <span class="c">###</span>
     <span class="c">### Grid Information Functions</span>
     <span class="c">###</span>
     
-    <span class="k">def</span> <span class="nf">get_grid_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Provides grid type of model;</span>
+<div class="viewcode-block" id="Glofrim.get_grid_type"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.get_grid_type.html#glofrim.Glofrim.get_grid_type">[docs]</a>    <span class="k">def</span> <span class="nf">get_grid_type</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides grid type of model.</span>
 <span class="sd">        can be regular, flexible or unit catchment grid</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            str -- Grid type of model</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="p">{</span><span class="n">mod</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_grid_type</span><span class="p">()</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">mod</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_grid_type</span><span class="p">()</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">}</span></div>
 
     <span class="c">###</span>
     <span class="c">### Observation points</span>
@@ -882,9 +882,9 @@
 
         <span class="k">pass</span>
 
-    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">mod</span><span class="p">,</span> <span class="n">in1d</span><span class="o">=</span><span class="k">False</span><span class="p">):</span>
+<div class="viewcode-block" id="Glofrim.index"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.index.html#glofrim.Glofrim.index">[docs]</a>    <span class="k">def</span> <span class="nf">index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">mod</span><span class="p">,</span> <span class="n">in1d</span><span class="o">=</span><span class="k">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Finds the index in model data grid associated with</span>
-<span class="sd">        coordinates in lat/lon projection of a user-specified point</span>
+<span class="sd">        coordinates in lat/lon projection of a user-specified point.</span>
 <span class="sd">        </span>
 <span class="sd">        Arguments:</span>
 <span class="sd">            x {float} -- x-coordinate of point</span>
@@ -914,14 +914,14 @@
             <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">_1d</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">idx</span>
+        <span class="k">return</span> <span class="n">idx</span></div>
     
     <span class="c">###</span>
     <span class="c">### set and get attribute / config </span>
     <span class="c">###</span>
 
-    <span class="k">def</span> <span class="nf">set_start_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_time</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Overwriting default model start time with user-specified start time;</span>
+<div class="viewcode-block" id="Glofrim.set_start_time"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.set_start_time.html#glofrim.Glofrim.set_start_time">[docs]</a>    <span class="k">def</span> <span class="nf">set_start_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwriting default model start time with user-specified start time.</span>
 <span class="sd">        format of provided start time must be yyyy-mm-dd</span>
 <span class="sd">        </span>
 <span class="sd">        Arguments:</span>
@@ -931,10 +931,10 @@
         <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">set_start_time</span><span class="p">(</span><span class="n">start_time</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_start_time</span><span class="p">()</span> <span class="c"># sync start time</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_startTime</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_t</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_startTime</span></div>
        
-    <span class="k">def</span> <span class="nf">set_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">end_time</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Overwriting default model end time with user-specified end time;</span>
+<div class="viewcode-block" id="Glofrim.set_end_time"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.set_end_time.html#glofrim.Glofrim.set_end_time">[docs]</a>    <span class="k">def</span> <span class="nf">set_end_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">end_time</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Overwriting default model end time with user-specified end time.</span>
 <span class="sd">        format of provided end time must be yyyy-mm-dd</span>
 <span class="sd">        </span>
 <span class="sd">        Arguments:</span>
@@ -943,19 +943,19 @@
 
         <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">set_end_time</span><span class="p">(</span><span class="n">end_time</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">()</span> <span class="c"># sync end time</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">()</span> <span class="c"># sync end time</span></div>
 
-    <span class="k">def</span> <span class="nf">get_attribute_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Provides list with all model attribute names from model config file</span>
+<div class="viewcode-block" id="Glofrim.get_attribute_names"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.get_attribute_names.html#glofrim.Glofrim.get_attribute_names">[docs]</a>    <span class="k">def</span> <span class="nf">get_attribute_names</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Provides list with all model attribute names from model config file.</span>
 <span class="sd">        </span>
 <span class="sd">        Returns:</span>
 <span class="sd">            list -- list with model attribute names</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">return</span> <span class="p">{</span><span class="n">mod</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_attribute_names</span><span class="p">()</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">}</span>
+        <span class="k">return</span> <span class="p">{</span><span class="n">mod</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_attribute_names</span><span class="p">()</span> <span class="k">for</span> <span class="n">mod</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">}</span></div>
 
-    <span class="k">def</span> <span class="nf">set_out_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Setting output directory of model; </span>
+<div class="viewcode-block" id="Glofrim.set_out_dir"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.set_out_dir.html#glofrim.Glofrim.set_out_dir">[docs]</a>    <span class="k">def</span> <span class="nf">set_out_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Setting output directory of model. </span>
 <span class="sd">        overwrites the default output directory</span>
 <span class="sd">        </span>
 <span class="sd">        Arguments:</span>
@@ -966,10 +966,10 @@
             <span class="n">path</span> <span class="o">=</span> <span class="n">join</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="n">mod</span><span class="p">)</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
                 <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">set_out_dir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">set_out_dir</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">get_attribute_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;gets attribute value in in underlying model;</span>
+<div class="viewcode-block" id="Glofrim.get_attribute_value"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.get_attribute_value.html#glofrim.Glofrim.get_attribute_value">[docs]</a>    <span class="k">def</span> <span class="nf">get_attribute_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;gets attribute value in in underlying model.</span>
 <span class="sd">        attribute_name should use the following convention model_name.section_name:attribute_name</span>
 <span class="sd">        </span>
 <span class="sd">        Arguments:</span>
@@ -980,10 +980,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">mod</span><span class="p">,</span> <span class="n">attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">attribute_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_attribute_value</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">get_attribute_value</span><span class="p">(</span><span class="n">attr</span><span class="p">)</span></div>
     
-    <span class="k">def</span> <span class="nf">set_attribute_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">,</span> <span class="n">attribute_value</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;sets attribute value in underlying model;</span>
+<div class="viewcode-block" id="Glofrim.set_attribute_value"><a class="viewcode-back" href="../../generated/glofrim.Glofrim.set_attribute_value.html#glofrim.Glofrim.set_attribute_value">[docs]</a>    <span class="k">def</span> <span class="nf">set_attribute_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attribute_name</span><span class="p">,</span> <span class="n">attribute_value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;sets attribute value in underlying model.</span>
 <span class="sd">        attribute_name should use the following convention model_name.section_name:attribute_name</span>
 <span class="sd">        </span>
 <span class="sd">        Arguments:</span>
@@ -992,7 +992,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">mod</span><span class="p">,</span> <span class="n">attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_long_var_name</span><span class="p">(</span><span class="n">attribute_name</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">set_attribute_value</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">attribute_value</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bmimodels</span><span class="p">[</span><span class="n">mod</span><span class="p">]</span><span class="o">.</span><span class="n">set_attribute_value</span><span class="p">(</span><span class="n">attr</span><span class="p">,</span> <span class="n">attribute_value</span><span class="p">)</span></div>
 </pre></div>
 
           </div>
@@ -1014,7 +1014,7 @@
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; Copyright 2018, J.M. Hoch, D. Eilander, H. Ikeuchi.
+        &#169; Copyright 2018, J.M. Hoch et al..
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.6.
     </div>
   </body>

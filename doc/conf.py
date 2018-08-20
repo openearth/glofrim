@@ -75,8 +75,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'GLOFRIM'
-copyright = u'2018, J.M. Hoch, D. Eilander, H. Ikeuchi'
-author = u'J.M. Hoch, D. Eilander, H. Ikeuchi'
+copyright = u'2018, J.M. Hoch et al.'
+author = u'J.M. Hoch'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

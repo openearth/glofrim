@@ -1,0 +1,6 @@
+glofrim.Glofrim.\_check\_initialized
+====================================
+
+.. currentmodule:: glofrim
+
+.. automethod:: Glofrim._check_initialized

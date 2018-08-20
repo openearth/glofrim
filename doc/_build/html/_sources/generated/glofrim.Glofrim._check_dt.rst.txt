@@ -1,0 +1,6 @@
+glofrim.Glofrim.\_check\_dt
+===========================
+
+.. currentmodule:: glofrim
+
+.. automethod:: Glofrim._check_dt

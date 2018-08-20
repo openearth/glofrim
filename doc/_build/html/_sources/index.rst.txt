@@ -22,6 +22,20 @@ GLOFRIM can be downloaded from `GitHub <https://github.com/openearth/glofrim>`_.
 .. note::
     The currently working branch is "csdms-compliant". Use with care.
 
+Structure
+=========================
+.. toctree::
+   :numbered:
+   :maxdepth: 2
+
+   intro.rst
+   models.rst
+   requirements.rst
+   running_GLOFRIM.rst
+   applications.rst
+   references.rst  
+   codeDocumentation.rst
+
 Acknowledgments
 ===============
 
@@ -40,29 +54,29 @@ Hessel Winsemius (*Deltares*, *VU Amsterdam*), Rens van Beek (*Utrecht Universit
 
 Research was funded by the European Institute of Innovation and Technology (EIT) Climate-KIC.
 
-
-Structure
-=========================
-.. toctree::
-   :numbered:
-   :maxdepth: 2
-
-   intro.rst
-   models.rst
-   requirements.rst
-   running_GLOFRIM.rst
-   applications.rst
-   references.rst  
-   codeDocumentation.rst
-
 .. |logo_CKIC| image:: _images/ClimateKIC.png
     :width: 50pt
     :height: 50pt
     :align: bottom
 
+.. |logo_Utre| image:: _images/Logo_UU.jpg
+    :width: 120pt
+    :height: 50pt
+    :align: bottom
+
+.. |logo_Delt| image:: _images/Logo_Deltares.jpg
+    :width: 100pt
+    :height: 50pt
+    :align: bottom
+
 .. |logo_Bris| image:: _images/Bristol.png
-    :width: 80pt
-    :height: 35pt
+    :width: 120pt
+    :height: 50pt
+    :align: bottom
+
+.. |logo_VUam| image:: _images/logo_IVM_2.png
+    :width: 200pt
+    :height: 50pt
     :align: bottom
 
 .. |logo_Toky| image:: _images/logo_UoT_2.png
@@ -70,7 +84,7 @@ Structure
     :height: 35pt
     :align: bottom
 
-|logo_Bris|         |logo_Toky|
+|logo_Utre|         |logo_Delt|         |logo_Bris|         |logo_VUam|         |logo_Toky|
 
 Indices and tables
 ==================

@@ -1,0 +1,6 @@
+glofrim.Glofrim.\_set\_spatial\_coupling
+========================================
+
+.. currentmodule:: glofrim
+
+.. automethod:: Glofrim._set_spatial_coupling
