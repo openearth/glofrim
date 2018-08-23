@@ -195,19 +195,33 @@ class CMF(GBmi):
     def get_grid(self, fn_catmxy=r'./hires/reg.catmxy.tif', **kwargs):
         if not hasattr(self, 'grid') or (self.grid is None):
             _root = dirname(self._config_fn)
+            # fn_catmx fn may be relative to folder where nextxy is found
+            fn_params = join(self._mapdir, 'params.txt')
+            if not isfile(fn_params): raise IOError("Params.txt file not found {}".format(fn_params))
+            # fn_catmx fn may be relative to folder where nextxy is found
+            fn_catmxy = glib.getabspath(fn_catmxy, self._mapdir)
+            if not isfile(fn_catmxy): 
+                fn_catmxy = None
+                self.logger.warn("Unit-Catchment file not found {}; indexing not possible".format(fn_catmxy))
+            # drainage direction
             _nextxy_fn = glib.getabspath(str(self.get_attribute_value('MAP:CNEXTXY').strip('"')), _root)
             _nextxy_fn = _nextxy_fn.replace('.bin', '.tif')
-            if not isfile(_nextxy_fn): raise IOError('nextxy file {} not found'.format(_nextxy_fn))
-            # fn_catmx fn may be relative to folder where nextxy is found
-            fn_catmxy = glib.getabspath(fn_catmxy, dirname(_nextxy_fn))
-            if not isfile(fn_catmxy):
-                raise IOError("{} file not found".format(fn_catmxy))
-            self.logger.info('Getting Unit-Catchment Grid info based on {}'.format(basename(_nextxy_fn)))
-            with rasterio.open(_nextxy_fn, 'r') as ds:
-                self.grid = UCGrid(ds.transform, ds.height, ds.width, fn_catmxy=fn_catmxy, crs=ds.crs)
-            # set drainage direction
-            self.logger.info('Getting drainage direction from {}'.format(basename(_nextxy_fn)))
-            self.grid.set_dd(_nextxy_fn, ddtype='nextxy', **kwargs)
+            # get grid info
+            self.logger.info('Getting Unit-Catchment Grid info based on {}'.format(basename(fn_params)))
+            params = read_params(fn_params)
+            transform = rasterio.transform.from_origin(params['west'], params['north'], params['res'], params['res'])
+            # TODO: set crs
+            self.grid = UCGrid(transform, params['height'], params['width'], fn_catmxy=fn_catmxy)
+            # with rasterio.open(_nextxy_fn, 'r') as ds:
+            #     ds.transform == transform
+            #     ds.height == params['height']
+            #     ds.width == params['width']
+            # add drainage direction
+            if isfile(_nextxy_fn): #raise IOError('nextxy file {} not found'.format(_nextxy_fn))
+                self.logger.info('Getting drainage direction from {}'.format(basename(_nextxy_fn)))
+                self.grid.set_dd(_nextxy_fn, ddtype='nextxy', **kwargs)
+            else:
+                self.logger.warn('No drainage direction file found {}; getting upstream cells not possible.'.format(basename(_nextxy_fn)))
         return self.grid
 
     """
@@ -253,9 +267,20 @@ class CMF(GBmi):
         self.logger.debug("set_attribute_value: {} -> {}".format(attribute_name, attribute_value))
         return glib.configset(self._config, attribute_name, str(attribute_value))
 
+    def set_inpmat(self, bounds, res, olat='NtoS'):
+        """Set the CMF inpmat file model based on the grid definition of upstream model"""
+        if not isfile(join(self._mapdir, 'generate_inpmat')):
+            raise ValueError('{} not found'.format(join(self._mapdir, 'generate_inpmat')))
+        w, s, e, n = bounds
+        # generate inpmat
+        cmd = './generate_inpmat {} {} {} {} {} {:s}'
+        cmd = cmd.format(abs(res), w, e, n, s, olat)
+        # print(cmd)
+        glib.subcall(cmd, cwd=self._mapdir)
+        
     def set_inpmat_attrs(self):
         # set new inpmat and diminfo in config
-        rel_path = relpath(dirname(self._config_fn), self._mapdir)
+        rel_path = relpath(self._mapdir, dirname(self._config_fn))
         self.set_attribute_value('INPUT:CINPMAT', '"{:s}/inpmat-tmp.bin"'.format(rel_path))
         self.set_attribute_value('INPUT:LBMIROF', ".TRUE.")
         self.set_attribute_value('MAP:CDIMINFO', '"{:s}/diminfo_tmp.txt"'.format(rel_path))
@@ -315,3 +340,16 @@ class NamConfigParser(ConfigParser):
                 value = ""
             fp.write("{}{}\n".format(key.upper(), value))
         fp.write("/\n")
+
+# CMF data utils
+def read_params(fn, col_width=12):
+    rename = {'grid number (north-south)': 'height',
+              'grid number (east-west)': 'width',
+              'west  edge [deg]': 'west',
+              'north edge [deg]': 'north',
+              'grid size  [deg]': 'res'}
+    with open(fn, 'r') as txt:
+        params = {line[col_width:].strip(): float(line[:col_width].strip())
+                    for line in txt.readlines()}
+    params = {rename[key]: params[key] for key in params if key in rename.keys()}
+    return params

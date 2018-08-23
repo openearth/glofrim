@@ -172,17 +172,6 @@ class UCGrid(RGrid):
             inds = (r, c) 
         return inds
 
-    def set_inpmat(self, bounds, res, mapdir, olat='NtoS'):
-        """Set the CMF inpmat file model based on the grid definition of upstream model"""
-        if not isfile(join(mapdir, 'generate_inpmat')):
-            raise ValueError('{} not found'.format(join(mapdir, 'generate_inpmat')))
-        w, s, e, n = bounds
-        # generate inpmat
-        cmd = './generate_inpmat {} {} {} {} {} {:s}'
-        cmd = cmd.format(abs(res), w, e, n, s, olat)
-        # print(cmd)
-        glib.subcall(cmd, cwd=mapdir)
-
 class UGrid(Grid):
     type = GridType.UGRID
 
