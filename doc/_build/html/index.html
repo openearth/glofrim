@@ -63,7 +63,8 @@
             
   <div class="section" id="welcome-to-glofrim-s-documentation">
 <h1>Welcome to GLOFRIM’s documentation!<a class="headerlink" href="#welcome-to-glofrim-s-documentation" title="Permalink to this headline">¶</a></h1>
-<p>GLOFRIM was developed as part of my PhD Thesis at Utrecht University in the Netherlands.
+<p>GLOFRIM v1.0 was developed as part of Jannis Hoch’s PhD at Utrecht University in the Netherlands.
+The current version, GLOFRIM v2.0, was developed in a collaboration between Dirk Eilander (IVM, VU Amsterdam), Jannis Hoch (Utrecht University) and Hiroaki Ikeuchi (University of Tokyo).
 Thanks to all contributors, co-authors, and collaborators!</p>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
@@ -92,12 +93,16 @@ If you discover any bugs or inconsistencies, we are happy to hear from you!</p>
 <li class="toctree-l2"><a class="reference internal" href="models.html#supported-models-in-glofrim">2.1. Supported models in GLOFRIM</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="requirements.html">3. GLOFRIM requirements and set-up</a></li>
+<li class="toctree-l1"><a class="reference internal" href="requirements.html">3. GLOFRIM requirements and set-up</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="requirements.html#note-for-installing-pcr-and-wfl">3.1. Note for installing PCR and WFL</a></li>
+<li class="toctree-l2"><a class="reference internal" href="requirements.html#note-for-installing-cmf-lfp-and-dfm">3.2. Note for installing CMF, LFP and DFM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="requirements.html#testing-your-installation">3.3. Testing your installation</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="running_GLOFRIM.html">4. Running GLOFRIM</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="running_GLOFRIM.html#coupled-run">4.1. Coupled run</a></li>
-<li class="toctree-l2"><a class="reference internal" href="running_GLOFRIM.html#stand-alone-run">4.2. Stand-alone run</a></li>
-<li class="toctree-l2"><a class="reference internal" href="running_GLOFRIM.html#convenience-script">4.3. Convenience script</a></li>
-<li class="toctree-l2"><a class="reference internal" href="running_GLOFRIM.html#help">4.4. Help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_GLOFRIM.html#run-glofrim-from-python">4.1. Run GLOFRIM from Python</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_GLOFRIM.html#run-glofrim-from-command-line">4.2. Run GLOFRIM from command line</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_GLOFRIM.html#the-glofrim-configuration-file">4.3. The GLOFRIM configuration file</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="applications.html">5. Applications</a><ul>
@@ -105,7 +110,7 @@ If you discover any bugs or inconsistencies, we are happy to hear from you!</p>
 <li class="toctree-l2"><a class="reference internal" href="applications.html#current-developments-and-future-applications">5.2. Current developments and future applications</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="references.html">6. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="references.html">6. List of References</a></li>
 <li class="toctree-l1"><a class="reference internal" href="codeDocumentation.html">7. GLOFRIM code documentation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="codeDocumentation.html#initialization">7.1. Initialization</a></li>
 <li class="toctree-l2"><a class="reference internal" href="codeDocumentation.html#execution">7.2. Execution</a></li>
@@ -123,10 +128,8 @@ at various departments.</p>
 <p>Particular shout-outs go to:</p>
 <p>Dirk Eilander (<em>VU Amsterdam</em>, <em>Deltares</em>), Hiroaki Ikeuchi (<em>University of Tokyo</em>), Fedor Baart (<em>Deltares</em>),
 Jeffrey Neal (<em>University of Bristol</em>), Paul Bates (<em>University of Bristol</em>), Arthur van Dam (<em>Deltares</em>), Herman Kernkamp (<em>Deltares</em>),
-Edwin Sutanudjaja (<em>Utrecht University</em>)</p>
-<p>and of course also to my supervisors</p>
-<p>Hessel Winsemius (<em>Deltares</em>, <em>VU Amsterdam</em>), Rens van Beek (<em>Utrecht University</em>) and Marc Bierkens (<em>Utrecht University</em>)</p>
-<p>Research was funded by the European Institute of Innovation and Technology (EIT) Climate-KIC.</p>
+Edwin Sutanudjaja (<em>Utrecht University</em>), Hessel Winsemius (<em>Deltares</em>, <em>VU Amsterdam</em>), Rens van Beek (<em>Utrecht University</em>) and Marc Bierkens (<em>Utrecht University</em>)</p>
+<p>Research was funded by the European Institute of Innovation and Technology (EIT) Climate-KIC and Netherlands Organisation for Scientific Research (NWO).</p>
 <p><a class="reference internal" href="_images/Logo_UU.jpg"><img alt="logo_Utre" class="align-bottom" src="_images/Logo_UU.jpg" style="width: 120pt; height: 50pt;" /></a>         <a class="reference internal" href="_images/Logo_Deltares.jpg"><img alt="logo_Delt" class="align-bottom" src="_images/Logo_Deltares.jpg" style="width: 100pt; height: 50pt;" /></a>         <a class="reference internal" href="_images/Bristol.png"><img alt="logo_Bris" class="align-bottom" src="_images/Bristol.png" style="width: 120pt; height: 50pt;" /></a>         <a class="reference internal" href="_images/logo_IVM_2.png"><img alt="logo_VUam" class="align-bottom" src="_images/logo_IVM_2.png" style="width: 200pt; height: 50pt;" /></a>         <a class="reference internal" href="_images/logo_UoT_2.png"><img alt="logo_Toky" class="align-bottom" src="_images/logo_UoT_2.png" style="width: 35pt; height: 35pt;" /></a></p>
 </div>
 <div class="section" id="indices-and-tables">
@@ -161,7 +164,7 @@ Edwin Sutanudjaja (<em>Utrecht University</em>)</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2018, J.M. Hoch et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.6.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
     </div>
   </body>
 </html>

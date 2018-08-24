@@ -83,7 +83,7 @@ resolution (that is, roughly 10km x 10km and 50km x 50km at the Equator, respect
 routed along a local drainage network using the kinematic wave approximation.</p>
 <p>For more information about PCR, we refer to <a class="reference internal" href="references.html#sutanudjaja2018" id="id1">[Sutanudjaja2018]</a>.</p>
 <p><strong>Model availability</strong></p>
-<p>A non bmi’ed version of PCR is available at <a class="reference external" href="https://github.com/UU-Hydro/PCR-GLOBWB_model">GitHub</a> which is, however, not suitable for application within GLOFRIM.</p>
+<p>A non bmi’ed version of PCR is available at <a class="reference external" href="https://github.com/UU-Hydro/PCR-GLOBWB_model">PCR-GLOBWB GitHub</a> which is, however, not suitable for application within GLOFRIM.</p>
 <p>To apply PCR within GLOFRIM, the version provided (version 2.0.3) together with the GLOFRIM package should be used.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -98,14 +98,14 @@ If you encounter any issues, please contact the developers!</p>
 </div>
 <div class="section" id="wflow">
 <h3>2.1.2. WFLOW<a class="headerlink" href="#wflow" title="Permalink to this headline">¶</a></h3>
-<p>WFLOW (hereafter WFL) is less a hydrologic model but a hydrologic modelling platform, currently including the following hydrologic models: SBM, HBV, GR4 and W3RA.
+<p>WFLOW (hereafter WFL) is a framework for distributed hydrologic modelling, currently including the following hydrologic models: SBM, HBV, GR4, W3RA and PCRGLOB-WB.
 In addition, routing can be simulated using the kinematic wave approximation.
 Depending on the chosen model, the processes described differ and therefore we do not provide a more detailed description of the model routines.</p>
 <p>Despite the different models available, WFL ensures that the main model properties and structure (nomenclature, grid properties etc.) are mantained.</p>
-<p>For a full documentation of WFL code, models, application, and other functionalities, please visit the <a class="reference external" href="https://wflow.readthedocs.io/en/latest/">readthedocs</a> page.</p>
+<p>For a full documentation of WFL code, models, application, and other functionalities, please visit the <a class="reference external" href="https://wflow.readthedocs.io/en/latest/">WFLOW readthedocs</a> page.</p>
 <p><strong>Model availability</strong></p>
 <p>WFL contains a BMI adapter by default and therefore no alternative version has to be applied to use it within GLOFRIM.</p>
-<p>All code is available at <a class="reference external" href="https://github.com/openstreams/wflow/">GitHub</a> and distributed under the GFP version 3.0.</p>
+<p>All code is available at <a class="reference external" href="https://github.com/openstreams/wflow/">WFLOW GitHub</a> and distributed under the GFP version 3.0.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">For GLOFRIM, only the SBM model was tested successfully. Application of other WFL models should be straightforward, but that is uncharted terrain at the moment.</p>
@@ -118,10 +118,10 @@ local inertia equation. Water level and flooded area are determined from the wat
 variable, simulation are efficient.</p>
 <p>Since CMF is a global model, only little additional work has to be done to obtain smaller discretizations. Also, this faciliates comparability between test studies since differences
 in input data are marginal.</p>
-<p>For further model description and application, please see <a class="reference internal" href="references.html#yamazaki2011" id="id3">[Yamazaki2011]</a> as well as the model’s <a class="reference external" href="http://hydro.iis.u-tokyo.ac.jp/~yamadai/cama-flood/Manual_CaMa-Flood_v362.pdf">manual</a>.</p>
+<p>For further model description and application, please see <a class="reference internal" href="references.html#yamazaki2011" id="id2">[Yamazaki2011]</a> as well as the model’s <a class="reference external" href="http://hydro.iis.u-tokyo.ac.jp/~yamadai/cama-flood/Manual_CaMa-Flood_v362.pdf">manual</a>.</p>
 <p><strong>Model availability</strong></p>
 <p>The original non bmi’ed model code is available upon request <a class="reference external" href="http://hydro.iis.u-tokyo.ac.jp/~yamadai/cama-flood/">here</a>.</p>
-<p>To obtain a bmi’ed versoin to be applied within GLOFRIM, please contact the developers.</p>
+<p>To obtain a bmi’ed version (v.3.6.2) to be applied within GLOFRIM, please contact the developers.</p>
 </div>
 <div class="section" id="delft3d-flexible-mesh">
 <h3>2.1.4. Delft3D Flexible Mesh<a class="headerlink" href="#delft3d-flexible-mesh" title="Permalink to this headline">¶</a></h3>
@@ -133,14 +133,14 @@ coupled simulations by GLOFRIM could be extended with other morphogeohydrologic 
 of topographical features such as as river bends can be realized with fine spatial resolution, while areas with less dynamic processes require only coarser grids. As a result,
 the run time needed can be reduced significantly.</p>
 <p>Since DFM genercially contains a BMI adapter, any DFM version can be used as long as it satisfies the minimal version requirement.</p>
-<p>For documentation of the model scheme, <a class="reference internal" href="references.html#kernkamp2011" id="id4">[Kernkamp2011]</a> provides the theoretical and computatonal background. Besides, extensive <a class="reference external" href="https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_Technical_Reference_Manual.pdf">technical</a>
+<p>For documentation of the model scheme, <a class="reference internal" href="references.html#kernkamp2011" id="id3">[Kernkamp2011]</a> provides the theoretical and computatonal background. Besides, extensive <a class="reference external" href="https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_Technical_Reference_Manual.pdf">technical</a>
 and <a class="reference external" href="https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual.pdf">user</a> manuals are available.</p>
 <p><strong>Model availability</strong></p>
 <p>The model is free to use, but currently not yet openly available. The DFM development team needs to be contacted for a DFM version.
 Please see the <a class="reference external" href="https://oss.deltares.nl/web/delft3dfm/home">DFM website</a> for contact information.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">DFM version higher than 1.1.201 is required to work with GLOFRIM</p>
+<p class="last">DFM version higher than 1.1.201 is required to work with GLOFRIM, the framework has successfully been tested with version 1.1.201.</p>
 </div>
 </div>
 <div class="section" id="lisflood-fp">
@@ -152,7 +152,7 @@ It computes water depths in each grid cell at each time step, and hence can simu
 well as the river bank height. The computational grid is regular in all applications.</p>
 <p>The initial paper documenting LFP’s computational scheme is [Bates2010]. More model and background information can be found on the <a class="reference external" href="https://www.bristol.ac.uk/geography/research/hydrology/models/lisflood/">LISFLOOD-FP</a> website.</p>
 <p><strong>Model availability</strong></p>
-<p>The bmi’ed version of LFP can freely be downloaded from <a class="reference external" href="https://gitlab.com/ChippChapp/LISFLOOD-BMI">GitLab</a>.
+<p>The bmi’ed version of LFP (v. 5.9)can freely be downloaded from <a class="reference external" href="https://gitlab.com/ChippChapp/LISFLOOD-BMI">GitLab</a>.
 A test version of the default model can be requested via this <a class="reference external" href="https://www.bristol.ac.uk/geography/research/hydrology/models/lisflood/downloads/">form</a>.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
@@ -160,7 +160,7 @@ A test version of the default model can be requested via this <a class="referenc
 The computational scheme is, nevertheless, identical and inundation simulations are not affected.</p>
 </div>
 <p>LFP was developed at the University of Bristol. Bristol also has a nice <a class="reference external" href="https://en.wikipedia.org/wiki/Clifton_Suspension_Bridge">bridge</a>:</p>
-<img alt="_images/bridge.png" src="_images/bridge.png" />
+<img alt="_static/bridge.png" src="_static/bridge.png" />
 </div>
 <div class="section" id="adding-new-models">
 <h3>2.1.6. Adding new models<a class="headerlink" href="#adding-new-models" title="Permalink to this headline">¶</a></h3>
@@ -196,7 +196,7 @@ A requirement is that the model to be added contains BMI functions.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2018, J.M. Hoch et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.6.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
     </div>
   </body>
 </html>

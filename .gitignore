@@ -131,3 +131,6 @@ AMA/
 
 # Ganges output
 GBR/
+
+# SHPINX output
+_build/

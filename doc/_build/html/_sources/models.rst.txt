@@ -23,7 +23,7 @@ For more information about PCR, we refer to [Sutanudjaja2018]_.
 
 **Model availability**
 
-A non bmi'ed version of PCR is available at `GitHub <https://github.com/UU-Hydro/PCR-GLOBWB_model>`_ which is, however, not suitable for application within GLOFRIM.
+A non bmi'ed version of PCR is available at `PCR-GLOBWB GitHub <https://github.com/UU-Hydro/PCR-GLOBWB_model>`_ which is, however, not suitable for application within GLOFRIM.
 
 To apply PCR within GLOFRIM, the version provided (version 2.0.3) together with the GLOFRIM package should be used.
 
@@ -39,19 +39,19 @@ To apply PCR within GLOFRIM, the version provided (version 2.0.3) together with 
 
 WFLOW
 -----
-WFLOW (hereafter WFL) is less a hydrologic model but a hydrologic modelling platform, currently including the following hydrologic models: SBM, HBV, GR4 and W3RA.
+WFLOW (hereafter WFL) is a framework for distributed hydrologic modelling, currently including the following hydrologic models: SBM, HBV, GR4, W3RA and PCRGLOB-WB.
 In addition, routing can be simulated using the kinematic wave approximation.
 Depending on the chosen model, the processes described differ and therefore we do not provide a more detailed description of the model routines.
 
 Despite the different models available, WFL ensures that the main model properties and structure (nomenclature, grid properties etc.) are mantained.
 
-For a full documentation of WFL code, models, application, and other functionalities, please visit the `readthedocs <https://wflow.readthedocs.io/en/latest/>`_ page.
+For a full documentation of WFL code, models, application, and other functionalities, please visit the `WFLOW readthedocs <https://wflow.readthedocs.io/en/latest/>`_ page.
 
 **Model availability**
 
 WFL contains a BMI adapter by default and therefore no alternative version has to be applied to use it within GLOFRIM.
 
-All code is available at `GitHub <https://github.com/openstreams/wflow/>`_ and distributed under the GFP version 3.0.
+All code is available at `WFLOW GitHub <https://github.com/openstreams/wflow/>`_ and distributed under the GFP version 3.0.
 
 .. note::
 
@@ -72,7 +72,7 @@ For further model description and application, please see [Yamazaki2011]_ as wel
 
 The original non bmi'ed model code is available upon request `here <http://hydro.iis.u-tokyo.ac.jp/~yamadai/cama-flood/>`_.
 
-To obtain a bmi'ed versoin to be applied within GLOFRIM, please contact the developers.
+To obtain a bmi'ed version (v.3.6.2) to be applied within GLOFRIM, please contact the developers.
 
 Delft3D Flexible Mesh
 ---------------------
@@ -98,7 +98,7 @@ Please see the `DFM website <https://oss.deltares.nl/web/delft3dfm/home>`_ for c
 
 .. note::
 
-    DFM version higher than 1.1.201 is required to work with GLOFRIM
+    DFM version higher than 1.1.201 is required to work with GLOFRIM, the framework has successfully been tested with version 1.1.201.
 
 LISFLOOD-FP
 -----------
@@ -114,7 +114,7 @@ The initial paper documenting LFP's computational scheme is [Bates2010]. More mo
 
 **Model availability**
 
-The bmi'ed version of LFP can freely be downloaded from `GitLab <https://gitlab.com/ChippChapp/LISFLOOD-BMI>`_. 
+The bmi'ed version of LFP (v. 5.9)can freely be downloaded from `GitLab <https://gitlab.com/ChippChapp/LISFLOOD-BMI>`_. 
 A test version of the default model can be requested via this `form <https://www.bristol.ac.uk/geography/research/hydrology/models/lisflood/downloads/>`_.
 
 .. note::

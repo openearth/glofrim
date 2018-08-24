@@ -71,60 +71,128 @@
   <div class="section" id="running-glofrim">
 <span id="id1"></span><h1>4. Running GLOFRIM<a class="headerlink" href="#running-glofrim" title="Permalink to this headline">¶</a></h1>
 <p>GLOFRIM exists of a series of uniformed BMI wrappers for each model and a overarching BMI wrapper for running coupled models.</p>
+<div class="section" id="run-glofrim-from-python">
+<h2>4.1. Run GLOFRIM from Python<a class="headerlink" href="#run-glofrim-from-python" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="coupled-run">
-<h2>4.1. Coupled run<a class="headerlink" href="#coupled-run" title="Permalink to this headline">¶</a></h2>
+<h3>4.1.1. Coupled run<a class="headerlink" href="#coupled-run" title="Permalink to this headline">¶</a></h3>
 <p>To run a coupled model from python use the following lines.
 The glofrim.ini (see example in root directory) configuration file hold the information of the individual model configuration files and exchanges between the models:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span class="c"># import GLOFRIM</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># import GLOFRIM</span>
 <span class="kn">from</span> <span class="nn">glofrim</span> <span class="k">import</span> <span class="n">Glofrim</span>
-<span class="c"># initialize coupled bmi</span>
+<span class="c1"># initialize coupled bmi</span>
 <span class="n">cbmi</span> <span class="o">=</span> <span class="n">Glofrim</span><span class="p">()</span>
-<span class="c"># initialize the coupling with the glofrim.ini configuration file</span>
+<span class="c1"># initialize the coupling with the glofrim.ini configuration file</span>
 <span class="n">cbmi</span><span class="o">.</span><span class="n">initialize_config</span><span class="p">(</span><span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">glofrim</span><span class="o">.</span><span class="n">ini</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>A basic model run uses the following statements:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span class="c"># optional: get the model start time</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># optional: get the model start time</span>
 <span class="n">bmi</span><span class="o">.</span><span class="n">get_start_time</span><span class="p">()</span>
-<span class="c"># initialize model</span>
+<span class="c1"># initialize model</span>
 <span class="n">bmi</span><span class="o">.</span><span class="n">initialize_model</span><span class="p">()</span>
-<span class="c"># run until set endtime</span>
+<span class="c1"># run until set endtime</span>
 <span class="n">bmi</span><span class="o">.</span><span class="n">update_until</span><span class="p">(</span><span class="n">bmi</span><span class="o">.</span><span class="n">get_end_time</span><span class="p">())</span>
-<span class="c"># finalize model</span>
+<span class="c1"># finalize model</span>
 <span class="n">bmi</span><span class="o">.</span><span class="n">finalize</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="stand-alone-run">
-<h2>4.2. Stand-alone run<a class="headerlink" href="#stand-alone-run" title="Permalink to this headline">¶</a></h2>
-<p>To run stand alone models via the GLOFRIM BMI wrapper you can use followed by the same statements as before:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span class="c"># import the CaMa-Flood bmi wrapper</span>
+<h3>4.1.2. Stand-alone run<a class="headerlink" href="#stand-alone-run" title="Permalink to this headline">¶</a></h3>
+<p>To run stand alone models via the GLOFRIM BMI wrapper you can use the lines below, followed by the same statements as before:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># import the CaMa-Flood bmi wrapper</span>
 <span class="kn">from</span> <span class="nn">glofrim</span> <span class="k">import</span> <span class="n">CMF</span>
-<span class="c"># intialize bmi with reference to engine (only for non-python models)</span>
+<span class="c1"># intialize bmi with reference to engine (only for non-python models)</span>
 <span class="n">bmi</span> <span class="o">=</span> <span class="n">CMF</span><span class="p">(</span><span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">model_engine</span><span class="p">)</span>
 <span class="n">bmi</span><span class="o">.</span><span class="n">initialize_config</span><span class="p">(</span><span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">model_configuration_file</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-<div class="section" id="convenience-script">
-<h2>4.3. Convenience script<a class="headerlink" href="#convenience-script" title="Permalink to this headline">¶</a></h2>
-<p>The GLOFRIM library contains a script to run combined and single (for testing purposes) models with a single line from a terminal.
+</div>
+<div class="section" id="run-glofrim-from-command-line">
+<h2>4.2. Run GLOFRIM from command line<a class="headerlink" href="#run-glofrim-from-command-line" title="Permalink to this headline">¶</a></h2>
+<p>The GLOFRIM library contains a script to run combined and single models with a single line from a terminal.
 This script can be found in the glofirm-py/scripts folder.</p>
 <p>GLOFRIM can be executed as follows on Linux command line:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span class="n">python</span> <span class="n">glofrim_runner</span><span class="o">.</span><span class="n">py</span> <span class="n">run</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">glofrim</span><span class="o">.</span><span class="n">ini</span> <span class="o">--</span><span class="n">env</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">glofrim</span><span class="o">.</span><span class="n">env</span> <span class="o">-</span><span class="n">s</span> <span class="n">startdate</span> <span class="o">-</span><span class="n">e</span> <span class="n">enddate</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">glofrim_runner</span><span class="o">.</span><span class="n">py</span> <span class="n">run</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">glofrim</span><span class="o">.</span><span class="n">ini</span> <span class="o">--</span><span class="n">env</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">glofrim</span><span class="o">.</span><span class="n">env</span> <span class="o">-</span><span class="n">s</span> <span class="n">startdate</span> <span class="o">-</span><span class="n">e</span> <span class="n">enddate</span>
 </pre></div>
 </div>
 <p>Both <em>startdate</em> and <em>enddate</em> must be in yyyy-mm-dd format.</p>
-</div>
-<div class="section" id="help">
-<h2>4.4. Help<a class="headerlink" href="#help" title="Permalink to this headline">¶</a></h2>
 <p>For more info on coupled runs, check:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre>python glofrim_runner.py run –help
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>python glofrim_runner.py run –help
 </pre></div>
 </div>
 <p>and for stand-alone runs:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre>python glofrim_runner.py run_single –help
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>python glofrim_runner.py run_single –help
 </pre></div>
+</div>
+</div>
+<div class="section" id="the-glofrim-configuration-file">
+<h2>4.3. The GLOFRIM configuration file<a class="headerlink" href="#the-glofrim-configuration-file" title="Permalink to this headline">¶</a></h2>
+<p>The GLOFRIM configuration (or .ini) file has four sections, the engines, models, coupling and exchanges settings, each is shortly explained here.</p>
+<p>The <strong>engines</strong> section contains paths to the shared libraries of each non-python model. For convenience the absolute paths in the engine and models sections
+may also be set in a seperate environment.env file in the GLOFRIM root folder.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">engines</span><span class="p">]</span>
+<span class="c1"># path to model engines; only required for the non-python models used</span>
+<span class="c1"># these settings can also be set in environment.env</span>
+<span class="n">CMF</span> <span class="o">=</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">libcama</span><span class="o">.</span><span class="n">so</span>
+<span class="n">DFM</span> <span class="o">=</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">libdflowfm</span><span class="o">.</span><span class="n">so</span>
+<span class="n">LFP</span> <span class="o">=</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">liblisflood</span><span class="o">.</span><span class="n">so</span>
+</pre></div>
+</div>
+<p>The <strong>models</strong> section needs the paths to all model configuraiton files. Together with the model engine, this allows GLOFRIM to know the model schematisation and to
+communicate with that model via BMI. Add only models which are part of the (coupled) run. The paths should be either relative to the root_dir option (if set), this ini file directory or absolute.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">models</span><span class="p">]</span>
+<span class="c1"># alternative root dir for relative ini-file paths, by default the directory of this ini file is used;</span>
+<span class="c1"># this setting can also be set in environment.env</span>
+<span class="n">root_dir</span> <span class="o">=</span> <span class="o">/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">models</span>
+
+<span class="c1"># all models which are listed here are run during update</span>
+<span class="c1"># format: model_short_name = /path/to/configuration_file</span>
+<span class="n">PCR</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">pcrglobwb</span><span class="o">.</span><span class="n">ini</span>
+<span class="n">WFL</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">wflow</span><span class="o">.</span><span class="n">ini</span>
+<span class="n">CMF</span><span class="o">=../</span><span class="n">rel_path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">input_flood</span><span class="o">.</span><span class="n">nam</span><span class="o">.</span><span class="n">org</span>
+<span class="n">LFP</span><span class="o">=/</span><span class="n">path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">lisflood</span><span class="o">.</span><span class="n">par</span>
+<span class="n">DFM</span><span class="o">=</span><span class="n">rel_path</span><span class="o">/</span><span class="n">to</span><span class="o">/</span><span class="n">dflowfm</span><span class="o">.</span><span class="n">mdu</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Note that the user can change model options through the GLOFRIM API. For all models but WFL, a new configuration file name ending with <em>_glofrim</em> is written to communicate these changes with the model
+before model initialization. For WFL it’s possible to communicate these changes directly via BMI.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">CMF only listens to the configuration file if it is called <em>input_flood.nam</em>, therefore the original configuration file should be called different, for instance input_flood.nam.org.</p>
+</div>
+<p>The <strong>coupling</strong> section contains general settings for the exchanges between models.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">coupling</span><span class="p">]</span>
+<span class="c1"># timestep for exchanges [sec]</span>
+<span class="n">dt</span><span class="o">=</span><span class="mi">86400</span>
+</pre></div>
+</div>
+<p>The <strong>exchanges</strong> section contains the information about how the models communicate on run time. This part has a slightly complex syntax as it contains a lot of information.
+Every line indicates one exchange from the left (upstream/get) model.variable to the right (downstream/set) model.variable. This can be further extended by multipliers which can be model variables
+or scalar values in order to make sure the variable units match. Finally behind the &#64; the spatial location to get (upstream) and set (downstream) the model variables.
+Current options are &#64;1d,  &#64;1d_us (the most upstream 1d cells or nodes) and &#64;grid_us (the upstream cell for each grid cell):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">exchanges</span><span class="p">]</span>
+<span class="c1"># setup exchanges which are executed during the coupled update function.</span>
+<span class="c1"># format: From_model.var1*var2*multiplier@index = To_model.var*multiplier@index</span>
+<span class="c1"># the multiplier is optional; if no index is set, by default the whole 2D domain is coupled</span>
+
+<span class="c1"># Example 1: PCR runoff [m] to CMF runoff [m]</span>
+<span class="c1"># The interal CMF interpolation matrix is used to convert from the PCR grid to the CMF U-Grid.</span>
+<span class="n">PCR</span><span class="o">.</span><span class="n">runoff</span><span class="o">=</span><span class="n">CMF</span><span class="o">.</span><span class="n">roffin</span>
+
+<span class="c1"># Example 2: PCR runoff [m] &amp; upstream discharge [m3/s] to DFM rain [mm] (used as api for lateral inflows)</span>
+<span class="c1"># both sides are converted to volumes per exchange timestep [m3/day]</span>
+<span class="n">PCR</span><span class="o">.</span><span class="n">runoff</span><span class="o">*</span><span class="n">cellArea</span><span class="o">=</span><span class="n">DFM</span><span class="o">.</span><span class="n">rain</span><span class="o">*</span><span class="n">ba</span><span class="o">*</span><span class="mi">1000</span><span class="nd">@1d</span>
+<span class="n">PCR</span><span class="o">.</span><span class="n">discharge</span><span class="o">*</span><span class="mi">86400</span><span class="nd">@grid_us</span><span class="o">=</span><span class="n">DFM</span><span class="o">.</span><span class="n">rain</span><span class="o">*</span><span class="n">ba</span><span class="o">*</span><span class="mi">1000</span><span class="nd">@1d_us</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Note that only exchange of fluxes has been tested so far.</p>
 </div>
 </div>
 </div>
@@ -155,7 +223,7 @@ This script can be found in the glofirm-py/scripts folder.</p>
     </div>
     <div class="footer" role="contentinfo">
         &#169; Copyright 2018, J.M. Hoch et al..
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.6.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.5.
     </div>
   </body>
 </html>

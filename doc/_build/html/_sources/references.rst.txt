@@ -1,8 +1,8 @@
 .. _references:
 
-**********
-References
-**********
+******************
+List of References
+******************
 
 .. [Hoch2017a] Hoch, J. M., Haag, A. V., van Dam, A., Winsemius, H. C., van Beek, L. P. H., and Bierkens, M. F. P.: \
      Assessing the impact of hydrodynamics on large-scale flood wave propagation – a case study for the Amazon Basin, \
@@ -24,4 +24,4 @@ References
 .. [Yamazaki2011] Yamazaki, D., Kanae, S., Kim, H. and Oki, T.: \
     A physically based description of floodplain inundation dynamics in a global river routing model, \
     Water Resour. Res., 47, 1–21, https://10.1029/2010WR009726, 2011.
-.. [WFLOW] Deltares: OpenStreams WFLOW documentation, https://wflow.readthedocs.io/en/latest/
+.. [WFLOW_docs] Deltares: OpenStreams WFLOW documentation, https://wflow.readthedocs.io/en/latest/
