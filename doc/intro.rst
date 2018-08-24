@@ -13,7 +13,7 @@ Currently, two different coupling strategies can be realized with GLOFRIM, eithe
 The former allows to couple hydrology to either routing or hydrodynamic model, while the latter represents the full modelling cascade hydrology to routing to hydrodynamics.
 
 GLOFRIM was so far applied and documented in [Hoch2017a]_ and [Hoch2017b]_. 
-The source code can be found on `GitHub <https://github.com/openearth/glofrim>`_ and the last stable release on `Zenodo <https://doi.org/10.5281/zenodo.597107>`_.
+The source code can be found on `GitHub <https://github.com/openearth/glofrim>`_ and the last stable release (v1.0) on `Zenodo <https://doi.org/10.5281/zenodo.597107>`_.
 
 Supported models
 ================
@@ -22,7 +22,7 @@ The models currently supported by GLOFRIM are:
 Hydrologic models:
 ------------------
 * *PCR-GLOBWB*: Global water balance model developed at Utrecht University [Sutanudjaja2018]_ running at 30 or 05 arc-min spatial resolution; water balance computed based on meteorological forcing, humand and industrial water demand and abstractions; solves kinematic wave approximation for discharge simulations
-* *WFLOW*: modelling suite for distributed hydrological models within the Deltares OpenStreams project [WFLOW]_; contains various hydrologic models, amongst others SBM and HBV; runs on a regular grid but grid resolution is variable; also solves kinematic wave approximation for discharge simulations
+* *WFLOW*: modelling suite for distributed hydrological models within the Deltares OpenStreams project [WFLOW_docs]_; contains various hydrologic models, amongst others SBM and HBV; runs on a regular grid but grid resolution is variable; also solves kinematic wave approximation for discharge simulations
 
 Routing models:
 ---------------

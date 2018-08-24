@@ -2,7 +2,7 @@
 
 
 **************************
-GLOFRIM code documentation
+GLOFRIM API documentation
 **************************
 
 Initialization
@@ -22,12 +22,13 @@ between them must be defined.
    Glofrim.initialize_model
    Glofrim.initialize
    Glofrim.set_exchanges
-   Glofrim.set_out_dir
 
 Execution
 ===============
 GLOFRIM provides a range of functions to retrieve and change time information,
 update models, as well as exchange content between models during execution.
+These exchange functions are used inside the update function to exchange variables 
+according to the setting in the exhanges section of the GLOFRIM ini file.
 
 .. automodule:: glofrim
 
@@ -37,9 +38,7 @@ update models, as well as exchange content between models during execution.
    :toctree: generated/
    :nosignatures:
 
-   Glofrim.get_start_time
    Glofrim.get_current_time
-   Glofrim.get_time_step
    Glofrim.update
    Glofrim.update_until
    Glofrim.exchange
@@ -76,7 +75,6 @@ It is possible to change model end times and finalize model states after executi
    :toctree: generated/
    :nosignatures:
 
-   Glofrim.get_end_time
    Glofrim.finalize
 
 Auxiliary functions
@@ -103,8 +101,7 @@ General information about model structure and variables.
 
 Variable Information Functions
 ------------------------------
-Providing information about properties 
-of model variables.
+Providing information about properties of model variables.
 
 .. automodule:: glofrim
 
@@ -138,8 +135,8 @@ Information about model grid.
 
 Attribute/ Config Information Functions
 ---------------------------------------
-Functions providing insights in settings of model 
-configuration files.
+Functions providing insights in settings of model configuration files. 
+Note that the set functions can only be used before model initialization.
 
 .. automodule:: glofrim
 
@@ -149,7 +146,11 @@ configuration files.
    :toctree: generated/
    :nosignatures:
 
+   Glofrim.set_out_dir
+   Glofrim.get_time_step
    Glofrim.set_start_time
+   Glofrim.get_start_time
+   Glofrim.get_end_time
    Glofrim.set_end_time
    Glofrim.get_attribute_names
    Glofrim.get_attribute_value
