@@ -1,6 +1,0 @@
-glofrim.Glofrim.\_check\_long\_var\_name
-========================================
-
-.. currentmodule:: glofrim
-
-.. automethod:: Glofrim._check_long_var_name

@@ -1,6 +1,0 @@
-glofrim.Glofrim.index
-=====================
-
-.. currentmodule:: glofrim
-
-.. automethod:: Glofrim.index
