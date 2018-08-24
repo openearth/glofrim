@@ -97,10 +97,9 @@ class SpatialCoupling(object):
         # rgrid to ucgrid
         elif (self.from_bmi.grid.type == 1) and (self.to_bmi.grid.type == 3):
             # set inpmat
-            _mapdir = self.to_bmi._mapdir
             bounds, res = self.from_bmi.grid.bounds, self.from_bmi.grid.res
             olat = 'NtoS' if self.from_bmi.grid.NtoS else 'StoN'
-            self.to_bmi.grid.set_inpmat(bounds, res, olat=olat, mapdir=_mapdir)
+            self.to_bmi.set_inpmat(bounds, res, olat=olat)
             # set new inpmat and diminfo in config
             self.to_bmi.set_inpmat_attrs()
         else:

@@ -8,8 +8,9 @@ install_requires = [
     'rasterio>=1.0',
     'rtree>=0.8.1',
     'click>=6.7',
-    'configparser'
-    'python-dateutil'
+    'configparser',
+    'python-dateutil',
+    'termcolor'
 ]
 
 setup(name='glofrim',
