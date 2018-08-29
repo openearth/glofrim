@@ -7,7 +7,9 @@ Welcome to GLOFRIM's documentation!
 ===================================
 
 GLOFRIM v1.0 was developed as part of Jannis Hoch's PhD at Utrecht University in the Netherlands.
-The current version, GLOFRIM v2.0, was developed in a collaboration between Dirk Eilander (IVM, VU Amsterdam), Jannis Hoch (Utrecht University) and Hiroaki Ikeuchi (University of Tokyo).
+The current version, GLOFRIM v2.0, was developed in a collaboration with Dirk Eilander (*IVM, VU Amsterdam*) 
+and Hiroaki Ikeuchi (*University of Tokyo*).
+
 Thanks to all contributors, co-authors, and collaborators!
 
 .. warning::
@@ -31,6 +33,7 @@ Structure
 
    intro.rst
    models.rst
+   gridCoupling.rst
    requirements.rst
    running_GLOFRIM.rst
    applications.rst
@@ -40,13 +43,12 @@ Structure
 Acknowledgments
 ===============
 
-The development of GLOFRIM was only possible due to the contribution of many colleagues at various departments.
+The development of GLOFRIM was only possible due to the contribution of many colleagues at various departments and universities.
 
 Particular shout-outs go to:
 
-Dirk Eilander (*VU Amsterdam*, *Deltares*), Hiroaki Ikeuchi (*University of Tokyo*), Fedor Baart (*Deltares*),
-Jeffrey Neal (*University of Bristol*), Paul Bates (*University of Bristol*), Arthur van Dam (*Deltares*), Herman Kernkamp (*Deltares*),
-Edwin Sutanudjaja (*Utrecht University*), Hessel Winsemius (*Deltares*, *VU Amsterdam*), Rens van Beek (*Utrecht University*) and Marc Bierkens (*Utrecht University*)
+Fedor Baart (*Deltares*), Jeffrey Neal (*University of Bristol*), Paul Bates (*University of Bristol*), Arthur van Dam (*Deltares*), Herman Kernkamp (*Deltares*),
+Edwin Sutanudjaja (*Utrecht University*), Hessel Winsemius (*Deltares*, *VU Amsterdam*), Rens van Beek (*Utrecht University*), and Marc Bierkens (*Utrecht University*)
 
 Research was funded by the European Institute of Innovation and Technology (EIT) Climate-KIC and Netherlands Organisation for Scientific Research (NWO).
 

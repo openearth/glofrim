@@ -1,6 +1,5 @@
 .. _running_GLOFRIM:
 
-
 ***************
 Running GLOFRIM
 ***************
@@ -64,6 +63,8 @@ For more info on coupled runs, check::
 and for stand-alone runs::
 
   python glofrim_runner.py run_single –help
+
+.. _the_ini_file:
 
 The GLOFRIM configuration file
 ==============================

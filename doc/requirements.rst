@@ -7,7 +7,7 @@ GLOFRIM requirements and set-up
 The tool was entirey written in Python 2.7 and tested on Linux systems.
 
 .. note::
-    Migration to Python 3.x is envisaged but not scheduled yet. Only after PCRGLOW-WB and WFLOW have switched to using the python 3 and PCRaster >= 4.2.0 this would be possible.
+    Migration to Python 3.x is envisaged but not scheduled yet. Only after PCR-GLOBWB and WFLOW have switched to using the python 3 and PCRaster >= 4.2.0 this would be possible.
 
 
 .. warning::
