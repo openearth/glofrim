@@ -1,4 +1,4 @@
-.. codeDocumentation:
+.. _codeDocumentation:
 
 
 **************************

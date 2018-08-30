@@ -110,11 +110,11 @@ While LFP also allows for 1D and 2D set-ups, only the sub-grid channel design wa
 A major advantage of LFP is its easy model creation which requires, for the simplest set-up, only ascii files describing the DEM, the channel width and bed level elevation, as
 well as the river bank height. The computational grid is regular in all applications.
 
-The initial paper documenting LFP's computational scheme is [Bates2010]. More model and background information can be found on the `LISFLOOD-FP <https://www.bristol.ac.uk/geography/research/hydrology/models/lisflood/>`_ website.
+The initial paper documenting LFP's computational scheme is [Bates2010]_. More model and background information can be found on the `LISFLOOD-FP <https://www.bristol.ac.uk/geography/research/hydrology/models/lisflood/>`_ website.
 
 **Model availability**
 
-The bmi'ed version of LFP (v. 5.9)can freely be downloaded from `GitLab <https://gitlab.com/ChippChapp/LISFLOOD-BMI>`_. 
+The bmi'ed version of LFP (v. 5.9) can freely be downloaded from `GitLab <https://gitlab.com/ChippChapp/LISFLOOD-BMI>`_. 
 A test version of the default model can be requested via this `form <https://www.bristol.ac.uk/geography/research/hydrology/models/lisflood/downloads/>`_.
 
 .. note::

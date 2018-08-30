@@ -34,6 +34,7 @@ Structure
    intro.rst
    models.rst
    gridCoupling.rst
+   BMI.rst
    requirements.rst
    running_GLOFRIM.rst
    applications.rst

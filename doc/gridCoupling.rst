@@ -7,19 +7,31 @@ When different models with different scopes are coupled, this may in a range of 
 designs. To cater for this flexibility, GLOFRIM allows for various ways of coupling grids and exchanging
 model information.
 
+To establish online and spatially explicit coupling between models, we employ the `Basic Model Interface <https://csdms.colorado.edu/wiki/BMI_Description>`_.
+An elaborated outline of this concept is provided at :ref:`basicModelInterface`.
+
 Spatial coupling of model grids
 ===============================
+
+.. _2dto2d:
 
 2D to 2D
 --------
 For models containing only of 2D model grid, meshes, or unit catchments, for instance PCR and CMF.
 
+By means of the developed grid API, GLOFRIM detects the corresponding cells of different model grids and
+assigns a 1-n index list which is subsequently used to attribute the right volumes to the right grids.
+
+If n>1, then the volumes from the providing model are devided equally over all coupled cells in the receiving model
+to maintain a correct water balance between models.
+
 2D to 1D
 --------
 If coupling a 2D grid/mesh/unit catchment to the channel network of either DFM or LFP.
 
-.. todo::
-    add more technical detail on how grids are coupled.
+The workflow is identical as for :ref:`2dto2d`, but before the 1-n index list is created, GLOFRIM finds those indices in the 
+receiving model that belong to river channels. To that end, GLOFRIM employs model-specific properties which are unique to river
+channels and can therefore be used for the separation.
 
 Exchange of model information
 =============================

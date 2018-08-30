@@ -123,3 +123,6 @@ GBR/
 # SHPINX output
 _build/
 _build/*
+
+#
+doc/_images/prepPlots.pptx

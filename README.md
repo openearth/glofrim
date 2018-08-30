@@ -6,6 +6,8 @@ contact: Jannis M. Hoch (j.m.hoch@uu.nl), Dirk Eilander (dirk.eilander@vu.nl)
 
 We also want to acknowledge the contributions of all colleagues at the insitues involved in the development of GLOFRIM.
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1146583.svg)](https://doi.org/10.5281/zenodo.1146583)
+
 # Manual
 GLOFRIM is designed to provide a flexible and modular tool to couple hydrologic, routing, and hydodynamic models across scales.
 The coupling process is spatially explicit (i.e. on grid-to-grid basis) and model information is exchanged per (daily) time step.

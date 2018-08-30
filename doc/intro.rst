@@ -19,7 +19,10 @@ The former allows to couple hydrology to either routing or hydrodynamic model, w
 GLOFRIM was so far applied and documented in [Hoch2017a]_ and [Hoch2017b]_. Brief summaries can be found in 
 :ref:`applications`.
 
-The source code can be downloaded from `GitHub <https://github.com/openearth/glofrim>`_ and the last stable release (v1.0) on `Zenodo <https://doi.org/10.5281/zenodo.597107>`_.
+The source code can be downloaded from `GitHub <https://github.com/openearth/glofrim>`_ and the last stable release (v1.0) on `Zenodo <https://doi.org/10.5281/zenodo.597107>`_:
+
+.. image:: https://zenodo.org/badge/90723537.svg
+   :target: https://zenodo.org/badge/latestdoi/90723537
 
 Supported models
 ================

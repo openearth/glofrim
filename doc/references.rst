@@ -25,3 +25,6 @@ List of References
     A physically based description of floodplain inundation dynamics in a global river routing model, \
     Water Resour. Res., 47, 1–21, https://10.1029/2010WR009726, 2011.
 .. [WFLOW_docs] Deltares: OpenStreams WFLOW documentation, https://wflow.readthedocs.io/en/latest/
+.. [Peckham2013] Peckham, S. D., Hutton, E. W. H., and Norris, B.: \
+    A component-based approach to integrated modeling in the geosciences: The design of CSDMS, \
+    Comput. Geosci., 53, 3–12, https://doi.org/10.1016/j.cageo.2012.04.002, 2013.
