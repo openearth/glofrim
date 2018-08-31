@@ -23,6 +23,9 @@ The source code can be downloaded from `GitHub <https://github.com/openearth/glo
 
 .. image:: https://zenodo.org/badge/90723537.svg
    :target: https://zenodo.org/badge/latestdoi/90723537
+   :align: center
+
+All GLOFRIM code is licensed under the GNU General Public License v3.0.
 
 Supported models
 ================

@@ -40,6 +40,7 @@ Structure
    applications.rst
    references.rst  
    codeDocumentation.rst
+   license.rst
 
 Acknowledgments
 ===============

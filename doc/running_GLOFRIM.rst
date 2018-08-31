@@ -43,10 +43,10 @@ To run stand alone models via the GLOFRIM BMI wrapper you can use the lines belo
   bmi = CMF(/path/to/model_engine) 
   bmi.initialize_config(/path/to/model_configuration_file)
 
+.. _run_from_commandline:
 
 Run GLOFRIM from command line
 =============================
-
 The GLOFRIM library contains a script to run combined and single models with a single line from a terminal. 
 This script can be found in the glofirm-py/scripts folder.
 
