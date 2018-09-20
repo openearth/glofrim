@@ -33,6 +33,13 @@ The workflow is identical as for :ref:`2dto2d`, but before the 1-n index list is
 receiving model that belong to river channels. To that end, GLOFRIM employs model-specific properties which are unique to river
 channels and can therefore be used for the separation.
 
+.. note::
+    GLOFRIM aims at using the default input files of the models to perform the spatial coupling of grids and networks. For
+    CMF, however, it is still needed to convert bin/ctl-files to geoTiff-files, particularly the nextxy.bin file for look-up of
+    the flow direction.
+    We provide a script to convert bin/ctl-files to tif-files.::
+        python <path/to>/ cama_maps_io.py <map/folder>/nextxy.ctl. 
+
 Exchange of model information
 =============================
 

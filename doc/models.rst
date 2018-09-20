@@ -114,7 +114,7 @@ The initial paper documenting LFP's computational scheme is [Bates2010]_. More m
 
 **Model availability**
 
-The bmi'ed version of LFP (v. 5.9) can freely be downloaded from `GitLab <https://gitlab.com/ChippChapp/LISFLOOD-BMI>`_. 
+The bmi'ed version of LFP (v. 5.9) can freely be downloaded from `GitHub <https://github.com/ChippChapp/LISFLOOD-FP>`_. 
 A test version of the default model can be requested via this `form <https://www.bristol.ac.uk/geography/research/hydrology/models/lisflood/downloads/>`_.
 
 .. note::
