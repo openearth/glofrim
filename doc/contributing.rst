@@ -1,4 +1,4 @@
-.. contributing:
+.. _contributing:
 
 ############################
 Contributing guidelines
