@@ -41,6 +41,8 @@ Structure
    references.rst  
    codeDocumentation.rst
    license.rst
+   contributing.rst
+   code_of_conduct.rst
 
 Acknowledgments
 ===============
