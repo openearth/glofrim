@@ -40,12 +40,14 @@ class LFP(GBmi):
     """
     Model Control Functions
     """
-    def initialize_config(self, config_fn):
+    def initialize_config(self, config_fn, config_defaults={}):
         if self.initialized:
             raise Warning("model already initialized, it's therefore not longer possible to initialize the config")
         # config settings
+        defaults = {'refdate': '2000-01-01'} # default refdate as this setting is not mandatory in LFP par settings file
+        defaults.update(**config_defaults)
         self._config_fn = abspath(config_fn)
-        self._config = glib.configread(self._config_fn, encoding='utf-8', cf=ParConfigParser())
+        self._config = glib.configread(self._config_fn, encoding='utf-8', cf=ParConfigParser(defaults=defaults))
         self._datefmt = "%Y-%m-%d"
         # model time
         self._dt = self.get_time_step()
