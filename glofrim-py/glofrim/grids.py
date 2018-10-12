@@ -2,7 +2,7 @@
 import rasterio.transform
 import numpy as np 
 import rasterio 
-from os.path import isfile, join
+from os.path import isfile, join, dirname
 from abc import ABCMeta, abstractmethod
 
 import glofrim_lib as glib
@@ -69,7 +69,7 @@ class Grid(object):
 
 class RGrid(Grid):
     type = GridType.RGRID
-    def __init__(self, transform, height, width, crs=None, mask=None):
+    def __init__(self, transform, height, width, crs=None, mask=None, **kwargs):
         self.transform = rasterio.transform.guard_transform(transform)
         self.height = int(height)
         self.width = int(width)
@@ -78,7 +78,7 @@ class RGrid(Grid):
         self.res = self.transform.a
         self.NtoS = self.transform.e < 0
         self.crs = crs
-        self.mask = mask
+        self.mask = self.set_mask(mask) if mask is not None else mask
 
     def index(self, x, y, flat_index=True, **kwargs):
         x, y = np.atleast_1d(x), np.atleast_1d(y)
@@ -128,49 +128,84 @@ class RGrid(Grid):
             inside[inside] = np.logical_and(inside[inside], self.mask[r[inside], c[inside]])
         return inside
 
+    def _inside_bounds(self, x, y):
+        xmin, ymin, xmax, ymax = self.bounds
+        inside = np.logical_and.reduce((x >= xmin, x <= xmax, y >= ymin, y <= ymax))
+        return inside
+
     def set_dd(self, fn, ddtype, **kwargs):
-        from nb.nb_io import read_dd_pcraster, read_dd_rasterio
+        from nb.nb_io import read_dd_pcraster, read_dd_rasterio, read_dd_cmfbin
         if (ddtype == 'ldd') and fn.endswith('.map'):
             self._dd = read_dd_pcraster(fn, transform=self.transform, **kwargs)
+        if (ddtype == 'nextxy') and fn.endswith('.bin'):
+            self._dd = read_dd_cmfbin(fn, self.transform, self.height, self.width)
         else:
             self._dd = read_dd_rasterio(fn, ddtype=ddtype, **kwargs)
+
+    def set_mask(self, mask):
+        assert np.all(mask.shape == self.shape)
+        self.mask = mask
 
 
 
 class UCGrid(RGrid):
     type = GridType.UCGRID
-    def __init__(self, transform, height, width, fn_catmxy, crs=None):
-        super(UCGrid, self).__init__(transform, height, width, crs=crs)
-        self.fn_catmxy = fn_catmxy
+    def __init__(self, transform, height, width, fn_location_txt, crs=None, mask=None):
+        super(UCGrid, self).__init__(transform, height, width, crs=crs, mask=mask)
+        self.hires_dir = dirname(fn_location_txt)
+        self.hires_locs = self._parse_location(fn_location_txt)
+        self.hires_rgrids = [RGrid(p['transform'], p['height'], p['width']) for p in self.hires_locs]
         
     def index(self, x, y, flat_index=True, **kwargs):
-        """Get CMF indices (1d) of xy coordinates using the catmxy.tif file"""
-        # read catmxy temporary into memory
-        with rasterio.open(self.fn_catmxy, 'r') as ds:
-            if ds.count != 2:
-                raise ValueError("{} file should have two layers".format(self.fn_catmxy))
-            catmxy_rg = RGrid(ds.transform, ds.height, ds.width, ds.crs)
-            # python zero based index for high res CMF grid
-            inds = catmxy_rg.index(x, y)
-            valid = inds >= 0
+        """Get CMF indices (1d) of xy coordinates using the catmxy files"""
+        x, y = np.asarray(x), np.asarray(y)
+        # find hires catmxy file for x, y coords
+        c, r = np.ones(x.size, dtype=int)*-1, np.ones(x.size, dtype=int)*-1
+        for i, rg in enumerate(self.hires_rgrids):
+            inds_hires = rg.index(x, y)
+            valid = inds_hires >= 0
             # read low-res CMF fortran one-based index
             # invalid indices have value - 1
             # go from fortran one-based to python zero-based indices
-            c, r = np.ones_like(inds)*-1, np.ones_like(inds)*-1
-            c[valid] = ds.read(1).flat[inds[valid]] - 1
-            r[valid] = ds.read(2).flat[inds[valid]] - 1
+            fn = join(self.hires_dir, '{}.catmxy'.format(self.hires_locs[i]['area']))
+            if not isfile(fn):
+                raise IOError('hires catmxy file not found {}'.format(fn))
+            a = np.memmap(filename=str(fn), dtype='int16', mode="r+", shape=(2, rg.height, rg.width))
+            c[valid] = np.array(a[0, :, :].flat[inds_hires[valid]]-1).astype(int)
+            r[valid] = np.array(a[1, :, :].flat[inds_hires[valid]]-1).astype(int)
         # check if inside low res domain
         inside = self._inside(r, c)
         if flat_index:
             # calculate 1d index; NOTE invalid indices have value -1
-            inds = np.ones_like(inside, dtype=int)
-            inds = inds * -1 # fill with -1
+            inds = np.ones(x.size, dtype=int) * -1 # fill with -1
             if np.any(inside):
                 inds[inside] = self.ravel_multi_index(r[inside], c[inside])
         else:
             r[~inside], c[~inside] = -1, -1
             inds = (r, c) 
         return inds
+
+    def _parse_location(self, fn):
+        """parse location.txt file in CMF map/hires folder to obtain high-res grid definition"""
+        rename = {'ny': 'height',
+                'nx': 'width',
+                'csize': 'res'}
+        with open(fn, 'r') as txt:
+            locs = []
+            lines = txt.readlines()
+            for line in lines:
+                vals = line.strip().split()
+                assert len(vals) == 2, "invalid location.txt file"
+                if vals[0] == 'code':
+                    code = int(vals[1])
+                    locs.append({})
+                elif vals[0] == 'area':
+                    locs[code-1]['area'] = str(vals[1])
+                else:
+                    locs[code-1][rename.get(str(vals[0]), str(vals[0]))] = float(vals[1])
+        for p in locs:
+            p['transform'] = rasterio.transform.from_origin(p['west'], p['north'], p['res'], p['res'])
+        return locs
 
 class UGrid(Grid):
     type = GridType.UGRID

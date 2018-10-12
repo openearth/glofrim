@@ -360,7 +360,7 @@ class PCR(GBmi):
                 self.grid = RGrid(ds.transform, ds.height, ds.width, crs=ds.crs, mask=mask)
             # read file with pcr readmap
             self.logger.info('Getting drainage direction from {}'.format(basename(_ldd_fn)))
-            self.grid.set_dd(_ldd_fn, ddtype='ldd', nodata=255)
+            self.grid.set_dd(_ldd_fn, ddtype='ldd')
         return self.grid
 
     ###
