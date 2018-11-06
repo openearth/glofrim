@@ -105,6 +105,12 @@ class integration_test(object):
             bmi_kwargs.update(engine = self.engine)
         return bmi(**bmi_kwargs)
 
+    @tryexcept('initialize BMI: ', fail=True)
+    def test_init_coupled_bmi(self, _loglevel='INFO'):
+        bmi = getattr(glofrim, self.mod)
+        bmi_kwargs = {'loglevel': _loglevel, config_fn=self.config_fn}
+        return bmi(**bmi_kwargs)
+
     @tryexcept('initialize config: ', fail=True)
     def test_initialize_config(self):
         print(str(self.config_fn))
@@ -266,7 +272,50 @@ class integration_test(object):
                 print(self.mod + " - test result: " + colored("zero errors", 'green'))
             self.cleanup()
 
+    @tryexcept('coupled BMI test: ')
+    def test_single(self):
+        try:
+            # create output dir & read glofrim ini
+            self.create_output_dir()
+            self.get_bmi_attrs()
+            
+            # initialize bmi
+            self.bmi = self.test_init_standalone_bmi()
+            
+            # initialize config
+            self.test_init_coupled_bmi()
 
+            # test settingn sim times
+            start_time = datetime(2000, 2, 1)
+            end_time = datetime(2000, 4, 1)
+            self.test_set_sim_times(start_time, end_time)
+            self.test_assert_sim_times(start_time, end_time)
+
+            # initialize model
+            self.test_initialize_model()
+
+            # check if start & end time still the same after initialization
+            self.test_assert_sim_times(start_time, end_time)
+ 
+            # test updates
+            self.test_update()
+            self.test_update_until(end_time)
+            
+            # check get_var / set_var (at indices)
+            self.test_get_set_var()
+            self.test_get_set_var_at_indices()
+            
+            # finalize
+            self.test_finalize()
+
+        # cleanup
+        finally:
+            if self.errors != 0:
+                print(self.mod + " - test result: " + colored("{:d} errors".format(self.errors), 'red'))
+                raise AssertionError('Errors found in test')
+            else:
+                print(self.mod + " - test result: " + colored("zero errors", 'green'))
+            self.cleanup()
         
 if __name__ == "__main__":
     integration_test(sys.argv[1])
