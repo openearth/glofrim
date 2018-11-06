@@ -209,7 +209,7 @@ class WFL(GBmi):
                 self.grid.set_1d(nodes=np.array(zip(x, y)), links=None, inds=inds)
             # read file with pcr readmap
             self.logger.info('Getting drainage direction from {}'.format(basename(_ldd_fn)))
-            self.grid.set_dd(_ldd_fn, ddtype='ldd', nodata=255)
+            self.grid.set_dd(_ldd_fn, ddtype='ldd')
         return self.grid
 
     """
