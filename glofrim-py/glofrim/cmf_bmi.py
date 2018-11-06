@@ -271,6 +271,7 @@ class CMF(GBmi):
         cmd = './generate_inpmat {} {} {} {} {} {:s}'
         cmd = cmd.format(abs(res), w, e, n, s, olat)
         # print(cmd)
+        self.logger.info("generate inpmat: {}".format(cmd))
         glib.subcall(cmd, cwd=self._mapdir)
         
     def set_inpmat_attrs(self):
