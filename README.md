@@ -8,10 +8,10 @@ We also want to acknowledge the contributions of all colleagues at the insitues 
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.597107.svg)](https://doi.org/10.5281/zenodo.597107)
 
-# Manual
-GLOFRIM is designed to provide a flexible and modular tool to couple hydrologic, routing, and hydodynamic models across scales.
-The coupling process is spatially explicit (i.e. on grid-to-grid basis) and model information is exchanged per (daily) time step.
-To establish this coupling scheme, the functions of the Basic Model Interface (BMI) are utilized.
+# Description
+GLOFRIM offers a flexible and modular tool to couple hydrologic, routing, and hydodynamic models across scales. This enables integration of physical processes from different models. The coupling process is spatially explicit (i.e. on grid-to-grid basis) and model information is exchanged online (i.e. per time step).
+
+GLOFRIM is designed as a “human interface” with additional and user friendly Python functions on top of the basic model interface (BMI), which makes it easy to setup and run coupled model simulations. For the model developer, only the BMI needs to be implemented in the model in a scripting language of choice, which makes it easy to develop and maintain. 
 
 While version 1 allowed for coupling PCR-GLOBWB with either Delft3D Flexible Mesh or LISFLOOD-FP, version 2 has a more generic setup and has been extended with the hydrologic modelling suite wflow and the global routing model CaMa-Flood.
 
@@ -91,8 +91,6 @@ from glofrim import CMF # import the CaMa-Flood bmi wrapper
 bmi = CMF(/path/to/model_engine) # intialize bmi with reference to engine (only for non-python models)
 bmi.initialize_config(/path/to/model_configuration_file)
 ```
-
-
 
 ## Convenience script:
 The GLOFRIM library contains a script to run combined and single (for testing purposes) models with a single line from a terminal. This script can be found in the glofirm-py/scripts folder 
