@@ -217,6 +217,28 @@ class CMF(GBmi):
             # set unit catchment mask based on drainage direction mask
             self.grid.set_mask(self.grid._dd.r.mask[0, :, :]==False)
 
+            # add 1d network
+            latlon_fn = join(self._mapdir, 'lonlat.bin')
+            if isfile(latlon_fn):
+                ## read data
+                row, col = np.where(self.grid.mask) # get valid row, cols
+                lonlat = np.fromfile(latlon_fn, dtype=np.float32).reshape(2, self.grid.height, self.grid.width) # read lat lon unit catchment outlets
+                nodes = lonlat[:, row, col].T # outlets at valid cells
+                ## get 1d indices of valid cells
+                inds = self.grid.ravel_multi_index(row, col) 
+                ## create links
+                i = np.arange(inds.size) # index of inds
+                id2 = np.ones(self.grid.shape, dtype=np.int32) # 2d index of inds
+                id2[row, col] = i
+                (next_row, next_col), valid = self.grid._dd._nb_downstream_idx(row, col) 
+                next_i = id2[next_row, next_col]
+                next_inds = self.grid.ravel_multi_index(next_row, next_col)
+                links = np.vstack([i[valid], next_i]).T
+                # set Network1D object
+                self.grid.set_1d(nodes=nodes, links=links, inds=inds, ds_idx=next_inds, us_idx=inds[valid])
+            else:
+                Warning('"lonlat.bin" file not found in map directory. no 1d network created')
+
         return self.grid
 
     """
