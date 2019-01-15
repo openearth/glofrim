@@ -78,8 +78,7 @@ class RGrid(Grid):
         self.res = self.transform.a
         self.NtoS = self.transform.e < 0
         self.crs = crs
-        import pdb; pdb.set_trace()
-       self.set_mask(mask) if mask is not None else mask
+        self.set_mask(mask)
 
     def index(self, x, y, flat_index=True, **kwargs):
         x, y = np.atleast_1d(x), np.atleast_1d(y)
@@ -144,7 +143,8 @@ class RGrid(Grid):
             self._dd = read_dd_rasterio(fn, ddtype=ddtype, **kwargs)
 
     def set_mask(self, mask):
-        assert np.all(mask.shape == self.shape)
+        if mask is not None:
+            assert np.all(mask.shape == self.shape)
         self.mask = mask
 
 
