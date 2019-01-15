@@ -67,6 +67,32 @@ class Grid(object):
     def has_1d(self):
         return self._1d is not None
 
+    def plot_2d(self, ax):
+        import matplotlib
+        cells = self.get_poly_coords()
+        gpatches = (matplotlib.patches.Polygon(cell) for cell in cells)
+        gpc = matplotlib.collections.PatchCollection(gpatches, edgecolor='grey')
+        gpc.set_facecolor('none')
+        ax.add_collection(gpc)
+        return gpc
+
+    def plot_1d(self, ax, c=None, **kwargs):
+        if self.has_1d():
+            idx_us = self._1d.links[:,0]
+            idx_ds = self._1d.links[:,1]
+            x = self._1d.nodes[idx_us,0]
+            y = self._1d.nodes[idx_us,1]
+            dx = self._1d.nodes[idx_ds,0]-x
+            dy = self._1d.nodes[idx_ds,1]-y
+            args = (x, y, dx, dy)
+            if c is not None:
+                args += (c, )
+            kwargs.update(scale_units='xy', angles='xy', scale=1)
+            q = ax.quiver(*args, **kwargs)
+            return q
+        else:
+            raise ValueError('grid object doens not have a 1D network')
+
 class RGrid(Grid):
     type = GridType.RGRID
     def __init__(self, transform, height, width, crs=None, mask=None, **kwargs):
@@ -277,8 +303,8 @@ class Network1D(object):
         self.nodes = np.atleast_2d(nodes)
         self.nnodes = self.nodes.shape[0]
         # optional links: links[0,:]=from-idx, links[1,:]=to-idx
-        if self.links is not None:
-            self.links = np.ma.masked_equal(np.atleast_2d(self.nodes), fill_value)
+        if links is not None:
+            self.links = np.atleast_2d(links)
             self.nlinks = self.links.shape[0]
         # optional index array 
         # indices only used for index function only!
