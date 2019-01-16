@@ -165,7 +165,9 @@ class DrainageDirection(object):
         """
         pit_bool = self.is_pit() # 2d array
         if return_index:
-            row, col = np.where(pit_bool)[-2:]
+            if pit_bool.ndim == 3:
+                pit_bool = pit_bool[0, :, :]
+            row, col = np.where(pit_bool)
             return np.atleast_1d(row), np.atleast_1d(col)
         else:
             return pit_bool
