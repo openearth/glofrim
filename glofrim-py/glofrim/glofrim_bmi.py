@@ -56,6 +56,7 @@ class Glofrim(EBmi):
 
         self._loglevel = loglevel
         self.logger = setlogger(None, self._name, thelevel=loglevel)
+        self.wb_logger = setlogger(None, 'wb', thelevel=loglevel, show_in_console=False)
         self.initialized = False
         self.obs = None
 
@@ -177,9 +178,12 @@ class Glofrim(EBmi):
             modconf = glib.getabspath(self._config.get('models', mod), self._root)
             self.bmimodels[mod].initialize_config(modconf)
 
-        # parse echanges section
+        # parse exchanges section
         self.exchanges = self.set_exchanges()
-
+        # create logfile for exchange volumes
+        add_file_handler(self.wb_logger, abspath(config_fn).replace('.ini', '.wb'), formatter=logging.Formatter("%(message)s"))
+        header = ['time'] + [item[1]['name'] for item in self.exchanges if item[0] == 'exchange']
+        self.wb_logger.info(', '.join(header))
         # combined model time
         self._dt = timedelta(seconds=int(self._config.get('coupling' ,'dt', fallback=86400)))
         # set start_time & end_time if given
@@ -219,7 +223,7 @@ class Glofrim(EBmi):
             raise ValueError(msg)
         self.exchanges = []
         model_called, vars_set = [], []
-        for ex_from in self._config.options('exchanges'):
+        for ex_i, ex_from in enumerate(self._config.options('exchanges')):
             ex_to = self._config.get('exchanges', ex_from)
             # break up starting from back
             exdict = {}
@@ -296,6 +300,7 @@ class Glofrim(EBmi):
                 coupling_method = '{}_2_{}'.format(ind_from, ind_to)
                 sc_kwargs.update(method=coupling_method)
             exdict['coupling'] = SpatialCoupling(**sc_kwargs)
+            exdict['name'] = '{:s}.{:s}_to_{:s}.{:s}'.format(mod_from, exdict['from_vars'][0], mod_to, exdict['to_vars'][0])
             ## UPDATE
             #  update model before first time it is called in mod_from
             if not mod_from in model_called:
@@ -386,6 +391,7 @@ class Glofrim(EBmi):
             self.logger.warn(msg)
             raise Exception(msg)
         # update all models with combined model dt
+        wb_line = [str(self._t)]
         dt = self._dt.total_seconds() if dt is None else dt
         t_next = self._t + timedelta(seconds=dt)
         for item in self.exchanges:
@@ -396,7 +402,9 @@ class Glofrim(EBmi):
                 dt_mod = (t_next - self.bmimodels[item[1]]._t).total_seconds()
                 self.bmimodels[item[1]].update(dt=dt_mod)
             elif item[0] == 'exchange':
-                self.exchange(**item[1])
+                tot_volume = self.exchange(**item[1])
+                wb_line.append('{:.2f}'.format(tot_volume)) # keep track of exchanges
+        self.wb_logger.info(', '.join(wb_line))
         self._t = self.get_current_time()
 
     def update_until(self, t, dt=None):
@@ -437,6 +445,7 @@ class Glofrim(EBmi):
         for mod in self.bmimodels:
             self.bmimodels[mod].finalize()
         closelogger(self.logger)
+        closelogger(self.wb_logger)
 
     def exchange(self, from_mod, to_mod, from_vars, to_vars, coupling, add=False, **kwargs):
         """Exchanges variable content from specified source variable in source model to
@@ -458,9 +467,10 @@ class Glofrim(EBmi):
 
         self.logger.info('{} {}.{} data to coupled {}.{} variable'.format('adding' if add else 'setting', from_mod, from_vars[0], to_mod, to_vars[0]))
         if coupling.at_indices():
-            self.exchange_at_indices(from_mod, to_mod, from_vars, to_vars, coupling, add=add, **kwargs)
+            tot_volume = self.exchange_at_indices(from_mod, to_mod, from_vars, to_vars, coupling, add=add, **kwargs)
         else:
-            self.exchange_same_grid(from_mod, to_mod, from_vars, to_vars, add=add, **kwargs)
+            tot_volume = self.exchange_same_grid(from_mod, to_mod, from_vars, to_vars, add=add, **kwargs)
+        return tot_volume
 
     def exchange_same_grid(self, from_mod, to_mod, from_vars, to_vars, add=False, **kwargs):
         """Exchanges variable content from specified source variable in source model to
@@ -485,7 +495,13 @@ class Glofrim(EBmi):
                 vals *= from_var
             else:
                 vals *= self.bmimodels[from_mod].get_value(from_var)
+        # total exchange
         self.logger.debug('total get {:3f}'.format(np.nansum(vals)))
+        tot_volume = np.nansum(vals)
+        # this is an ugly hack at the moment to circumvent the PCR.runoff [m] to CMF.roffin [m] coupling
+        # TODO: solve this when we implement pint for unit conversion
+        if (from_mod == 'PCR') and (from_vars[0] == 'runoff') and (to_mod == 'CMF') and (to_vars[0] == 'roffin'):
+            tot_volume = np.nansum(vals * self.bmimodels[from_mod].get_value(self.bmimodels[from_mod]._area_var_name))
         # get TO data & translate
         for var in to_vars[1:]:
             if isinstance(var, float):
@@ -498,6 +514,7 @@ class Glofrim(EBmi):
         if add:  # add to current state
             vals += self.bmimodels[to_mod].get_value(to_vars[0], vals) # TO   
         self.bmimodels[to_mod].set_value(to_vars[0], vals)
+        return tot_volume
 
     def exchange_at_indices(self, from_mod, to_mod, from_vars, to_vars, coupling, add=False, **kwargs):
         """Exchanges variable content from specified source variable in source model to
@@ -530,10 +547,11 @@ class Glofrim(EBmi):
             vals_set = np.repeat(vals_get, coupling.to_grp_n) * coupling.get_frac()
         else:
             vals_set = vals_get
-        vol_diff = np.nansum(vals_get) - np.nansum(vals_set)
+        tot_volume = np.nansum(vals_get)
+        vol_diff = tot_volume - np.nansum(vals_set)
         if vol_diff > 1E-2:
             self.logger.warming('Large difference in water volume from and to: {:.4f} m3'.format(vol_diff))
-        self.logger.debug('total get {:3f}'.format(np.nansum(vals_get)))
+        self.logger.debug('total get {:3f}'.format(tot_volume))
         # get TO data & translate
         for var in to_vars[1:]:
             if isinstance(var, float):
@@ -546,6 +564,7 @@ class Glofrim(EBmi):
         if add: # add to current state
             vals_set += self.bmimodels[to_mod].get_value_at_indices(to_vars[0], coupling.to_ind)
         self.bmimodels[to_mod].set_value_at_indices(to_vars[0], coupling.to_ind, vals_set)
+        return tot_volume
 
     ###
     ### Model Information Functions

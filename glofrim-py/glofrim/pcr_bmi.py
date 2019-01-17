@@ -344,23 +344,24 @@ class PCR(GBmi):
             _indir = abspath(self.get_attribute_value('globalOptions:inputDir'))
             _ldd_fn = glib.getabspath(self.get_attribute_value('routingOptions:lddMap'), _indir)
             if not isfile(_ldd_fn): raise IOError('ldd file not found {}'.format(_ldd_fn))
-            # landmask used for masking out coordinates outside mask
+            # landmask used for masking out coordinates outside mask if provided
             _lm_fn = glib.getabspath(self.get_attribute_value('globalOptions:landmask'), _indir)
-            if isfile(_lm_fn): #raise IOError('landmask file not found')
+            if isfile(_lm_fn):
                 with rasterio.open(_lm_fn, 'r') as ds:
-                    mask=ds.read(1)==1
+                    mask = ds.read(1)==1
                     mask_name = basename(_lm_fn)
+            # use ldd for masking
             else:
                 mask=None
                 mask_name = basename(_ldd_fn)
             self.logger.info('Getting rgrid info based on {}; mask based on {}'.format(basename(_ldd_fn), mask_name))
             with rasterio.open(_ldd_fn, 'r') as ds:
                 if mask is None:
-                    mask=ds.read(1) != ds.nodata
+                    mask = ds.read(1) != ds.nodata
                 self.grid = RGrid(ds.transform, ds.height, ds.width, crs=ds.crs, mask=mask)
             # read file with pcr readmap
             self.logger.info('Getting drainage direction from {}'.format(basename(_ldd_fn)))
-            self.grid.set_dd(_ldd_fn, ddtype='ldd', nodata=255)
+            self.grid.set_dd(_ldd_fn, ddtype='ldd')
         return self.grid
 
     ###

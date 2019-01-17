@@ -192,36 +192,53 @@ class CMF(GBmi):
     Grid Information Functions
     """
 
-    def get_grid(self, fn_catmxy=r'./hires/reg.catmxy.tif', **kwargs):
+    def get_grid(self, fn_params=r'params.txt', fn_locs=r'./hires/location.txt', **kwargs):
         if not hasattr(self, 'grid') or (self.grid is None):
             _root = dirname(self._config_fn)
-            # fn_catmx fn may be relative to folder where nextxy is found
-            fn_params = join(self._mapdir, 'params.txt')
+            # read grid definition from params file
+            fn_params = join(self._mapdir, fn_params)
             if not isfile(fn_params): raise IOError("Params.txt file not found {}".format(fn_params))
-            # fn_catmx fn may be relative to folder where nextxy is found
-            fn_catmxy = glib.getabspath(fn_catmxy, self._mapdir)
-            if not isfile(fn_catmxy): 
-                fn_catmxy = None
-                self.logger.warn("Unit-Catchment file not found {}; indexing not possible".format(fn_catmxy))
-            # drainage direction
-            _nextxy_fn = glib.getabspath(str(self.get_attribute_value('MAP:CNEXTXY').strip('"')), _root)
-            _nextxy_fn = _nextxy_fn.replace('.bin', '.tif')
-            # get grid info
             self.logger.info('Getting Unit-Catchment Grid info based on {}'.format(basename(fn_params)))
-            params = read_params(fn_params)
-            transform = rasterio.transform.from_origin(params['west'], params['north'], params['res'], params['res'])
+            p = read_params(fn_params)
+            # get hires index info file
+            fn_locs = join(self._mapdir, fn_locs)
+            if not isfile(fn_locs): raise IOError("locations.txt file for hires index not found {}".format(fn_locs))
+            
+            # get catchment unit grid instance 
             # TODO: set crs
-            self.grid = UCGrid(transform, params['height'], params['width'], fn_catmxy=fn_catmxy)
-            # with rasterio.open(_nextxy_fn, 'r') as ds:
-            #     ds.transform == transform
-            #     ds.height == params['height']
-            #     ds.width == params['width']
+            self.grid = UCGrid(p['transform'], p['height'], p['width'], fn_locs)
+            
             # add drainage direction
-            if isfile(_nextxy_fn): #raise IOError('nextxy file {} not found'.format(_nextxy_fn))
-                self.logger.info('Getting drainage direction from {}'.format(basename(_nextxy_fn)))
-                self.grid.set_dd(_nextxy_fn, ddtype='nextxy', **kwargs)
+            fn_nextxy = glib.getabspath(str(self.get_attribute_value('MAP:CNEXTXY').strip('"')), _root)
+            if not isfile(fn_locs): raise IOError("nextxy file for drainage direction data not found {}".format(fn_locs))
+            self.logger.info('Getting drainage direction from {}'.format(basename(fn_nextxy)))
+            self.grid.set_dd(fn_nextxy, ddtype='nextxy', **kwargs)
+
+            # set unit catchment mask based on drainage direction mask
+            self.grid.set_mask(self.grid._dd.r.mask[0, :, :]==False)
+
+            # add 1d network
+            latlon_fn = join(self._mapdir, 'lonlat.bin')
+            if isfile(latlon_fn):
+                ## read data
+                row, col = np.where(self.grid.mask) # get valid row, cols
+                lonlat = np.fromfile(latlon_fn, dtype=np.float32).reshape(2, self.grid.height, self.grid.width) # read lat lon unit catchment outlets
+                nodes = lonlat[:, row, col].T # outlets at valid cells
+                ## get 1d indices of valid cells
+                inds = self.grid.ravel_multi_index(row, col) 
+                ## create links
+                i = np.arange(inds.size) # index of inds
+                id2 = np.ones(self.grid.shape, dtype=np.int32) # 2d index of inds
+                id2[row, col] = i
+                (next_row, next_col), valid = self.grid._dd._nb_downstream_idx(row, col) 
+                next_i = id2[next_row, next_col]
+                next_inds = self.grid.ravel_multi_index(next_row, next_col)
+                links = np.vstack([i[valid], next_i]).T
+                # set Network1D object
+                self.grid.set_1d(nodes=nodes, links=links, inds=inds, ds_idx=next_inds, us_idx=inds[valid])
             else:
-                self.logger.warn('No drainage direction file found {}; getting upstream cells not possible.'.format(basename(_nextxy_fn)))
+                Warning('"lonlat.bin" file not found in map directory. no 1d network created')
+
         return self.grid
 
     """
@@ -276,6 +293,7 @@ class CMF(GBmi):
         cmd = './generate_inpmat {} {} {} {} {} {:s}'
         cmd = cmd.format(abs(res), w, e, n, s, olat)
         # print(cmd)
+        self.logger.info("generate inpmat: {}".format(cmd))
         glib.subcall(cmd, cwd=self._mapdir)
         
     def set_inpmat_attrs(self):
@@ -343,13 +361,15 @@ class NamConfigParser(ConfigParser):
 
 # CMF data utils
 def read_params(fn, col_width=12):
+    """parse params.txt file in CMF map folder to obtain low-res grid definition"""
     rename = {'grid number (north-south)': 'height',
               'grid number (east-west)': 'width',
               'west  edge [deg]': 'west',
               'north edge [deg]': 'north',
               'grid size  [deg]': 'res'}
     with open(fn, 'r') as txt:
-        params = {line[col_width:].strip(): float(line[:col_width].strip())
+        p = {line[col_width:].strip(): float(line[:col_width].strip())
                     for line in txt.readlines()}
-    params = {rename[key]: params[key] for key in params if key in rename.keys()}
-    return params
+    p = {rename[key]: p[key] for key in p if key in rename.keys()}
+    p['transform'] = rasterio.transform.from_origin(p['west'], p['north'], p['res'], p['res'])
+    return p

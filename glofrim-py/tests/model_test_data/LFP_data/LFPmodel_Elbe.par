@@ -1,0 +1,19 @@
+# test
+DEMfile                  dem.asc	    # provide DEM file
+resroot                  res					# prefix of output files
+dirroot                  results_Elbe_2km		# output folder name
+sim_time                 347155200			    # total simulation time
+initial_tstep            432					# intial solver time step
+massint                  86400.0				# interval of time series output
+saveint                  864000.0  				# interval of map output
+bcifile                  LFPmodel_Elbe_BCs.bci	# file containing boundary condition information
+SGCwidth                 width.asc	    # privde widhts of channels
+SGCbank                  dem.asc	    # provide elevation of river banks
+SGCbed                   depth.asc	    # provide surface elevation of river bed
+gaugefile                NeuDarchau.gauge		# provide location of discharge measurements
+stagefile                Elbe.stage             # provide location with stage measurements
+fpfric                   0.05					# floodplain friction
+SGCn                     0.035					# sub-grid channel friction
+SGCr                     0.15					# parameter to determine river geometry
+SGCp                     0.65					# parameter to determine river geometry
+latlong                                         # REQUIRED!
