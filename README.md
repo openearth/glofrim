@@ -15,10 +15,13 @@ GLOFRIM is designed as a “human interface” with additional and user friendly
 
 While version 1 allowed for coupling PCR-GLOBWB with either Delft3D Flexible Mesh or LISFLOOD-FP, version 2 has a more generic setup and has been extended with the hydrologic modelling suite wflow and the global routing model CaMa-Flood.
 
-With the available models, different hydrologic and hydrodynamic coupled model runs can be done, for instance:
+With the available models, different coupled hydrologic and hydrodynamic model runs can be done, for instance:
  - 2-step coupling: hydrology -> 1D routing or hydrology -> full 2D hydrodynamics
  - 3-step coupling: hydrology -> 1D routing -> full 2D hydrodynamics
 
+![alt text](https://github.com/openearth/glofrim/blob/master/doc/_images/GLOFRIM_flows_wLegend.png "Conceptual GLOFRIM diagram")
+
+## Warrants
 Currently, the coupling process in only one-directional, i.e. only downstream along the model cascade.
 Work is currently performed to extend it to a full feedback loop.
 
@@ -35,9 +38,8 @@ Please note that it running it on Windows is currently not supported.
  - CaMa-Flood: a BMI'ed version of CaMa-Flood (v3.6.2) is available upon request
 
 ## Content of package
- - glofrim-py: python package containing the functions required to execute the various coupling models
- - pcrglobwb-bmi_v203: BMI-compatible PCR-GLOBWB model supporting application at 30 arcmin resolution
- - glofrim.ini: example ini-file where the models as well as the exchanged fluxes/paths are specified
+ - glofrim: python package containing the functions required to execute the various coupling models
+ - scripts: convienence scripts and examples to run GLOFRIM
 
 ## Setting up GLOFRIM
 We recommend you setup GLOFRIM within its own python environment. You can do so using [conda environments](https://conda.io/docs/user-guide/tasks/manage-environments.html#creating-an-environment-from-an-environment-yml-file) with the provided envrionment.yml file in the glofrim-py folder. This should also install the required python BMI-wrapper for you.
@@ -115,14 +117,15 @@ GLOFRIM development and applications \
 https://www.geosci-model-dev.net/10/3913/2017/gmd-10-3913-2017.html
 		
 BMI\
-https://csdms.colorado.edu/wiki/BMI_Description \
+https://bmi-spec.readthedocs.io/en/latest \
 http://www.sciencedirect.com/science/article/pii/S0098300412001252
 
 BMI-wrapper for Python\
 https://github.com/openearth/bmi-python
 
 PCR-GLOBWB\
-https://www.geosci-model-dev.net/11/2429/2018/
+https://www.geosci-model-dev.net/11/2429/2018 \
+https://github.com/UU-Hydro/PCR_BMI/
 
 Delft3D Flexible Mesh\
 https://link.springer.com/article/10.1007%2Fs10236-011-0423-6 \
