@@ -19,7 +19,7 @@ With the available models, different coupled hydrologic and hydrodynamic model r
  - 2-step coupling: hydrology -> 1D routing or hydrology -> full 2D hydrodynamics
  - 3-step coupling: hydrology -> 1D routing -> full 2D hydrodynamics
 
-![alt text](https://github.com/openearth/glofrim/blob/master/doc/_images/GLOFRIM_flows_wLegend.png "Conceptual GLOFRIM diagram")
+![alt text](/doc/_images/GLOFRIM_flows_wLegend.png "Conceptual GLOFRIM diagram")
 
 ## Warrants
 Currently, the coupling process in only one-directional, i.e. only downstream along the model cascade.
