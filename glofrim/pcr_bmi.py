@@ -320,7 +320,19 @@ class PCR(GBmi):
         val = self.get_value(long_var_name, fill_value=fill_value, **kwargs)
         val.flat[inds] = src
         self.set_value(long_var_name, val, **kwargs)
-        
+
+    def _get_tot_volume_in(self):
+        # precipitation [m]
+        P = np.nansum(self.get_value('precipitation') * self.get_value('cellArea'))
+        return P
+
+    def _get_tot_volume_out(self):
+        # discharge [m3/s]
+        Qout =  np.nansum(self.get_value_at_indices('discharge', self.grid.pits)) * self._dt.total_seconds()
+        # ET [m] ??
+        ET = np.nansum(self.get_value('actualET') * self.get_value('cellArea'))
+        return Qout + ET
+
     ###
     ### Grid Information Functions
     ###
@@ -362,6 +374,7 @@ class PCR(GBmi):
             # read file with pcr readmap
             self.logger.info('Getting drainage direction from {}'.format(basename(_ldd_fn)))
             self.grid.set_dd(_ldd_fn, ddtype='ldd')
+            self.grid.get_pits()
         return self.grid
 
     ###
