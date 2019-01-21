@@ -182,8 +182,15 @@ class Glofrim(EBmi):
         self.exchanges = self.set_exchanges()
         # create logfile for exchange volumes
         add_file_handler(self.wb_logger, abspath(config_fn).replace('.ini', '.wb'), formatter=logging.Formatter("%(message)s"))
-        header = ['time'] + [item[1]['name'] for item in self.exchanges if item[0] == 'exchange']
-        self.wb_logger.info(', '.join(header))
+        # TODO
+        self._wb_header = ['time']
+        for mod in self.bmimodels:
+            if hasattr(self.bmimodels[mod], '_get_tot_volume_in'):
+                self._wb_header.append('{}_tot_in'.format(mod))
+            if hasattr(self.bmimodels[mod], '_get_tot_volume_out'):
+                self._wb_header.append('{}_tot_out'.format(mod))
+        self._wb_header += [item[1]['name'] for item in self.exchanges if item[0] == 'exchange']
+        self.wb_logger.info(', '.join(self._wb_header))
         # combined model time
         self._dt = timedelta(seconds=int(self._config.get('coupling' ,'dt', fallback=86400)))
         # set start_time & end_time if given
@@ -391,7 +398,7 @@ class Glofrim(EBmi):
             self.logger.warn(msg)
             raise Exception(msg)
         # update all models with combined model dt
-        wb_line = [str(self._t)]
+        wb_dict = {'time': str(self._t)}
         dt = self._dt.total_seconds() if dt is None else dt
         t_next = self._t + timedelta(seconds=dt)
         for item in self.exchanges:
@@ -399,12 +406,19 @@ class Glofrim(EBmi):
                 # LFP deviates from the set timestep using an adaptive timestep if dt is set to large
                 # calculate the dt to get to the next timestep
                 # NOTE we use "update" instead of "update_until" to getter better logging.
-                dt_mod = (t_next - self.bmimodels[item[1]]._t).total_seconds()
-                self.bmimodels[item[1]].update(dt=dt_mod)
+                imod = item[1]
+                dt_mod = (t_next - self.bmimodels[imod]._t).total_seconds()
+                self.bmimodels[imod].update(dt=dt_mod)
+                # get volume totals in and out if the bmi object has this funtion, ortherwise return -9999
+                tot_volume_in = getattr(self.bmimodels[imod], '_get_tot_volume_in', lambda: -9999.)()
+                wb_dict.update({'{}_tot_in'.format(imod): '{:.2f}'.format(tot_volume_in)})
+                tot_volume_out = getattr(self.bmimodels[imod], '_get_tot_volume_out', lambda: -9999.)()
+                wb_dict.update({'{}_tot_out'.format(imod): '{:.2f}'.format(tot_volume_out)})
             elif item[0] == 'exchange':
                 tot_volume = self.exchange(**item[1])
-                wb_line.append('{:.2f}'.format(tot_volume)) # keep track of exchanges
-        self.wb_logger.info(', '.join(wb_line))
+                wb_dict.update({item[1]['name']: '{:.2f}'.format(tot_volume)})
+        # write water balance volumes to file according to header
+        self.wb_logger.info(', '.join([wb_dict[c] for c in self._wb_header]))
         self._t = self.get_current_time()
 
     def update_until(self, t, dt=None):
