@@ -188,6 +188,15 @@ class CMF(GBmi):
         val.flat[inds] = src
         self._bmi.set_var(long_var_name, val)
 
+    def _get_tot_volume_in(self):
+        # runoff in [m3/s]
+        Rin = np.nansum(self.get_value('runoff')) * self._dt.total_seconds()
+        return Rin
+
+    def _get_tot_volume_out(self):
+        Qout = np.nansum(self.get_value_at_indices('outflw', self.grid.pits)) * self._dt.total_seconds()
+        return Qout
+
     """
     Grid Information Functions
     """
@@ -213,6 +222,8 @@ class CMF(GBmi):
             if not isfile(fn_locs): raise IOError("nextxy file for drainage direction data not found {}".format(fn_locs))
             self.logger.info('Getting drainage direction from {}'.format(basename(fn_nextxy)))
             self.grid.set_dd(fn_nextxy, ddtype='nextxy', **kwargs)
+            # set index of pits to calculate total outflow
+            self.grid.get_pits()
 
             # set unit catchment mask based on drainage direction mask
             self.grid.set_mask(self.grid._dd.r.mask[0, :, :]==False)

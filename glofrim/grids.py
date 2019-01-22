@@ -168,6 +168,14 @@ class RGrid(Grid):
         else:
             self._dd = read_dd_rasterio(fn, ddtype=ddtype, **kwargs)
 
+    def get_pits(self):
+        if self._dd is not None:
+            # set index of pits (locatoins of outlfow)
+            row, col = self._dd.get_pits()
+            self.pits = self.ravel_multi_index(row, col)
+        else:
+            raise ValueError("The grid has no drainage direction defined")
+
     def set_mask(self, mask):
         if mask is not None:
             assert np.all(mask.shape == self.shape)
