@@ -18,5 +18,3 @@ dependencies:
   - faulthandler>=2.3
   - six>=1.6.1
   - pip>=9.0.3
-  - pip:
-    - bmi-python>=
