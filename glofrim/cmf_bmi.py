@@ -87,18 +87,21 @@ class CMF(GBmi):
     def update(self, dt=None):
         # dt in seconds. if not given model timestep is used
         if self._t >= self._endTime:
-		    raise Exception("endTime already reached, model not updated")
+            raise Exception("endTime already reached, model not updated")
         if (dt is not None) and (dt != self._dt.total_seconds()):
-            _dt = timedelta(seconds=dt)
-            if not glib.check_dts_divmod(_dt, self._dt):
+            dt = timedelta(seconds=dt)
+            if not glib.check_dts_divmod(dt, self._dt):
                 msg = "Invalid value for dt in comparison to model dt. Make sure a whole number of model timesteps ({}) fit in the given dt ({})"
-                raise ValueError(msg.format(self._dt, _dt))
-            self._bmi.update(dt)
-            self._t += _dt
+                raise ValueError(msg.format(self._dt, dt))
         else:
+            dt = self._dt
+        t_next = self.get_current_time() + dt
+        i = 0
+        while self._t < t_next:
             self._bmi.update()
-            self._t += self._dt
-        self.logger.info('updated model to datetime {}'.format(self._t.strftime("%Y-%m-%d %H:%M")))
+            self._t = self.get_current_time()
+            i += 1
+        self.logger.info('updated model to datetime {} in {:d} iterations'.format(self._t.strftime("%Y-%m-%d %H:%M:%S"), i))
 
     def update_until(self, t, dt=None):
         if (t<self._t) or t>self._endTime:
@@ -190,7 +193,7 @@ class CMF(GBmi):
 
     def _get_tot_volume_in(self):
         # runoff in [m3/s]
-        Rin = np.nansum(self.get_value('runoff')) * self._dt.total_seconds()
+        Rin = np.nansum(self.get_value('runoff')) * float(self.get_attribute_value('CONF:DTIN'))
         return Rin
 
     def _get_tot_volume_out(self):
