@@ -8,6 +8,8 @@ We also want to acknowledge the contributions of all colleagues at the insitues 
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.597107.svg)](https://doi.org/10.5281/zenodo.597107)
 
+[![Documentation Status](https://readthedocs.org/projects/glofrim/badge/?version=latest)](https://glofrim.readthedocs.io/en/latest/?badge=latest)
+
 # Description
 GLOFRIM offers a flexible and modular tool to couple hydrologic, routing, and hydodynamic models across scales. This enables integration of physical processes from different models. The coupling process is spatially explicit (i.e. on grid-to-grid basis) and model information is exchanged online (i.e. per time step).
 
