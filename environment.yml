@@ -2,8 +2,6 @@ name: glofrim
 
 channels:
   - conda-forge
-  - defaults
-  - conda-forge/label/dev
 
 dependencies:
   - python=2.7
@@ -19,4 +17,5 @@ dependencies:
   - six>=1.6.1
   - pip>=9.0.3
   - pip:
-    - bmi-python>=
+    - bmi-python
+    - git+https://github.com/openearth/glofrim.git
