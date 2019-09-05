@@ -25,7 +25,7 @@ For more information about PCR, we refer to [Sutanudjaja2018]_.
 
 A non bmi'ed version of PCR is available at `PCR-GLOBWB GitHub <https://github.com/UU-Hydro/PCR-GLOBWB_model>`_ which is, however, not suitable for application within GLOFRIM.
 
-To apply PCR within GLOFRIM, the version provided (version 2.0.3) together with the GLOFRIM package should be used.
+To apply PCR within GLOFRIM, a separate model version of PCR-GLOBWB needs to be used. It can be found `here <https://doi.org/10.5281/zenodo.3345900>`_.
 
 .. note::
 
@@ -35,7 +35,7 @@ To apply PCR within GLOFRIM, the version provided (version 2.0.3) together with 
 
 .. note::
 
-    PCR within GLOFRIM was successfully applied at 30 arc-min spatial resolutions. The 05 arc-min version was so far only used in test model and not for detailed studies.
+    PCR within GLOFRIM was successfully applied at 30 arc-min spatial resolutions. The 05 arc-min version or schematization at any finer spatial resolution were so far only used in test model and not for detailed studies.
 
 WFLOW
 -----
@@ -51,11 +51,16 @@ For a full documentation of WFL code, models, application, and other functionali
 
 WFL contains a BMI adapter by default and therefore no alternative version has to be applied to use it within GLOFRIM.
 
-All code is available at `WFLOW GitHub <https://github.com/openstreams/wflow/>`_ and distributed under the GFP version 3.0.
+All code is available at `WFLOW GitHub <https://github.com/openstreams/wflow/>`_ and distributed under the GNU GPL 3.0 license.
 
 .. note::
 
-    For GLOFRIM, only the SBM model was tested successfully. Application of other WFL models should be straightforward, but that is uncharted terrain at the moment.
+    For GLOFRIM, only the SBM and W3RA models were tested successfully. Application of other WFL models should be straightforward, but that is uncharted territory at the moment.
+
+.. warning::
+    
+    WFL was recently upgraded to Python 3. However, GLOFRIM is still running with Python 2. To be able to run WFL within GLOFRIM, make sure that you the branch corresponding to 
+    the (probably older) Python 2 version of WFL!
 
 CaMa-Flood
 ----------
@@ -114,7 +119,7 @@ The initial paper documenting LFP's computational scheme is [Bates2010]_. More m
 
 **Model availability**
 
-The bmi'ed version of LFP (v. 5.9) can freely be downloaded from `GitHub <https://github.com/ChippChapp/LISFLOOD-FP>`_. 
+The bmi'ed version of LFP (v. 5.9) can freely be downloaded from `Zenodo <https://doi.org/10.5281/zenodo.1479836>`_. 
 A test version of the default model can be requested via this `form <https://www.bristol.ac.uk/geography/research/hydrology/models/lisflood/downloads/>`_.
 
 .. note::
@@ -130,4 +135,4 @@ LFP was developed at the University of Bristol. Bristol also has a nice `bridge 
 Adding new models
 -----------------
 It's easy to extend with new models via provided template.
-A requirement is that the model to be added contains BMI functions.
+A requirement is that the model to be added contains BMI functions and follows the conventions used in the python-BMI files of the other models.
