@@ -16,16 +16,11 @@ The former allows to couple hydrology to either routing or hydrodynamic model, w
     :scale: 40%
     :align: center
 
-GLOFRIM was so far applied and documented in [Hoch2017a]_ and [Hoch2017b]_. Brief summaries can be found in 
-:ref:`applications`.
+Depending on modelling requirements of a study, the coupled models can be configured to your liking. After all, not every physical process and the highest level of detail are required to answer
+a research question. As such, GLOFRIM can be a flexible tool to avoid under- and overfitting of the modelling question.
 
-The source code can be downloaded from `GitHub <https://github.com/openearth/glofrim>`_ and the last stable release (v1.0) on `Zenodo <https://doi.org/10.5281/zenodo.597107>`_:
-
-.. image:: https://zenodo.org/badge/90723537.svg
-   :target: https://zenodo.org/badge/latestdoi/90723537
-   :align: center
-
-All GLOFRIM code is licensed under the GNU General Public License v3.0.
+Furthermore, the fact that GLOFRIM makes use of the BMI technology allows for extending the current modelling cascade with additional (non-)physical models, ever increasing the
+representation of relevant processes in a consistent manner.
 
 Supported models
 ================
@@ -57,6 +52,5 @@ Depending on the design of the coupled model, GLOFRIM can be used for applicatio
 #. *Nested modelling*: By adding detailed 2D hydrodynamics to large-scale hydrology and routing, inundations can locally be simulated with more accuracy
 #. *Large-scale routing*: For large-scale discharge simulations, replacing kinematic wave approximations with routing models increased accuracy while not increasing run time unneccesarily
 
-
-
-   
+GLOFRIM was so far applied and documented in [Hoch2017a]_, [Hoch2017b]_ and [Hoch2019]_. Brief summaries can be found in 
+:ref:`applications`.

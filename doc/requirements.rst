@@ -7,12 +7,10 @@ GLOFRIM requirements and set-up
 The tool was entirey written in Python 2.7 and tested on Linux systems.
 
 .. note::
-    Migration to Python 3.x is envisaged but not scheduled yet. Only after PCR-GLOBWB and WFLOW have switched to using the python 3 and PCRaster >= 4.2.0 this would be possible.
-
+    Migration to Python 3 is envisaged but not scheduled yet. Only after PCR-GLOBWB and WFLOW have switched to using Python 3 and PCRaster >= 4.2.0 this would be possible.
 
 .. warning::
-    Note that GLOFRIM is not yet tested on Windows systems! 
-    And bmi'd version of CMF has not yet been compiled for Windows. 
+    Note that GLOFRIM is not Windows-compatible!
 
 To install and run GLOFRIM on your Linux machine, several python packages are required.
 For convenience, we recommend to set up GLOFRIM within its own python environment.
@@ -29,18 +27,13 @@ This should also install the required python BMI-wrapper for you::
 To install GLOFRIM do::
 
     # get copy of source code from git repos
-    git clone git@github.com/openearth/glofrim.git@csdms-compliant
+    git clone git@github.com/openearth/glofrim.git
     # navigate to the py-glofrim folder
     cd glofrim/py-glofrim
     # install for (the -e links the source code folder for development, this can be left out)
     pip install -e <path/to/glofrim>/py-glofrim
 
-.. note::
-    The currently most stable branch is csdms-compliant. As development and merging goes along, this may change however.
-    Any change will be documented here.
-
-Once the glofrim environment is successfully installed, the actual models can be installed.
-
+Once the glofrim environment is successfully set up, the actual models can be installed.
 
 Note for installing PCR and WFL
 -------------------------------
@@ -51,17 +44,16 @@ As both libraries written in python GLOFRIM can find the models as long as these
 .. note::
     WFL and PCR work with PCRaster v4.1.0, both models as well as GLOFRIM have not yet been tested with PCRaster v4.2.0. 
     
-
 Note for installing CMF, LFP and DFM
 ------------------------------------
-All hydrodynamic models are written in other than Python languages, such as Fortran anc C++. These models need to be compiled on your linux machines, check the
+All hydrodynamic models are written in other languages than Python, such as Fortran anc C++. These models need to be compiled on your linux machines, check the
 documentation of the individual models for more info.
 
 The paths to the share libraries of each need to be provided to GLOFRIM. These can be set in the GLOFRIM ini file or provided in a file called environment.env 
 in the glofrim root dir in the *engines* section, see :ref:`The GLOFRIM configuration file`.
 
 .. note::
-    In addition to the source code, to setup local models and to generate the interpolation matrix for runoff inputs to CMF, additional Fortran scripts need to be compiled.
+    In addition to the source code, to set up local models and to generate the interpolation matrix for runoff inputs to CMF, additional Fortran scripts need to be compiled.
     GLOFRIM requires the generate_inpmat.F script to setup the interpolation scheme based on domain of the upstream model in the model cascade. 
     Carefully follow the steps laid out in the README.txt in the glofim-py/script/generate_inpmat folder for more info.
 

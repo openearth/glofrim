@@ -43,9 +43,6 @@ channels and can therefore be used for the separation.
 Exchange of model information
 =============================
 
-.. todo::
-    Insert figures for illustration
-
 With GLOFRIM, model variables can be exchanged for the entire grid/network of a model or only for the most upstream
 cells/nodes, depending on model set-up and envisaged application.
 
@@ -61,7 +58,7 @@ Alternatively, this option may be chosen in a nested setting if states are excha
 
 Only upstream
 -------------
-In case the downstream model is nested into the upstream model (i.e. the extent is smaller), the upstream model
+In case the downstream model is nested into the upstream model (i.e. the spatial extent is smaller), the upstream model
 may already route discharge until the edge of the downstream model is reached.
 This may happen if a hydrodynamic model only represents the river delta while the routing and/or hydrologic model capture
 the entire basin.

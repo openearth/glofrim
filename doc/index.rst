@@ -6,24 +6,25 @@
 Welcome to GLOFRIM's documentation!
 ===================================
 
-GLOFRIM v1.0 was developed as part of Jannis Hoch's PhD at Utrecht University in the Netherlands.
+GLOFRIM v1.0 was developed as part of Jannis Hoch's PhD studies at Utrecht University in the Netherlands.
 The current version, GLOFRIM v2.0, was developed in a collaboration with Dirk Eilander (*IVM, VU Amsterdam*) 
 and Hiroaki Ikeuchi (*University of Tokyo*).
 
 Thanks to all contributors, co-authors, and collaborators!
 
-.. warning::
-
-    While the code works, this documentation is currently still under development.
-    If you discover any bugs or inconsistencies, we are happy to hear from you!
-
 GLOFRIM download
 ================
 
-GLOFRIM can be downloaded from `GitHub <https://github.com/openearth/glofrim>`_.
+Together with the recently published article in `NHESS <https://www.nat-hazards-earth-syst-sci.net/19/1723/2019/nhess-19-1723-2019.html>`_, 
+a stable release of the GLOFRIM 2.0 code is now available via `Zenodo <https://doi.org/10.5281/zenodo.3364388>`_.
 
-.. note::
-    The currently working branch is "csdms-compliant". Use with care.
+.. image:: https://zenodo.org/badge/90723537.svg
+   :target: https://zenodo.org/badge/latestdoi/90723537
+   :align: left
+
+GLOFRIM is hosted on `GitHub <https://github.com/openearth/glofrim>`_.
+
+All GLOFRIM code is licensed under the GNU General Public License v3.0
 
 Structure
 =========================

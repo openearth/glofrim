@@ -10,6 +10,12 @@ List of References
 .. [Hoch2017b] Hoch, J. M., Neal, J. C., Baart, F., van Beek, R., Winsemius, H. C., Bates, P. D., and Bierkens, M. F. P.: \
     GLOFRIM v1.0 – A globally applicable computational framework for integrated hydrological–hydrodynamic modelling, \
     Geosci. Model Dev., 10, 3913-3929, https://doi.org/10.5194/gmd-10-3913-2017, 2017.
+.. [Hoch2018] Hoch, J.M., van Beek, R., Winsemius, H.C., and Bierkens, M.F.P.:\
+    Benchmarking flexible meshes and regular grids for large-scale fluvial inundation modelling,\
+    Adv. Water Resour., 121, 350-360, 2018.
+.. [Hoch2019] Hoch, J.M., Eilander, D., Ikeuchi, H., Baart, F., and Winsemius, H.C.:\
+    Evaluating the impact of model complexity on flood wave propagation and inundation extent with a hydrologic–hydrodynamic model coupling framework,\
+    Nat. Hazards Earth Syst. Sci., 19, 1723–1735, https://doi.org/10.5194/nhess-19-1723-2019, 2019
 .. [Sutanudjaja2018] Sutanudjaja, E. H., van Beek, R., Wanders, N., Wada, Y., Bosmans, J. H. C., Drost, N., van der Ent, R. J., \
     de Graaf, I. E. M., Hoch, J. M., de Jong, K., Karssenberg, D., López López, P., Peßenteiner, S., Schmitz, O., Straatsma, M. W., \
     Vannametee, E., Wisser, D., and Bierkens, M. F. P.: \
