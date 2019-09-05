@@ -130,5 +130,6 @@ Current options are @1d,  @1d_us (the most upstream 1d cells or nodes) and @grid
     PCR.discharge*86400@grid_us=DFM.rain*ba*1000@1d_us
 
 .. note::
-    Note that only exchange of fluxes has been tested so far. 
+    Note that only fluxes were tested as receiving variables. While states can be used as well, their rather static nature (i.e. using m3 instead of m3/s)
+    can lead to numerical stabilities per time step. Careful testing of the established model coupling is thus necessary!
 
