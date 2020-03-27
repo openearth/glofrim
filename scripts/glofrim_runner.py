@@ -1,4 +1,4 @@
-from glofrim import Glofrim 
+from glofrim import Glofrim
 
 import click
 from os.path import isdir, dirname, abspath
@@ -7,12 +7,16 @@ import os
 from dateutil import parser
 
 # utils
+
+
 def parse_datetime(param, value):
     try:
         date = parser.parse(value)
     except:
-        raise click.BadParameter("Couldn't understand date for the '{}' argument.".format(param))
+        raise click.BadParameter(
+            "Couldn't understand date for the '{}' argument.".format(param))
     return date
+
 
 def parse_dir(param, path):
     try:
@@ -20,12 +24,15 @@ def parse_dir(param, path):
         if not isdir(path):
             os.makedirs(path)
     except:
-        raise click.BadParameter("Couldn't understand or create folder directory for the '{}' argument.".format(param))
+        raise click.BadParameter(
+            "Couldn't understand or create folder directory for the '{}' argument.".format(param))
     return path
+
 
 @click.group()
 def cli():
     pass
+
 
 @click.command()
 @click.argument('ini',)
@@ -56,19 +63,20 @@ def run(ini, env='', out_dir='', end_date='', start_date=''):
         start_date = parse_datetime('start-date', start_date)
     if start_date and end_date:
         if end_date <= start_date:
-            raise click.BadParameter("'end-time' should be larger than start-time")
+            raise click.BadParameter(
+                "'end-time' should be larger than start-time")
     if out_dir:
         out_dir = parse_dir('out-dir', out_dir)
     # initialize combined bmi
     cbmi = Glofrim()
     # initialize configuration
     cbmi.initialize_config(config_fn=ini, env_fn=env)
-    # get model start and end times 
+    # get model start and end times
     if start_date:
         cbmi.set_start_time(start_date)
     if end_date:
         cbmi.set_end_time(end_date)
-    # create and set optional outdir 
+    # create and set optional outdir
     if isdir(out_dir):
         cbmi.set_out_dir(out_dir)
     # initialize model
@@ -117,7 +125,8 @@ def run_single(ini, mod, env='', out_dir='', end_date='', start_date=''):
         start_date = parse_datetime('start-date', start_date)
     if start_date and end_date:
         if end_date <= start_date:
-            raise click.BadParameter("'end-time' should be larger than start-time")
+            raise click.BadParameter(
+                "'end-time' should be larger than start-time")
     if out_dir:
         out_dir = parse_dir('out-dir', out_dir)
     # initialize bmi
@@ -125,14 +134,15 @@ def run_single(ini, mod, env='', out_dir='', end_date='', start_date=''):
     # initialize configuration
     cbmi.initialize_config(config_fn=ini, env_fn=env)
     if mod not in cbmi.bmimodels.keys():
-        raise click.BadParameter("Model with name {} not found in ini file".format(mod))
+        raise click.BadParameter(
+            "Model with name {} not found in ini file".format(mod))
     bmi = cbmi.bmimodels[mod]
     # set model start and end time
     if start_date:
         bmi.set_start_time(start_date)
     if end_date:
         bmi.set_end_time(end_date)
-    # create and set optional outdir 
+    # create and set optional outdir
     if isdir(out_dir):
         bmi.set_out_dir(out_dir)
     # initialize model
@@ -141,7 +151,8 @@ def run_single(ini, mod, env='', out_dir='', end_date='', start_date=''):
     start = bmi.get_start_time()
     end = bmi.get_end_time()
     # run combined model until end time
-    cbmi.logger.info('running model from {} to {}'.format(str(start), str(end)))
+    cbmi.logger.info(
+        'running model from {} to {}'.format(str(start), str(end)))
     bmi.update_until(end)
     # finalize
     cbmi.logger.info('finalizing model')
@@ -165,10 +176,10 @@ def run_single(ini, mod, env='', out_dir='', end_date='', start_date=''):
 #     for sc in exchanges:
 #         sc.to_file(out_fn)
 
+
 cli.add_command(run)
 cli.add_command(run_single)
 # cli.add_command(spatial)
-
 
 
 if __name__ == '__main__':
