@@ -5,7 +5,7 @@ import rasterio
 from os.path import isfile, join, dirname
 from abc import ABCMeta, abstractmethod
 
-import glofrim_lib as glib
+import glofrim.glofrim_lib as glib
 
 class GridType(object):
     """

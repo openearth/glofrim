@@ -6,15 +6,15 @@ from configparser import ConfigParser
 import logging
 import numpy as np
 
-from utils import setlogger, closelogger, add_file_handler
-from gbmi import EBmi
-import glofrim_lib as glib 
-from pcr_bmi import PCR
-from cmf_bmi import CMF
-from dfm_bmi import DFM
-from wfl_bmi import WFL
-from lfp_bmi import LFP
-from spatial_coupling import SpatialCoupling, groupby_sum
+from glofrim.utils import setlogger, closelogger, add_file_handler
+from glofrim.gbmi import EBmi
+import glofrim.glofrim_lib as glib
+from glofrim.pcr_bmi import PCR
+from glofrim.cmf_bmi import CMF
+from glofrim.dfm_bmi import DFM
+from glofrim.wfl_bmi import WFL
+from glofrim.lfp_bmi import LFP
+from glofrim.spatial_coupling import SpatialCoupling, groupby_sum
 
 class Glofrim(EBmi):
     """Central CSDMS-compliant BMI implementation; 

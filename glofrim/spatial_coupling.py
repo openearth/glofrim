@@ -1,7 +1,7 @@
-from grids import GridType
+from glofrim.grids import GridType
 import os
 from os.path import isfile, relpath, dirname
-import glofrim_lib as glib
+import glofrim.glofrim_lib as glib
 import numpy as np
 
 class SpatialCoupling(object):

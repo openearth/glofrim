@@ -10,10 +10,10 @@ import re
 
 from bmi.wrapper import BMIWrapper as _bmi
 
-from utils import setlogger, closelogger
-from gbmi import GBmi 
-from grids import RGrid
-import glofrim_lib as glib 
+from glofrim.utils import setlogger, closelogger
+from glofrim.gbmi import GBmi
+from glofrim.grids import RGrid
+import glofrim.glofrim_lib as glib
 
 class LFP(GBmi):
     """
@@ -82,7 +82,7 @@ class LFP(GBmi):
     def update(self, dt=None):
         # dt in seconds. if not given model timestep is used
         if self._t >= self._endTime:
-		    raise Exception("endTime already reached, model not updated")
+            raise Exception("endTime already reached, model not updated")
         if (dt is not None) and (dt != self._dt.total_seconds()):
             dt = timedelta(seconds=dt)
             # because of the adaptive timestep scheme do not check the dt value
