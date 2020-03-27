@@ -4,6 +4,7 @@ from os.path import isfile, relpath, dirname
 import glofrim_lib as glib
 import numpy as np
 
+
 class SpatialCoupling(object):
     _methods = ['grid_2_grid', 'grid_2_1d', 'grid_us_2_1d_us']
 
@@ -11,7 +12,8 @@ class SpatialCoupling(object):
         # this info can be filled now or when coupling
         self.method = method
         if not self.method in self._methods:
-            raise AttributeError('Coupling method {} does not exist'.format(method))
+            raise AttributeError(
+                'Coupling method {} does not exist'.format(method))
         self.filename = filename
         if self.filename is not None and not isfile(self.filename):
             raise IOError('{} not found.'.format(self.filename))
@@ -22,9 +24,9 @@ class SpatialCoupling(object):
         self.to_bmi = to_bmi
         self.to_name = to_bmi.get_component_name()
         # this info is filled when coupling
-        self.from_ind = np.array([]) # 1d array with indices
-        self.from_grp = np.array([]) # 1d array with group number
-        self.from_grp_n = np.array([]) # 1d array with indices per group
+        self.from_ind = np.array([])  # 1d array with indices
+        self.from_grp = np.array([])  # 1d array with group number
+        self.from_grp_n = np.array([])  # 1d array with indices per group
         self.to_ind = np.array([])
         self.to_grp = np.array([])
         self.to_grp_n = np.array([])
@@ -43,20 +45,24 @@ class SpatialCoupling(object):
             not_coupled = coupled_dict.pop(-1)
             print(not_coupled)
             # TODO warning
-        self.to_ind, self.to_grp, self.to_grp_n = group_index(coupled_dict.values()) 
-        self.from_ind, self.from_grp, self.from_grp_n = group_index(coupled_dict.keys()) 
-    
+        self.to_ind, self.to_grp, self.to_grp_n = group_index(
+            coupled_dict.values())
+        self.from_ind, self.from_grp, self.from_grp_n = group_index(
+            coupled_dict.keys())
+
     def set_frac(self, from_area=True):
         if not from_area:
-            self.frac = np.ones_like(self.to_ind).astype(float) / np.repeat(self.to_grp_n, self.to_grp_n)
+            self.frac = np.ones_like(self.to_ind).astype(
+                float) / np.repeat(self.to_grp_n, self.to_grp_n)
         else:
             area_var = self.to_bmi._area_var_name
             areas = self.to_bmi.get_value_at_indices(area_var, self.to_ind)
-            area_sum = groupby_sum(areas, self.to_grp) 
-            self.frac = areas.astype(float) / np.repeat(area_sum, self.to_grp_n)
-        assert np.all(groupby_sum(self.frac, self.to_grp).round(5)==1)
+            area_sum = groupby_sum(areas, self.to_grp)
+            self.frac = areas.astype(
+                float) / np.repeat(area_sum, self.to_grp_n)
+        assert np.all(groupby_sum(self.frac, self.to_grp).round(5) == 1)
         return self.frac
-            
+
     def get_frac(self, from_area=True):
         if (self.to_ind.size > 0) and (self.frac.size == 0):
             self.set_frac(from_area=from_area)
@@ -66,13 +72,14 @@ class SpatialCoupling(object):
         # replace properties if provided (not None)
         self.method = method if method is not None else self.method
         if not self.method in self._methods:
-            raise AttributeError('Coupling method {} does not exist'.format(method))
+            raise AttributeError(
+                'Coupling method {} does not exist'.format(method))
         self.filename = filename if filename is not None else self.filename
         if self.filename is not None and not isfile(self.filename):
             raise IOError('{} not found.'.format(self.filename))
         # do coupling
-        self.from_bmi.get_grid() # make sure grid property is set
-        self.to_bmi.get_grid() # make sure grid property is set
+        self.from_bmi.get_grid()  # make sure grid property is set
+        self.to_bmi.get_grid()  # make sure grid property is set
         getattr(self, self.method)()
 
     def to_file(self, filename):
@@ -89,10 +96,13 @@ class SpatialCoupling(object):
         # rgrid to rgrid
         if (self.to_bmi.grid.type == self.from_bmi.grid.type == 1):
             # just check grid types. do nothing
-            check_bounds= np.all(self.to_bmi.grid.bounds == self.from_bmi.grid.bounds)
-            check_shape = np.all(self.to_bmi.grid.shape == self.from_bmi.grid.shape)
+            check_bounds = np.all(self.to_bmi.grid.bounds ==
+                                  self.from_bmi.grid.bounds)
+            check_shape = np.all(self.to_bmi.grid.shape ==
+                                 self.from_bmi.grid.shape)
             if not (check_shape and check_bounds):
-                raise ValueError('both model grids should have the shape and bounding box')
+                raise ValueError(
+                    'both model grids should have the shape and bounding box')
             # TODO make special case to cover same rgrid and same urgrid coupling
         # rgrid to ucgrid
         elif (self.from_bmi.grid.type == 1) and (self.to_bmi.grid.type == 3):
@@ -104,12 +114,13 @@ class SpatialCoupling(object):
             self.to_bmi.set_inpmat_attrs()
         else:
             # TODO add options to couple u/rgrid to u/rgrid based on cell (face) centers
-            # possibilities: 
+            # possibilities:
             # 1) to_grid < from_grid: find from_cell for each to_cell. check from cells which are not touched
-            # 2) to_grid > from_grid: raise warning?? same procedure will do. 
+            # 2) to_grid > from_grid: raise warning?? same procedure will do.
 
             msg = 'coupling from grid type {} to grid type {} has not been implemented'
-            raise NotImplementedError(msg.format(self.to_bmi.grid.type, self.from_bmi.grid.type))
+            raise NotImplementedError(msg.format(
+                self.to_bmi.grid.type, self.from_bmi.grid.type))
 
     def grid_2_1d(self):
         """
@@ -119,7 +130,8 @@ class SpatialCoupling(object):
             msg = 'coupling from grid type {} to 1d has not been implemented'
             raise NotImplementedError(msg.format(self.from_bmi.grid.type))
         if not self.to_bmi.grid.has_1d():
-            raise ValueError('1d network not set for model {}'.format(self.to_name))
+            raise ValueError(
+                '1d network not set for model {}'.format(self.to_name))
         # get 1d nodes
         to_coords = self.to_bmi.grid._1d.nodes
         to_inds = self.to_bmi.grid._1d.inds
@@ -139,13 +151,14 @@ class SpatialCoupling(object):
         self.set_inds_from_coupled_dict(coupled_dict)
         return coupled_dict
 
-
     def grid_us_2_1d_us(self):
         """"""
         if not self.from_bmi.grid.has_dd():
-            raise ValueError('dd network not set for model  {}'.format(self.from_name))
+            raise ValueError(
+                'dd network not set for model  {}'.format(self.from_name))
         if not self.to_bmi.grid.has_1d():
-            raise ValueError('1d network not set for model  {}'.format(self.to_name))
+            raise ValueError(
+                '1d network not set for model  {}'.format(self.to_name))
         # get 1d nodes
         to_coords = self.to_bmi.grid._1d.nodes
         to_inds = self.to_bmi.grid._1d.inds
@@ -167,15 +180,18 @@ class SpatialCoupling(object):
         # to(1):from(n) dict
         d = dict()
         for r, c, i in zip(from_rows, from_cols, to_inds[valid]):
-            from_idx_us = findex(*fup(r, c)) # upstream cell of node i
+            from_idx_us = findex(*fup(r, c))  # upstream cell of node i
             # find most upstream of connected cells
-            from_idx_us = [idx for idx in from_idx_us if idx not in u_from_inds]
+            from_idx_us = [
+                idx for idx in from_idx_us if idx not in u_from_inds]
             if len(from_idx_us) > 0:
-                d[i] = tuple(from_idx_us) # tuple as list cannot be used as python dict key
+                # tuple as list cannot be used as python dict key
+                d[i] = tuple(from_idx_us)
         # from(n):from(n) dict
         coupled_dict = dictinvert(d)
         if len(d) == 0:
-            raise IndexError('There are no 2D cells upstream from most upstream 1D nodes')
+            raise IndexError(
+                'There are no 2D cells upstream from most upstream 1D nodes')
         # set indices
         self.set_inds_from_coupled_dict(coupled_dict)
         return coupled_dict
@@ -185,7 +201,6 @@ class SpatialCoupling(object):
         return self.from_ind.size > 0
 
 
-
 def dictinvert(d):
     inv = {}
     for k, v in d.iteritems():
@@ -193,10 +208,11 @@ def dictinvert(d):
         keys.append(k)
     return inv
 
+
 def group_index(indices):
     """
     translate jagged array with indices to flattened array and groups
-    
+
     group_index([[0,1,2], 
                  [3,4]])
     returns
@@ -204,7 +220,7 @@ def group_index(indices):
     groups: [0, 0, 0, 1, 1]
     """
     x = np.array(indices)
-    if isinstance(x[0], (list, tuple)): # check if jagged array
+    if isinstance(x[0], (list, tuple)):  # check if jagged array
         grp_n = np.array([len(a) for a in x])
         grp = np.repeat(np.arange(x.size), grp_n)
         x = np.concatenate(x)
@@ -212,6 +228,7 @@ def group_index(indices):
         grp_n = np.ones(x.size)
         grp = np.arange(x.size, dtype=np.int32)
     return x.astype(np.int32), grp, grp_n
+
 
 def groupby_sum(X, groups):
     """vectorized sum of groups in X"""
@@ -221,7 +238,7 @@ def groupby_sum(X, groups):
     if not X.size == groups.size:
         raise ValueError('array and group sizes do not match')
     minlength = groups.max() + 1
-    out = np.full((minlength,), uf.identity, dtype = X.dtype)
+    out = np.full((minlength,), uf.identity, dtype=X.dtype)
     uf.at(out, groups, X)
     return out
 

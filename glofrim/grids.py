@@ -1,11 +1,12 @@
 
 import rasterio.transform
-import numpy as np 
-import rasterio 
+import numpy as np
+import rasterio
 from os.path import isfile, join, dirname
 from abc import ABCMeta, abstractmethod
 
 import glofrim_lib as glib
+
 
 class GridType(object):
     """
@@ -14,7 +15,8 @@ class GridType(object):
     UNKNOWN = 0
     RGRID = 1
     UGRID = 2
-    UCGRID = 3 # Unit-catchment grid
+    UCGRID = 3  # Unit-catchment grid
+
 
 class Grid(object):
     __metaclass__ = ABCMeta
@@ -52,7 +54,8 @@ class Grid(object):
         """
         Sets the 1d network attribute
         """
-        self._1d = Network1D(nodes, links=links, inds=inds, fill_value=fill_value, ds_idx=ds_idx, us_idx=us_idx)
+        self._1d = Network1D(nodes, links=links, inds=inds,
+                             fill_value=fill_value, ds_idx=ds_idx, us_idx=us_idx)
 
     @abstractmethod
     def set_dd(self, fn, **kwargs):
@@ -71,19 +74,20 @@ class Grid(object):
         import matplotlib
         cells = self.get_poly_coords()
         gpatches = (matplotlib.patches.Polygon(cell) for cell in cells)
-        gpc = matplotlib.collections.PatchCollection(gpatches, edgecolor='grey')
+        gpc = matplotlib.collections.PatchCollection(
+            gpatches, edgecolor='grey')
         gpc.set_facecolor('none')
         ax.add_collection(gpc)
         return gpc
 
     def plot_1d(self, ax, c=None, **kwargs):
         if self.has_1d():
-            idx_us = self._1d.links[:,0]
-            idx_ds = self._1d.links[:,1]
-            x = self._1d.nodes[idx_us,0]
-            y = self._1d.nodes[idx_us,1]
-            dx = self._1d.nodes[idx_ds,0]-x
-            dy = self._1d.nodes[idx_ds,1]-y
+            idx_us = self._1d.links[:, 0]
+            idx_ds = self._1d.links[:, 1]
+            x = self._1d.nodes[idx_us, 0]
+            y = self._1d.nodes[idx_us, 1]
+            dx = self._1d.nodes[idx_ds, 0]-x
+            dy = self._1d.nodes[idx_ds, 1]-y
             args = (x, y, dx, dy)
             if c is not None:
                 args += (c, )
@@ -93,14 +97,17 @@ class Grid(object):
         else:
             raise ValueError('grid object doens not have a 1D network')
 
+
 class RGrid(Grid):
     type = GridType.RGRID
+
     def __init__(self, transform, height, width, crs=None, mask=None, **kwargs):
         self.transform = rasterio.transform.guard_transform(transform)
         self.height = int(height)
         self.width = int(width)
         self.shape = (self.height, self.width)
-        self.bounds = rasterio.transform.array_bounds(self.height, self.width, self.transform)
+        self.bounds = rasterio.transform.array_bounds(
+            self.height, self.width, self.transform)
         self.res = self.transform.a
         self.NtoS = self.transform.e < 0
         self.crs = crs
@@ -114,12 +121,12 @@ class RGrid(Grid):
         if flat_index:
             # calculate 1d index; NOTE invalid indices have value -1
             inds = np.ones_like(inside, dtype=int)
-            inds = inds * -1 # fill with -1
+            inds = inds * -1  # fill with -1
             if np.any(inside):
                 inds[inside] = self.ravel_multi_index(r[inside], c[inside])
         else:
             r[~inside], c[~inside] = -1, -1
-            inds = (r, c) 
+            inds = (r, c)
         return inds
 
     def xy(self, ind=None, row=None, col=None, **kwargs):
@@ -131,15 +138,17 @@ class RGrid(Grid):
         row, col = np.atleast_1d(row), np.atleast_1d(col)
         inside = self._inside(row, col)
         x, y = np.ones(row.size)*-1, np.ones(row.size)*-1
-        x[inside], y[inside] = rasterio.transform.xy(self.transform, row[inside], col[inside])
+        x[inside], y[inside] = rasterio.transform.xy(
+            self.transform, row[inside], col[inside])
         return x, y
 
     def get_poly_coords(self):
         rows, cols = np.where(self.mask)
         xs, ys = self.xy(row=rows, col=cols)
         r = self.res/2
-        bounds = [[x-r, y-r, x+r, y+r] for x,y in zip(xs, ys)]
-        cells = [[[s,e], [n,e], [n,w], [s,w], [s,e]] for s, e, n, w in bounds]
+        bounds = [[x-r, y-r, x+r, y+r] for x, y in zip(xs, ys)]
+        cells = [[[s, e], [n, e], [n, w], [s, w], [s, e]]
+                 for s, e, n, w in bounds]
         return cells
 
     def ravel_multi_index(self, r, c):
@@ -149,14 +158,17 @@ class RGrid(Grid):
         return np.unravel_index(flat_ind, (self.height, self.width))
 
     def _inside(self, r, c):
-        inside = np.logical_and.reduce((r>=0, r<self.height, c>=0, c<self.width))
+        inside = np.logical_and.reduce(
+            (r >= 0, r < self.height, c >= 0, c < self.width))
         if self.mask is not None:
-            inside[inside] = np.logical_and(inside[inside], self.mask[r[inside], c[inside]])
+            inside[inside] = np.logical_and(
+                inside[inside], self.mask[r[inside], c[inside]])
         return inside
 
     def _inside_bounds(self, x, y):
         xmin, ymin, xmax, ymax = self.bounds
-        inside = np.logical_and.reduce((x >= xmin, x <= xmax, y >= ymin, y <= ymax))
+        inside = np.logical_and.reduce(
+            (x >= xmin, x <= xmax, y >= ymin, y <= ymax))
         return inside
 
     def set_dd(self, fn, ddtype, **kwargs):
@@ -164,7 +176,8 @@ class RGrid(Grid):
         if (ddtype == 'ldd') and fn.endswith('.map'):
             self._dd = read_dd_pcraster(fn, transform=self.transform, **kwargs)
         if (ddtype == 'nextxy') and fn.endswith('.bin'):
-            self._dd = read_dd_cmfbin(fn, self.transform, self.height, self.width)
+            self._dd = read_dd_cmfbin(
+                fn, self.transform, self.height, self.width)
         else:
             self._dd = read_dd_rasterio(fn, ddtype=ddtype, **kwargs)
 
@@ -182,15 +195,17 @@ class RGrid(Grid):
         self.mask = mask
 
 
-
 class UCGrid(RGrid):
     type = GridType.UCGRID
+
     def __init__(self, transform, height, width, fn_location_txt, crs=None, mask=None):
-        super(UCGrid, self).__init__(transform, height, width, crs=crs, mask=mask)
+        super(UCGrid, self).__init__(
+            transform, height, width, crs=crs, mask=mask)
         self.hires_dir = dirname(fn_location_txt)
         self.hires_locs = self._parse_location(fn_location_txt)
-        self.hires_rgrids = [RGrid(p['transform'], p['height'], p['width']) for p in self.hires_locs]
-        
+        self.hires_rgrids = [
+            RGrid(p['transform'], p['height'], p['width']) for p in self.hires_locs]
+
     def index(self, x, y, flat_index=True, **kwargs):
         """Get CMF indices (1d) of xy coordinates using the catmxy files"""
         x, y = np.asarray(x), np.asarray(y)
@@ -202,29 +217,33 @@ class UCGrid(RGrid):
             # read low-res CMF fortran one-based index
             # invalid indices have value - 1
             # go from fortran one-based to python zero-based indices
-            fn = join(self.hires_dir, '{}.catmxy'.format(self.hires_locs[i]['area']))
+            fn = join(self.hires_dir, '{}.catmxy'.format(
+                self.hires_locs[i]['area']))
             if not isfile(fn):
                 raise IOError('hires catmxy file not found {}'.format(fn))
-            a = np.memmap(filename=str(fn), dtype='int16', mode="r+", shape=(2, rg.height, rg.width))
-            c[valid] = np.array(a[0, :, :].flat[inds_hires[valid]]-1).astype(int)
-            r[valid] = np.array(a[1, :, :].flat[inds_hires[valid]]-1).astype(int)
+            a = np.memmap(filename=str(fn), dtype='int16',
+                          mode="r+", shape=(2, rg.height, rg.width))
+            c[valid] = np.array(
+                a[0, :, :].flat[inds_hires[valid]]-1).astype(int)
+            r[valid] = np.array(
+                a[1, :, :].flat[inds_hires[valid]]-1).astype(int)
         # check if inside low res domain
         inside = self._inside(r, c)
         if flat_index:
             # calculate 1d index; NOTE invalid indices have value -1
-            inds = np.ones(x.size, dtype=int) * -1 # fill with -1
+            inds = np.ones(x.size, dtype=int) * -1  # fill with -1
             if np.any(inside):
                 inds[inside] = self.ravel_multi_index(r[inside], c[inside])
         else:
             r[~inside], c[~inside] = -1, -1
-            inds = (r, c) 
+            inds = (r, c)
         return inds
 
     def _parse_location(self, fn):
         """parse location.txt file in CMF map/hires folder to obtain high-res grid definition"""
         rename = {'ny': 'height',
-                'nx': 'width',
-                'csize': 'res'}
+                  'nx': 'width',
+                  'csize': 'res'}
         with open(fn, 'r') as txt:
             locs = []
             lines = txt.readlines()
@@ -237,31 +256,35 @@ class UCGrid(RGrid):
                 elif vals[0] == 'area':
                     locs[code-1]['area'] = str(vals[1])
                 else:
-                    locs[code-1][rename.get(str(vals[0]), str(vals[0]))] = float(vals[1])
+                    locs[code-1][rename.get(str(vals[0]),
+                                            str(vals[0]))] = float(vals[1])
         for p in locs:
-            p['transform'] = rasterio.transform.from_origin(p['west'], p['north'], p['res'], p['res'])
+            p['transform'] = rasterio.transform.from_origin(
+                p['west'], p['north'], p['res'], p['res'])
         return locs
+
 
 class UGrid(Grid):
     type = GridType.UGRID
 
     # TODO: connect to pyugrid package at https://github.com/pyugrid/pyugrid/blob/master/pyugrid/ugrid.py
 
-    def __init__(self, nodes, faces, 
-                edges=None, boundaries=None, face_face_connectivity=None, 
-                fill_value=-1, inds=None, crs=None,
-                face_coordinates=None, edge_coordinates=None, boundary_coordinates=None):
+    def __init__(self, nodes, faces,
+                 edges=None, boundaries=None, face_face_connectivity=None,
+                 fill_value=-1, inds=None, crs=None,
+                 face_coordinates=None, edge_coordinates=None, boundary_coordinates=None):
         self.nodes = np.atleast_2d(nodes)
         self.faces = np.ma.masked_equal(np.atleast_2d(faces), fill_value)
         self.nnodes = self.nodes.shape[0]
         self.nfaces = self.faces.shape[0]
-        assert np.logical_and(self.faces.max() <= self.nnodes, self.faces.min() >= 0)
+        assert np.logical_and(self.faces.max() <=
+                              self.nnodes, self.faces.min() >= 0)
         # optional index array
         self.inds = np.arange(self.nfaces) if inds is None else np.array(inds)
         assert self.nfaces == self.inds.size
         # optional links: links[0,:]=from-idx, links[1,:]=to-idx
         self.edges = edges
-        self.boundaries = boundaries 
+        self.boundaries = boundaries
         self.face_face_connectivity = face_face_connectivity
         # optional coordinate array
         self.edge_coordinates = edge_coordinates
@@ -270,12 +293,12 @@ class UGrid(Grid):
         # coordinate reference system
         self.crs = crs
         self._tree = None
-    
+
     def get_poly_coords(self):
         n_nodes_per_face = (~self.faces.mask).sum(axis=1)
         ragged = [
             face[:n_nodes].filled()
-            for n_nodes, face 
+            for n_nodes, face
             in zip(n_nodes_per_face, self.faces)
         ]
         fcoords = [self.nodes[np.append(face, face[0])] for face in ragged]
@@ -297,16 +320,19 @@ class UGrid(Grid):
             from cell_tree2d import CellTree
         except ImportError:
             raise ImportError("the cell_tree2d package must be installed to "
-                                "use the celltree search:\n"
-                                "https://github.com/NOAA-ORR-ERD/cell_tree2d/")
+                              "use the celltree search:\n"
+                              "https://github.com/NOAA-ORR-ERD/cell_tree2d/")
         self._tree = CellTree(self.nodes, self.faces)
 
     def set_dd(self):
-        raise NotImplementedError("No drainage direction method is implemented for UGrid")
+        raise NotImplementedError(
+            "No drainage direction method is implemented for UGrid")
+
 
 class Network1D(object):
     links = None
     nlinks = 0
+
     def __init__(self, nodes, links=None, inds=None, fill_value=-1, ds_idx=None, us_idx=None):
         self.nodes = np.atleast_2d(nodes)
         self.nnodes = self.nodes.shape[0]
@@ -314,11 +340,13 @@ class Network1D(object):
         if links is not None:
             self.links = np.atleast_2d(links)
             self.nlinks = self.links.shape[0]
-        # optional index array 
+        # optional index array
         # indices only used for index function only!
         self.inds = np.arange(self.nnodes) if inds is None else np.array(inds)
-        self.ds_idx = np.array([]) if ds_idx is None else np.array(ds_idx) # indices of downstream nodes
-        self.us_idx = np.array([]) if us_idx is None else np.array(us_idx) # indices of upstream nodes
+        self.ds_idx = np.array([]) if ds_idx is None else np.array(
+            ds_idx)  # indices of downstream nodes
+        self.us_idx = np.array([]) if us_idx is None else np.array(
+            us_idx)  # indices of upstream nodes
         assert self.nnodes == self.inds.size
         # will be created later
         self._tree = None
@@ -333,8 +361,8 @@ class Network1D(object):
         if self.links is None:
             raise ValueError('links between nodes not provided')
         idx, counts = np.unique(self.links, return_counts=True)
-        return idx[counts==1]
-        
+        return idx[counts == 1]
+
     def get_downstream_points(self):
         end_idx = self.get_end_points()
         self.ds_idx = np.array([p for p in end_idx if p in self.links[0, :]])
