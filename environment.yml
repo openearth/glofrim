@@ -22,3 +22,4 @@ dependencies:
   - pip:
     - bmi-python==0.2.6
     - git+https://github.com/openearth/glofrim.git@migrate_to_python3
+    - git+https://github.com/openstreams/wflow.git
