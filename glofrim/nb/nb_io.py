@@ -4,7 +4,7 @@
 # Author: Dirk Eilander (contact: dirk.eilancer@vu.nl)
 # Created: Nov-2017
 
-from dd_ops import LDD, NextXY
+from .dd_ops import LDD, NextXY
 import rasterio
 import numpy as np
 

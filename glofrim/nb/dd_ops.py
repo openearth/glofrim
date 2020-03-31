@@ -5,7 +5,7 @@
 # Created: Nov-2017
 
 import numpy as np
-from nb_ops import MaskedWdwArray
+from .nb_ops import MaskedWdwArray
 # TODO: add io, check if sound and bbox-clip options
 # TODO: test if drainge area etc function work fast compared to pcraster
 

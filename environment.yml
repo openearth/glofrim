@@ -7,7 +7,6 @@ channels:
 
 dependencies:
   - python>=3.7
-  - numpy>=1.16.5
   - netcdf4>=1.4.2
   - rasterio>=1.1
   - rtree>=0.9.3
@@ -20,6 +19,8 @@ dependencies:
   - pip>=20.0
   - pcraster>=4.3
   - pip:
+    - numpy==1.14.5
     - bmi-python==0.2.6
     - wflow==2019.1
     - git+https://github.com/openearth/glofrim.git@migrate_to_python3
+    - git+https://github.com/UU-Hydro/PCR_BMI.git@migrate_to_py3

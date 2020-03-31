@@ -160,7 +160,7 @@ class RGrid(Grid):
         return inside
 
     def set_dd(self, fn, ddtype, **kwargs):
-        from nb.nb_io import read_dd_pcraster, read_dd_rasterio, read_dd_cmfbin
+        from .nb.nb_io import read_dd_pcraster, read_dd_rasterio, read_dd_cmfbin
         if (ddtype == 'ldd') and fn.endswith('.map'):
             self._dd = read_dd_pcraster(fn, transform=self.transform, **kwargs)
         if (ddtype == 'nextxy') and fn.endswith('.bin'):
