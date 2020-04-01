@@ -6,3 +6,4 @@ from glofrim.lfp_bmi import LFP
 from glofrim.glofrim_bmi import Glofrim
 from glofrim.spatial_coupling import SpatialCoupling
 from glofrim.grids import UCGrid, UGrid, RGrid, Network1D
+from glofrim import nb
