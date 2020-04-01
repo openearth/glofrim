@@ -198,7 +198,7 @@ class LFP(GBmi):
                 row, col = np.where(ds.read(1)>0)
                 x, y = self.grid.xy(row=row, col=col)
                 inds = self.grid.ravel_multi_index(row, col)
-            self.grid.set_1d(nodes=np.array(zip(x, y)), links=None, inds=inds)
+            self.grid.set_1d(nodes=np.vstack((x, y)).transpose(), links=None, inds=inds)  # python2.7 nodes=np.array(zip(x, y))
         return self.grid
 
 

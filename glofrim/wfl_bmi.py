@@ -206,7 +206,7 @@ class WFL(GBmi):
                     row, col = np.where(ds.read(1)==1)
                     x, y = self.grid.xy(row=row, col=col)
                     inds = self.grid.ravel_multi_index(row, col)
-                self.grid.set_1d(nodes=np.array(zip(x, y)), links=None, inds=inds)
+                self.grid.set_1d(nodes=np.vstack((x, y)).transpose(), links=None, inds=inds)  # python2.7 nodes=np.array(zip(x, y))
             # read file with pcr readmap
             self.logger.info('Getting drainage direction from {}'.format(basename(_ldd_fn)))
             self.grid.set_dd(_ldd_fn, ddtype='ldd')
