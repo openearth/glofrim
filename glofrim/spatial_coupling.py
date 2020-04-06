@@ -188,7 +188,8 @@ class SpatialCoupling(object):
 
 def dictinvert(d):
     inv = {}
-    for k, v in d.iteritems():
+    # for k, v in d.iteritems(): # old python 2 style
+    for k, v in d.items():
         keys = inv.setdefault(v, [])
         keys.append(k)
     return inv
