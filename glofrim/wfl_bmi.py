@@ -197,8 +197,7 @@ class WFL(GBmi):
             if not isfile(_lm_fn): raise IOError('subcatch file not found')
             self.logger.info('Getting rgrid info based on {}'.format(basename(_lm_fn)))
             with rasterio.open(_lm_fn, 'r') as ds:
-                # TODO: change transform instead of flipping the grid every time ..
-                self.grid = RGrid(ds.transform, ds.height, ds.width, crs=ds.crs, mask=ds.read(1)>=1)
+                self.grid = RGrid(ds.transform, ds.height, ds.width, crs=ds.crs, flip_transform=True, mask=ds.read(1)>=1)
             # river is used for the 1D cells
             _riv_fn = join(mapdir, 'wflow_river.map')
             if isfile(_riv_fn):

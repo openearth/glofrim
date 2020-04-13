@@ -95,7 +95,11 @@ class Grid(object):
 
 class RGrid(Grid):
     type = GridType.RGRID
-    def __init__(self, transform, height, width, crs=None, mask=None, **kwargs):
+    def __init__(self, transform, height, width, crs=None, mask=None, flip_transform=False, **kwargs):
+        """
+        If flip_transform is set to True, then the transform will be flipped so that grids read from BMI are compatible with
+        the North-South orientation of the grid as read from a clone map with rasterio
+        """
         self.transform = rasterio.transform.guard_transform(transform)
         self.height = int(height)
         self.width = int(width)
@@ -105,8 +109,37 @@ class RGrid(Grid):
         self.NtoS = self.transform.e < 0
         self.crs = crs
         self.set_mask(mask)
+        if flip_transform:
+            self.flip_transform()
 
-    def index(self, x, y, flat_index=True, **kwargs):
+    def flip_transform(self):
+        """
+        Flips the transform upside down so that origin is lower left corner. Use if a typical rasterio.read
+        on a map gives the up-side-down of that same map when called from BMI (WFlow has this behaviour)
+        """
+        bounds = rasterio.transform.array_bounds(self.height, self.width, self.transform)
+        west, south, east, north = bounds
+        # call the from_bounds method, but with north and south flipped!!
+        self.transform = rasterio.transform.from_bounds(west, north, east, south, self.width, self.height)
+
+    def index(self, x, y, flat_index=True, src_crs=None, **kwargs):
+        """
+        Returns the index values within destination grid of coordinates 'x' and 'y'.
+        If a coordinate ref. system is provides, 'x' and 'y' will first be transformed to the projection of self object
+        before computing index values
+
+        Parameters
+        ----------
+        x : float
+            x value in coordinate reference system
+        y : float
+            y value in coordinate reference system
+        src_crs : string
+            rasterio crs object or string defining the crs of the x, y coordinates
+        """
+        if (src_crs is not None) and (src_crs is not self.crs):
+            # coordinate ref systems of src and dst are different, so a transform is needed
+            x, y = rasterio.warp.transform(src_crs, self.crs, x, y)
         x, y = np.atleast_1d(x), np.atleast_1d(y)
         r, c = rasterio.transform.rowcol(self.transform, x, y, **kwargs)
         r, c = np.asarray(r).astype(int), np.asarray(c).astype(int)

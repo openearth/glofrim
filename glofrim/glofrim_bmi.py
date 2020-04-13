@@ -172,17 +172,28 @@ class Glofrim(EBmi):
                     raise ValueError(msg.format(mod))
                 engine_path = glib.getabspath(self._config.get('engines', mod), self._root)
                 bmi_kwargs.update(engine = engine_path)
+            # read proj string from config file
+            if not self._config.has_option('coupling', mod):
+                msg = 'GLOFRIM ini or environment file misses a "coupling" section {} option for projection string, assuming lat-lon'
+                self.logger.error(msg)
+                # raise ValueError(msg.format(mod))
+            crs = self._config.get('coupling', mod, fallback='+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs')
+
             # initialize bmi component
             self.bmimodels[mod] = _bmi(**bmi_kwargs)
             # initialize config of bmi component
             modconf = glib.getabspath(self._config.get('models', mod), self._root)
             self.bmimodels[mod].initialize_config(modconf)
+            # initialize grid
+            self.bmimodels[mod].get_grid()
+            # if grid does not have a crs, it will be taken from the config file
+            if self.bmimodels[mod].grid.crs is None:
+                self.bmimodels[mod].grid.crs = crs
 
         # parse exchanges section
         self.exchanges = self.set_exchanges()
         # create logfile for exchange volumes
         add_file_handler(self.wb_logger, abspath(config_fn).replace('.ini', '.wb'), formatter=logging.Formatter("%(message)s"))
-        # TODO
         self._wb_header = ['time']
         for mod in self.bmimodels:
             if hasattr(self.bmimodels[mod], '_get_tot_volume_in'):
@@ -483,10 +494,10 @@ class Glofrim(EBmi):
         if coupling.at_indices():
             tot_volume = self.exchange_at_indices(from_mod, to_mod, from_vars, to_vars, coupling, add=add, **kwargs)
         else:
-            tot_volume = self.exchange_same_grid(from_mod, to_mod, from_vars, to_vars, add=add, **kwargs)
+            tot_volume = self.exchange_same_grid(from_mod, to_mod, from_vars, to_vars, coupling, add=add, **kwargs)
         return tot_volume
 
-    def exchange_same_grid(self, from_mod, to_mod, from_vars, to_vars, add=False, **kwargs):
+    def exchange_same_grid(self, from_mod, to_mod, from_vars, to_vars, coupling, add=False, **kwargs):
         """Exchanges variable content from specified source variable in source model to
         a specified destination variable in the destination model for the entire grid.
         source variable can either add to destination variable or overwrite it
@@ -496,7 +507,7 @@ class Glofrim(EBmi):
             to_mod {str} -- string defining the destination model
             from_vars {str} -- string defining the source variable
             to_vars {str} -- string defining the destination variable
-        
+            proj {lambda} -- function that reprojects data from source crs to destination crs
         Keyword Arguments:
             add {bool} -- if True, source values are added to destination values; if False, overwritten (default: {False})
         """
@@ -509,6 +520,9 @@ class Glofrim(EBmi):
                 vals *= from_var
             else:
                 vals *= self.bmimodels[from_mod].get_value(from_var)
+        # reproject vals to the to_mod projection using the SpatialCoupling.reproject function
+        if coupling.reproject is not None:
+            vals = coupling.reproject(vals, np.nan)
         # total exchange
         self.logger.debug('total get {:3f}'.format(np.nansum(vals)))
         tot_volume = np.nansum(vals)
@@ -526,7 +540,7 @@ class Glofrim(EBmi):
             vals /= div
         # SET data
         if add:  # add to current state
-            vals += self.bmimodels[to_mod].get_value(to_vars[0], vals) # TO   
+            vals += self.bmimodels[to_mod].get_value(to_vars[0], vals)
         self.bmimodels[to_mod].set_value(to_vars[0], vals)
         return tot_volume
 
