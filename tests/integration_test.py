@@ -16,8 +16,6 @@ import numpy as np
 ddir = dirname(realpath(__file__))
 
 # wrapper to check if function raises error
-
-
 def tryexcept(msg, errors=(Exception, ), fail=False):
     def decorator(func):
         @functools.wraps(func)
@@ -27,11 +25,11 @@ def tryexcept(msg, errors=(Exception, ), fail=False):
                 out = func(self, *args, **kwargs)
                 print(prefix + msg + colored('PASS', 'green'))
                 return out
-            except errors, e:
+            except errors as e:
                 print(prefix + msg + colored('FAILED', 'red'))
                 self.errors += 1
                 if fail:
-                    raise errors(e)
+                    raise errors(e) 
                 else:
                     print(colored('ERROR: ', 'red') + repr(e))
                     return None
@@ -39,15 +37,15 @@ def tryexcept(msg, errors=(Exception, ), fail=False):
     return decorator
 
 
+
 class integration_test(object):
 
     def __init__(self, mod):
-        self.mod = mod
+        self.mod = mod 
         self.prefix = mod
-        self.errors = 0
+        self.errors=0
         self.bmi = None
-        self.glofrim_config_fn = config_fn = join(
-            ddir, r'integration_test.ini')
+        self.glofrim_config_fn = config_fn=join(ddir, r'integration_test.ini')
         # do test
         if self.mod == 'GLOFRIM':
             self.test_coupled()
@@ -57,12 +55,10 @@ class integration_test(object):
     @tryexcept('set outdir: ', fail=True)
     def create_output_dir(self):
         self.outputDir = join(ddir, 'model_test_data', 'output', self.mod)
-        if not isdir(self.outputDir):
-            os.makedirs(self.outputDir)
+        if not isdir(self.outputDir): os.makedirs(self.outputDir)
 
     def cleanup(self):
-        if isdir(self.outputDir):
-            shutil.rmtree(dirname(self.outputDir))
+        if isdir(self.outputDir): shutil.rmtree(dirname(self.outputDir))
         if self.mod != 'WFL':
             if self.bmi.initialized:
                 os.unlink(self.bmi._config_fn)
@@ -70,37 +66,33 @@ class integration_test(object):
             if hasattr(self.bmi, '_mapdir'):
                 for fn in glob.glob(join(self.bmi._mapdir, '*tmp*')):
                     os.unlink(fn)
-                ext = ("*.txt", "*.log", "*.nc",)
+                ext = ("*.txt","*.log","*.nc",)
                 for e in ext:
                     for fn in glob.glob(join(dirname(self.bmi._config_fn), e)):
                         os.unlink(fn)
 
     @tryexcept('get BMI attrs: ', fail=True)
     def get_bmi_attrs(self):
-        if self.mod == 'GLOFRIM':  # coupled run
+        if self.mod == 'GLOFRIM': # coupled run
             self.config_fn = self.glofrim_config_fn
-
-        else:  # single run
+        
+        else: # single run
             if not isfile(self.glofrim_config_fn):
-                raise IOError('glofrim inifile not found: {}'.format(
-                    self.glofrim_config_fn))
+                raise IOError('glofrim inifile not found: {}'.format(self.glofrim_config_fn))
             _config = glib.configread(self.glofrim_config_fn)
 
             if _config.has_option('models', self.mod):
                 config_fn = _config.get('models', self.mod)
-                self.config_fn = str(
-                    join(ddir, 'model_test_data', _config.get('models', self.mod)))
+                self.config_fn = str(join(ddir, 'model_test_data', _config.get('models', self.mod)))
             else:
                 msg = 'config filename not found {} model'
                 raise ValueError(msg.format(self.mod))
 
             # check if bmi component requires engine
-            self.requires_engine = 'engine' in getattr(
-                glofrim, self.mod).__init__.__code__.co_varnames
+            self.requires_engine = 'engine' in getattr(glofrim, self.mod).__init__.__code__.co_varnames
             if self.requires_engine:
                 if _config.has_option('engines', self.mod):
-                    self.engine = glib.getabspath(
-                        _config.get('engines', self.mod), ddir)
+                    self.engine = glib.getabspath(_config.get('engines', self.mod), ddir)
                 else:
                     msg = 'engine path not found for {} model'
                     raise ValueError(msg.format(self.mod))
@@ -110,13 +102,13 @@ class integration_test(object):
         bmi = getattr(glofrim, self.mod)
         bmi_kwargs = {'loglevel': _loglevel}
         if self.requires_engine:
-            bmi_kwargs.update(engine=self.engine)
+            bmi_kwargs.update(engine = self.engine)
         return bmi(**bmi_kwargs)
 
     @tryexcept('initialize BMI: ', fail=True)
     def test_init_coupled_bmi(self, _loglevel='INFO'):
         bmi = getattr(glofrim, self.mod)
-        bmi_kwargs = {'loglevel': _loglevel, config_fn = self.config_fn}
+        bmi_kwargs = {'loglevel': _loglevel, 'config_fn': self.config_fn}
         return bmi(**bmi_kwargs)
 
     @tryexcept('initialize config: ', fail=True)
@@ -129,11 +121,9 @@ class integration_test(object):
         if self.mod == 'PCR':
             inputDir = join(ddir, 'model_test_data', 'PCR_Elbe', 'input30min')
             self.bmi.set_attribute_value('globalOptions:inputDir', inputDir)
-            self.bmi.set_attribute_value(
-                'globalOptions:outputDir', self.outputDir)
+            self.bmi.set_attribute_value('globalOptions:outputDir', self.outputDir)
         elif self.mod == 'CMF':
-            self.bmi.set_attribute_value('OUTPUT:COUTDIR', relpath(
-                self.outputDir, dirname(self.config_fn)))
+            self.bmi.set_attribute_value('OUTPUT:COUTDIR', relpath(self.outputDir, dirname(self.config_fn)))
 
     @tryexcept('set CMF inpmat: ')
     def test_set_inpmat(self):
@@ -152,7 +142,7 @@ class integration_test(object):
     @tryexcept('check simulation time: ')
     def test_assert_sim_times(self, start_time, end_time):
         if not (end_time == self.bmi.get_end_time()):
-            raise AssertionError('end time not set correctly')
+            raise AssertionError('end time not set correctly')     
         if not (start_time == self.bmi.get_start_time()):
             raise AssertionError('start time not set correctly')
 
@@ -186,29 +176,27 @@ class integration_test(object):
     def test_update(self):
         try:
             # update for one second
-            self.bmi.update((self.bmi._dt/2).total_seconds())
-            if self.mod != 'LFP':
-                raise AssertionError(
-                    'Updates smaller than timestep should yield an assertion error')  # except for LFP
+            self.bmi.update((self.bmi._dt/2).total_seconds()) 
+            if self.mod != 'LFP': 
+                raise AssertionError('Updates smaller than timestep should yield an assertion error') # except for LFP
         except ValueError:
-            pass  # the above should raise a value error
+            pass # the above should raise a value error
         # update for one days
-        self.bmi.update(1*86400)  # this should work
+        self.bmi.update(1*86400) # this should work
 
     @tryexcept('model update until: ')
     def test_update_until(self):
-        next_t = self.bmi.get_current_time() + (self.bmi._dt * 2)
+        next_t = self.bmi.get_current_time() + (self.bmi._dt *  2)
         self.bmi.update_until(next_t)
-
+            
     @tryexcept('get and set values: ')
     def test_get_set_var(self):
         var_name = self.bmi.get_output_var_names()[0]
         var_shape = self.bmi.get_var_shape(var_name)
-        self.bmi.set_value(var_name, np.ones(var_shape))
+        self.bmi.set_value(var_name, np.ones(var_shape)) 
         if not self.bmi.get_value(var_name).sum() == np.ones(var_shape).sum():
-            raise AssertionError(
-                'Get and set values does not yield the same sum')
-
+            raise AssertionError('Get and set values does not yield the same sum')
+        
     @tryexcept('get and set values at indices: ')
     def test_get_set_var_at_indices(self):
         var_name = self.bmi.get_output_var_names()[0]
@@ -218,29 +206,28 @@ class integration_test(object):
             inds = [0]
         self.bmi.set_value_at_indices(var_name, inds, np.ones_like(inds))
         if not (self.bmi.get_value_at_indices(var_name, inds).sum() == np.ones_like(inds).sum()):
-            raise AssertionError(
-                'Get and set values does not yield the same sum')
+            raise AssertionError('Get and set values does not yield the same sum')
 
     @tryexcept('finalize model: ')
     def test_finalize(self):
         self.bmi.finalize()
-
+            
     @tryexcept('stand alone BMI test: ')
     def test_single(self):
         try:
             # create output dir & read glofrim ini
             self.create_output_dir()
             self.get_bmi_attrs()
-
+            
             # initialize bmi
             self.bmi = self.test_init_standalone_bmi()
-
+            
             # initialize config
             self.test_initialize_config()
 
             # set model specific settings
             self.test_edit_config()
-
+            
             # test CMF inpmap
             if self.mod == 'CMF':
                 self.test_set_inpmat()
@@ -264,27 +251,25 @@ class integration_test(object):
             self.test_get_grid()
             if self.bmi.grid.type != 2:
                 self.test_grid_index()
-
+  
             # test updates
             self.test_update()
             self.test_update_until()
-
+            
             # check get_var / set_var (at indices)
             self.test_get_set_var()
             self.test_get_set_var_at_indices()
-
+            
             # finalize
             self.test_finalize()
 
         # cleanup
         finally:
             if self.errors != 0:
-                print(self.mod + " - test result: " +
-                      colored("{:d} errors".format(self.errors), 'red'))
+                print(self.mod + " - test result: " + colored("{:d} errors".format(self.errors), 'red'))
                 raise AssertionError('Errors found in test')
             else:
-                print(self.mod + " - test result: " +
-                      colored("zero errors", 'green'))
+                print(self.mod + " - test result: " + colored("zero errors", 'green'))
             self.cleanup()
 
     @tryexcept('coupled BMI test: ')
@@ -293,10 +278,10 @@ class integration_test(object):
             # create output dir & read glofrim ini
             self.create_output_dir()
             self.get_bmi_attrs()
-
+            
             # initialize bmi
             self.bmi = self.test_init_standalone_bmi()
-
+            
             # initialize config
             self.test_init_coupled_bmi()
 
@@ -311,29 +296,26 @@ class integration_test(object):
 
             # check if start & end time still the same after initialization
             self.test_assert_sim_times(start_time, end_time)
-
+ 
             # test updates
             self.test_update()
             self.test_update_until(end_time)
-
+            
             # check get_var / set_var (at indices)
             self.test_get_set_var()
             self.test_get_set_var_at_indices()
-
+            
             # finalize
             self.test_finalize()
 
         # cleanup
         finally:
             if self.errors != 0:
-                print(self.mod + " - test result: " +
-                      colored("{:d} errors".format(self.errors), 'red'))
+                print(self.mod + " - test result: " + colored("{:d} errors".format(self.errors), 'red'))
                 raise AssertionError('Errors found in test')
             else:
-                print(self.mod + " - test result: " +
-                      colored("zero errors", 'green'))
+                print(self.mod + " - test result: " + colored("zero errors", 'green'))
             self.cleanup()
-
-
+        
 if __name__ == "__main__":
     integration_test(sys.argv[1])
