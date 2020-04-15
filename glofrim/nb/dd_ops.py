@@ -375,7 +375,7 @@ class NextXY(DrainageDirection):
 
 class LDD(DrainageDirection):
     def __init__(self, ldd, transform,
-                 fill_value=255, **kwargs):
+                 fill_value=255, flipud=False, **kwargs):
         """initialize drainage direction object based on pcraster ldd definition,
         for more info on the ldd data format see:
         http://pcraster.geo.uu.nl/pcraster/4.1.0/doc/manual/secdatbase.html#formldd
@@ -383,6 +383,9 @@ class LDD(DrainageDirection):
 
         # ldd defintion
         dd = np.array([[7, 8, 9], [4, 5, 6], [1, 2, 3]])
+        if flipud:
+            dd = np.flipud(dd)
+            ldd = np.flipud(ldd)
         pit_value = 5
         super(LDD, self).__init__('ldd', dd=dd, raster=ldd, transform=transform,
                                   pit_value=pit_value, fill_value=fill_value,

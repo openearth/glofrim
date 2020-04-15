@@ -197,18 +197,21 @@ class WFL(GBmi):
             if not isfile(_lm_fn): raise IOError('subcatch file not found')
             self.logger.info('Getting rgrid info based on {}'.format(basename(_lm_fn)))
             with rasterio.open(_lm_fn, 'r') as ds:
-                self.grid = RGrid(ds.transform, ds.height, ds.width, crs=ds.crs, flip_transform=True, mask=ds.read(1)>=1)
+                self.grid = RGrid(ds.transform, ds.height, ds.width, crs=ds.crs, flip_transform=True, mask=np.flipud(ds.read(1))>=1)
+                # self.grid = RGrid(ds.transform, ds.height, ds.width, crs=ds.crs, flip_transform=False,
+                #                   mask=ds.read(1) >= 1)
             # river is used for the 1D cells
             _riv_fn = join(mapdir, 'wflow_river.map')
             if isfile(_riv_fn):
                 with rasterio.open(_riv_fn, 'r') as ds:
-                    row, col = np.where(ds.read(1)==1)
+                    row, col = np.where(np.flipud(ds.read(1))==1)  # note, flipud to match origin rasterio vs BMI
+                    # row, col = np.where(ds.read(1)==1)  # note, flipud to match origin rasterio vs BMI
                     x, y = self.grid.xy(row=row, col=col)
                     inds = self.grid.ravel_multi_index(row, col)
                 self.grid.set_1d(nodes=np.vstack((x, y)).transpose(), links=None, inds=inds)  # python2.7 nodes=np.array(zip(x, y))
             # read file with pcr readmap
             self.logger.info('Getting drainage direction from {}'.format(basename(_ldd_fn)))
-            self.grid.set_dd(_ldd_fn, ddtype='ldd')
+            self.grid.set_dd(_ldd_fn, ddtype='ldd', flipud=True)
         return self.grid
 
     """

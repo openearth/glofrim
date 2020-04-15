@@ -20,11 +20,11 @@ def read_dd_rasterio(fn, ddtype='ldd', **ddkwargs):
     return dd_r
 
 
-def read_dd_pcraster(fn, transform, nodata=255):
+def read_dd_pcraster(fn, transform, nodata=255, flipud=False):
     import pcraster as pcr
     lddmap = pcr.readmap(str(fn))
     ldd_data = pcr.pcr2numpy(lddmap, nodata)
-    ldd = LDD(ldd_data, transform, nodata=nodata)
+    ldd = LDD(ldd_data, transform, nodata=nodata, flipud=flipud)
     return ldd
 
 
