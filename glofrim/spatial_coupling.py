@@ -10,7 +10,7 @@ import numpy as np
 class SpatialCoupling(object):
     _methods = ['grid_2_grid', 'grid_2_1d', 'grid_us_2_1d_us']
 
-    def __init__(self, to_bmi, from_bmi, method=None, filename=None):
+    def __init__(self, to_bmi, from_bmi, method=None, filename=None, to_coords=None):
         # this info can be filled now or when coupling
         self.method = method
         if not self.method in self._methods:
@@ -32,6 +32,7 @@ class SpatialCoupling(object):
         self.to_ind = np.array([])
         self.to_grp = np.array([])
         self.to_grp_n = np.array([])
+        self.to_coords = to_coords
         self.frac = np.array([])
         self._nodes_outside_domain = []
 
@@ -163,14 +164,25 @@ class SpatialCoupling(object):
         if not self.to_bmi.grid.has_1d():
             raise ValueError('1d network not set for model  {}'.format(self.to_name))
         # get 1d nodes
-        to_coords = self.to_bmi.grid._1d.nodes
-        to_inds = self.to_bmi.grid._1d.inds
+        if self.to_coords is None:
+            to_coords = self.to_bmi.grid._1d.nodes
+            to_inds = self.to_bmi.grid._1d.inds
+        else:
+            # get 1d nodes from user-configured list of coordinates in .ini file
+            to_coords = np.array(self.to_coords)
+            x, y = zip(*to_coords)
+            row, col = rasterio.transform.rowcol(self.to_bmi.grid.transform, x, y)
+            try:
+                to_inds = np.array(self.to_bmi.grid.ravel_multi_index(row, col))
+            except:
+                raise IndexError('Some or all of manually configured 1D nodes fall outside valid model domain')
+
         # get short handles for function
         fup = self.from_bmi.grid._dd.next_upstream
         findex = self.from_bmi.grid.ravel_multi_index
         frowcol = self.from_bmi.grid.unravel_index
         # find cells indices for all nodes
-        from_inds = self.from_bmi.grid.index(to_coords[:, 0], to_coords[:, 1], src_crs=self.to_bmi.grid.crs)   # TODO add the crs of the grid and a transform in function .index!
+        from_inds = self.from_bmi.grid.index(to_coords[:, 0], to_coords[:, 1], src_crs=self.to_bmi.grid.crs)
         valid = from_inds >= 0
         if np.any(~valid):
             print('1D nodes found outside of valid 2D domain')
@@ -200,8 +212,6 @@ class SpatialCoupling(object):
         """check if coupling at indices"""
         return self.from_ind.size > 0
 
-
-
 def dictinvert(d):
     inv = {}
     for k, v in d.items():
@@ -220,7 +230,7 @@ def group_index(indices):
     groups: [0, 0, 0, 1, 1]
     length: [3, 2]
     """
-    x = np.array(list(indices))
+    x = np.array(list(indices)).flatten()
     if isinstance(x[0], (list, tuple)): # check if jagged array
         grp_n = np.array([len(a) for a in x])
         grp = np.repeat(np.arange(x.size), grp_n)

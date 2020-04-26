@@ -53,6 +53,7 @@ class Glofrim(EBmi):
         self._var_sep = "."
         self._mult_sep = "*"
         self._ind_sep = "@"
+        self._coord_sep = "|"
 
         self._loglevel = loglevel
         self.logger = setlogger(None, self._name, thelevel=loglevel)
@@ -241,6 +242,7 @@ class Glofrim(EBmi):
             raise ValueError(msg)
         self.exchanges = []
         model_called, vars_set = [], []
+        to_coords = None
         for ex_i, ex_from in enumerate(self._config.options('exchanges')):
             ex_to = self._config.get('exchanges', ex_from)
             # break up starting from back
@@ -278,6 +280,10 @@ class Glofrim(EBmi):
             # index
             if self._ind_sep in ex_to:
                 ex_to, ind_to = ex_to.split(self._ind_sep)
+                # check if manual set coordinates are found
+                if self._coord_sep in ind_to:
+                    ind_to, to_coords = ind_to.split(self._coord_sep)
+                    to_coords = eval(to_coords)
             else:
                 ind_to = 'grid'
             # model
@@ -316,7 +322,7 @@ class Glofrim(EBmi):
                 sc_kwargs.update(filename=ind_to, method='from_file')
             else:
                 coupling_method = '{}_2_{}'.format(ind_from, ind_to)
-                sc_kwargs.update(method=coupling_method)
+                sc_kwargs.update(method=coupling_method, to_coords=to_coords)
             exdict['coupling'] = SpatialCoupling(**sc_kwargs)
             exdict['name'] = '{:s}.{:s}_to_{:s}.{:s}'.format(mod_from, exdict['from_vars'][0], mod_to, exdict['to_vars'][0])
             ## UPDATE
