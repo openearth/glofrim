@@ -526,6 +526,8 @@ class Glofrim(EBmi):
                 vals *= from_var
             else:
                 vals *= self.bmimodels[from_mod].get_value(from_var)
+        # remove nans to make sure there are no gaps in results
+        vals[np.isnan(vals)] = 0.
         # reproject vals to the to_mod projection using the SpatialCoupling.reproject function
         if coupling.reproject is not None:
             vals = coupling.reproject(vals, np.nan)
@@ -546,7 +548,9 @@ class Glofrim(EBmi):
             vals /= div
         # SET data
         if add:  # add to current state
-            vals += self.bmimodels[to_mod].get_value(to_vars[0], vals)
+            vals += self.bmimodels[to_mod].get_value(to_vars[0])
+        # mask values, set to zero
+        vals[~self.bmimodels[to_mod].grid.mask] = 0.
         self.bmimodels[to_mod].set_value(to_vars[0], vals)
         return tot_volume
 
