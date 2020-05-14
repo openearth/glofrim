@@ -490,7 +490,7 @@ class Glofrim(EBmi):
             to_mod {str} -- string defining the destination model
             from_vars {str} -- string defining the source variable
             to_vars {str} -- string defining the destination variable
-            coupling {array} -- array with coupled indices
+            coupling {SpatialCoupling} -- object defining the spatial coupling structure
         
         Keyword Arguments:
             add {bool} -- if True, source values are added to destination values; if False, overwritten (default: {False})
@@ -513,7 +513,7 @@ class Glofrim(EBmi):
             to_mod {str} -- string defining the destination model
             from_vars {str} -- string defining the source variable
             to_vars {str} -- string defining the destination variable
-            proj {lambda} -- function that reprojects data from source crs to destination crs
+            coupling {SpatialCoupling} -- object defining the spatial coupling structure
         Keyword Arguments:
             add {bool} -- if True, source values are added to destination values; if False, overwritten (default: {False})
         """
@@ -565,7 +565,7 @@ class Glofrim(EBmi):
             to_mod {str} -- string defining the destination model
             from_vars {str} -- string defining the source variable
             to_vars {str} -- string defining the destination variable
-            coupling {array} -- array with coupled indices
+            coupling {SpatialCoupling} -- object defining the spatial coupling structure
         
         Keyword Arguments:
             add {bool} -- if True, source values are added to destination values; if False, overwritten (default: {False})
