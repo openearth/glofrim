@@ -92,25 +92,27 @@ class SpatialCoupling(object):
         """
         """
         # rgrid to rgrid
-        if (self.to_bmi.grid.type == self.from_bmi.grid.type == 1):
+        if (self.to_bmi.grid.type == 1) and (self.from_bmi.grid.type == 1):
             # just check grid types. do nothing
             # TODO make a configurable Resampling choice, now Resampling.average used hard coded
             check_bounds= np.all(self.to_bmi.grid.bounds == self.from_bmi.grid.bounds)
             check_shape = np.all(self.to_bmi.grid.shape == self.from_bmi.grid.shape)
             if not (check_shape and check_bounds):
-                # make a reprojection function, note that rasterio sees rasters flipped vertically with respect to BMI convention, so a flipud is required
-                self.reproject = lambda data, nodata: rasterio.warp.reproject(data,
-                                                                               destination=np.zeros((self.to_bmi.grid.height, self.to_bmi.grid.width)),
-                                                                               src_transform=self.from_bmi.grid.transform,
-                                                                               src_crs=self.from_bmi.grid.crs,
-                                                                               src_nodata=nodata,
-                                                                               dst_transform=self.to_bmi.grid.transform,
-                                                                               dst_crs=self.to_bmi.grid.crs,
-                                                                               dst_nodata=nodata,
-                                                                               resampling=rasterio.enums.Resampling.average
-                                                                              )[0]
+                # make a reprojection function, note that rasterio sees rasters flipped 
+                # vertically with respect to BMI convention, so a flipud is required
+                self.reproject = lambda data, nodata: rasterio.warp.reproject(
+                    data,
+                    destination=np.zeros((self.to_bmi.grid.height, self.to_bmi.grid.width)),
+                    src_transform=self.from_bmi.grid.transform,
+                    src_crs=self.from_bmi.grid.crs,
+                    src_nodata=nodata,
+                    dst_transform=self.to_bmi.grid.transform,
+                    dst_crs=self.to_bmi.grid.crs,
+                    dst_nodata=nodata,
+                    resampling=rasterio.enums.Resampling.average
+                    )[0]
                 # raise ValueError('both model grids should have the shape and bounding box')
-            # TODO make special case to cover same rgrid and same urgrid coupling
+            # TODO make special case to cover same rgrid and same ugrid coupling
         # rgrid to ucgrid
         elif (self.from_bmi.grid.type == 1) and (self.to_bmi.grid.type == 3):
             # set inpmat
