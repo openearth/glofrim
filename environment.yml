@@ -3,7 +3,6 @@ name: glofrim3
 channels:
   - defaults
   - conda-forge
-  - http://pcraster.geo.uu.nl/pcraster/pcraster/
 
 dependencies:
   - python>=3.7
@@ -14,13 +13,11 @@ dependencies:
   - configparser
   - python-dateutil>=2.8
   - pytz>=2019.3
-  # - faulthandler #leads to conflicts
   - six>=1.14
   - pip>=20.0
-  - pcraster>=4.3
+  - pcraster
+  - wflow
   - pip:
     - numpy==1.14.5
-    - bmi-python==0.2.6
-    - wflow==2019.1
-    - git+https://github.com/openearth/glofrim.git@migrate_to_python3
+    - bmi-python>=0.2.6
     - git+https://github.com/UU-Hydro/PCR_BMI.git@migrate_to_py3
