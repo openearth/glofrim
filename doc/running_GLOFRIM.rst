@@ -104,13 +104,19 @@ communicate with that model via BMI. Add only models which are part of the (coup
 .. note::
     CMF only listens to the configuration file if it is called *input_flood.nam*, therefore the original configuration file should be called different, for instance input_flood.nam.org.
 
-The **coupling** section contains general settings for the exchanges between models.::
+The **coupling** section contains general settings for the exchanges between models.
+**dt** indicates the time step at which information should be exchanged between models. This usually should be at least one full time step of the model that runs with the largest time step.
+In the example we assume that a WFlow model dictates daily time steps, and that a coupled lisflood model
+has smaller time steps. The section furthermore contains projections of the different model instances. These can be provided in EPSG code (e.g. "EPSG:4326" would indicate regular WGS84 lat lon projection) or as proj string, as shown in the example.::
 
     [coupling]
     # timestep for exchanges [sec]
     dt=86400
+    WFL=+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs
+    LFP=+proj=utm +zone=34 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 
-The **exchanges** section contains the information about how the models communicate on run time. This part has a slightly complex syntax as it contains a lot of information. 
+
+The **exchanges** section contains the information about how the models communicate on run time. This part has a slightly complex syntax as it contains a lot of information.
 Every line indicates one exchange from the left (upstream/get) model.variable to the right (downstream/set) model.variable. This can be further extended by multipliers which can be model variables 
 or scalar values in order to make sure the variable units match. Finally behind the @ the spatial location to get (upstream) and set (downstream) the model variables. 
 Current options are @1d,  @1d_us (the most upstream 1d cells or nodes) and @grid_us (the upstream cell for each grid cell)::
