@@ -5,6 +5,7 @@ import logging
 import os
 from os.path import join, isfile, abspath, dirname, basename, relpath
 from datetime import datetime, timedelta
+from scipy.signal import convolve2d
 import rasterio
 import re
 
@@ -164,10 +165,24 @@ class LFP(GBmi):
     """
     Variable Getter and Setter Functions
     """
-    
+    def get_mask(self, long_var_name):
+        if long_var_name in ['Qx', 'QxSGold', 'Qy', 'QySGold']:
+            if long_var_name in ['Qx', 'QxSGold']:
+                # expand mask in x-direction
+                mask = np.vstack([self.grid.mask, np.zeros((1, self.grid.mask.shape[1]))])
+                conv_filt = np.array([[1, 1]])  # horizontal convolution
+            elif long_var_name in ['Qy', 'QySGold']:
+                mask = np.hstack([self.grid.mask, np.zeros((self.grid.mask.shape[0], 1))])
+                conv_filt = np.array([[1], [1]])  # vertical convolution
+            mask = np.array(convolve2d(mask, conv_filt), dtype='bool')
+        else:
+            mask = self.grid.mask
+        return mask
+
     def get_value(self, long_var_name, **kwargs):
         var = np.asarray(self._bmi.get_var(long_var_name)).copy()
-        var[~self.grid.mask] = np.nan
+        mask = self.get_mask(long_var_name)
+        var[~mask] = np.nan
         return var
 
     def get_value_at_indices(self, long_var_name, inds, **kwargs):
@@ -175,7 +190,8 @@ class LFP(GBmi):
 
     def set_value(self, long_var_name, src, fill_value=0., **kwargs):
         # set nans that lie within to_mod model domain to zeros to prevent model crashes
-        src[self.grid.mask & np.isnan(src)] = 0.
+        mask = self.get_mask(long_var_name)
+        src[mask & np.isnan(src)] = 0.
         # set remaining nans to missing value
         src = np.where(np.isnan(src), fill_value, src).astype(self.get_var_type(long_var_name))
         # LFP does not have a set_var function, but used the get_var function with an extra argument
