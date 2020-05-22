@@ -166,14 +166,20 @@ class LFP(GBmi):
     """
     
     def get_value(self, long_var_name, **kwargs):
-        return np.asarray(self._bmi.get_var(long_var_name)).copy()
+        var = np.asarray(self._bmi.get_var(long_var_name)).copy()
+        var[~self.grid.mask] = np.nan
+        return var
 
     def get_value_at_indices(self, long_var_name, inds, **kwargs):
         return self.get_value(long_var_name).flat[inds]
 
-    def set_value(self, long_var_name, src, **kwargs):
+    def set_value(self, long_var_name, src, fill_value=0., **kwargs):
+        # set nans that lie within to_mod model domain to zeros to prevent model crashes
+        src[self.grid.mask & np.isnan(src)] = 0.
+        # set remaining nans to missing value
+        src = np.where(np.isnan(src), fill_value, src).astype(self.get_var_type(long_var_name))
         # LFP does not have a set_var function, but used the get_var function with an extra argument
-        self._bmi.get_var(long_var_name)[:] = src.astype(self.get_var_type(long_var_name))
+        self._bmi.get_var(long_var_name)[:] = src
 
     def set_value_at_indices(self, long_var_name, inds, src, **kwargs):
         val = self.get_value(long_var_name)
