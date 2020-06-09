@@ -5,19 +5,18 @@ channels:
   - conda-forge
 
 dependencies:
-  - python>=3.7
-  - netcdf4>=1.4.2
-  - rasterio>=1.1
-  - rtree>=0.9.3
-  - click>=7.0
   - configparser
+  - click>=7.0
+  - netcdf4>=1.4.2
+  - numpy
+  - pcraster
+  - pip>=20.0
+  - python>=3.7
   - python-dateutil>=2.8
   - pytz>=2019.3
+  - rasterio>=1.1
+  - rtree>=0.9.3
   - six>=1.14
-  - pip>=20.0
-  - pcraster
   - wflow
   - pip:
-    - numpy==1.14.5
     - bmi-python>=0.2.6
-    - git+https://github.com/UU-Hydro/PCR_BMI.git@migrate_to_py3
