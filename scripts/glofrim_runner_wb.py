@@ -1,4 +1,4 @@
-from glofrim import Glofrim
+from glofrim import Glofrim 
 
 import click
 from os.path import isdir, dirname, abspath
@@ -9,16 +9,12 @@ import pandas as pd
 import numpy as np
 
 # utils
-
-
 def parse_datetime(param, value):
     try:
         date = parser.parse(value)
     except:
-        raise click.BadParameter(
-            "Couldn't understand date for the '{}' argument.".format(param))
+        raise click.BadParameter("Couldn't understand date for the '{}' argument.".format(param))
     return date
-
 
 def parse_dir(param, path):
     try:
@@ -26,15 +22,12 @@ def parse_dir(param, path):
         if not isdir(path):
             os.makedirs(path)
     except:
-        raise click.BadParameter(
-            "Couldn't understand or create folder directory for the '{}' argument.".format(param))
+        raise click.BadParameter("Couldn't understand or create folder directory for the '{}' argument.".format(param))
     return path
-
 
 @click.group()
 def cli():
     pass
-
 
 @click.command()
 @click.argument('ini',)
@@ -65,8 +58,7 @@ def run(ini, env='', out_dir='', end_date='', start_date=''):
         start_date = parse_datetime('start-date', start_date)
     if start_date and end_date:
         if end_date <= start_date:
-            raise click.BadParameter(
-                "'end-time' should be larger than start-time")
+            raise click.BadParameter("'end-time' should be larger than start-time")
     if out_dir:
         out_dir = parse_dir('out-dir', out_dir)
     # initialize combined bmi
@@ -75,12 +67,12 @@ def run(ini, env='', out_dir='', end_date='', start_date=''):
     ini = abspath(ini)
     print(ini)
     cbmi.initialize_config(config_fn=ini, env_fn=env)
-    # get model start and end times
+    # get model start and end times 
     if start_date:
         cbmi.set_start_time(start_date)
     if end_date:
         cbmi.set_end_time(end_date)
-    # create and set optional outdir
+    # create and set optional outdir 
     if isdir(out_dir):
         cbmi.set_out_dir(out_dir)
     # initialize model
@@ -96,21 +88,17 @@ def run(ini, env='', out_dir='', end_date='', start_date=''):
         # get outlet coordinates from 1d network
         coords = np.asarray(cbmi.bmimodels['CMF'].grid._1d.nodes)
         inds = cbmi.bmimodels['CMF'].grid._1d.inds
-        idx = np.array([[i for i, ind in enumerate(inds) if ind == pit_ind]
-                        for pit_ind in pit_inds]).squeeze()
+        idx = np.array([[i for i,ind in enumerate(inds) if ind == pit_ind] for pit_ind in pit_inds]).squeeze()
         pit_coords = coords[idx]
         # create dataframe
-        df_pits = pd.DataFrame(
-            {'lon': pit_coords[:, 0], 'lat': pit_coords[:, 1], 'flat_ind': pit_inds}).set_index('flat_ind')
+        df_pits = pd.DataFrame({'lon': pit_coords[:,0], 'lat': pit_coords[:,1], 'flat_ind': pit_inds}).set_index('flat_ind')
         if 'LFP' in cbmi.bmimodels:
-            df_pits['in_lfp_domain'] = cbmi.bmimodels['LFP'].grid._inside_bounds(
-                pit_coords[:, 0], pit_coords[:, 1])
+            df_pits['in_lfp_domain'] = cbmi.bmimodels['LFP'].grid._inside_bounds(pit_coords[:,0], pit_coords[:,1])
         print(ini.replace('.ini', '_CMFrivmth_loc.csv'))
         df_pits.to_csv(ini.replace('.ini', '_CMFrivmth_loc.csv'))
-        df_outflw = pd.DataFrame(index=pd.date_range(
-            start, end, freq=cbmi._dt), columns=df_pits.index)
+        df_outflw = pd.DataFrame(index=pd.date_range(start, end, freq=cbmi._dt), columns=df_pits.index)
         df_outflw.index.name = 'date'
-
+    
     # run all models until combined start time
     for mod in cbmi.bmimodels:
         if cbmi.bmimodels[mod].get_current_time() < start:
@@ -125,8 +113,7 @@ def run(ini, env='', out_dir='', end_date='', start_date=''):
 
         # read discharge at outputs
         if 'CMF' in cbmi.bmimodels:
-            df_outflw.loc[t, df_pits.index] = cbmi.get_value_at_indices(
-                'CMF.outflw', df_pits.index.values)
+            df_outflw.loc[t, df_pits.index] = cbmi.get_value_at_indices('CMF.outflw', df_pits.index.values)
 
     # run indiviudal models until end
     for mod in cbmi.bmimodels:
@@ -138,7 +125,6 @@ def run(ini, env='', out_dir='', end_date='', start_date=''):
 
     if 'CMF' in cbmi.bmimodels:
         df_outflw.to_csv(ini.replace('.ini', '_CMFrivmth_outflw.csv'))
-
 
 cli.add_command(run)
 
