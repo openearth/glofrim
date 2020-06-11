@@ -13,8 +13,8 @@ install_requires = [
     'termcolor'
 ]
 
-setup(name='glofrim',
-      version='2.0',
+setup(name='glofrim', 
+      version='2.1b1',
       description="functions to couple hydrologic and hydrodynamic models using BMI",
       long_desciption="""""",
       classifiers=[
