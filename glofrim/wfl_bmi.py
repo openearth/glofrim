@@ -7,10 +7,10 @@ from os.path import join, isfile, abspath, dirname, basename, normpath
 from datetime import datetime, timedelta
 import rasterio
 
-from utils import setlogger, closelogger
-from gbmi import GBmi
-from grids import RGrid
-import glofrim_lib as glib 
+from glofrim.utils import setlogger, closelogger
+from glofrim.gbmi import GBmi
+from glofrim.grids import RGrid
+import glofrim.glofrim_lib as glib
 
 
 class WFL(GBmi):
@@ -87,7 +87,7 @@ class WFL(GBmi):
     def update(self, dt=None):
         # dt in seconds. if not given model timestep is used
         if self._t >= self._endTime:
-		    raise Exception("endTime already reached, model not updated")
+            raise Exception("endTime already reached, model not updated")
         if (dt is not None) and (dt != self._dt.total_seconds()):
             dt = timedelta(seconds=dt)
             if not glib.check_dts_divmod(dt, self._dt):
@@ -197,8 +197,8 @@ class WFL(GBmi):
             if not isfile(_lm_fn): raise IOError('subcatch file not found')
             self.logger.info('Getting rgrid info based on {}'.format(basename(_lm_fn)))
             with rasterio.open(_lm_fn, 'r') as ds:
-                # TODO: change transform instead of flipping the grid every time ..
-                self.grid = RGrid(ds.transform, ds.height, ds.width, crs=ds.crs, mask=ds.read(1)>=1)
+                self.grid = RGrid(ds.transform, ds.height, ds.width, crs=ds.crs, flip_transform=False,
+                                  mask=ds.read(1) >= 1)
             # river is used for the 1D cells
             _riv_fn = join(mapdir, 'wflow_river.map')
             if isfile(_riv_fn):
@@ -206,10 +206,10 @@ class WFL(GBmi):
                     row, col = np.where(ds.read(1)==1)
                     x, y = self.grid.xy(row=row, col=col)
                     inds = self.grid.ravel_multi_index(row, col)
-                self.grid.set_1d(nodes=np.array(zip(x, y)), links=None, inds=inds)
+                self.grid.set_1d(nodes=np.vstack((x, y)).transpose(), links=None, inds=inds)
             # read file with pcr readmap
             self.logger.info('Getting drainage direction from {}'.format(basename(_ldd_fn)))
-            self.grid.set_dd(_ldd_fn, ddtype='ldd')
+            self.grid.set_dd(_ldd_fn, ddtype='ldd', flipud=False)
         return self.grid
 
     """

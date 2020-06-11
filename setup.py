@@ -3,18 +3,19 @@ import os
 
 install_requires = [
     'setuptools',
-    'numpy==1.14.5', # there's an error when using 1.15.
+    'numpy', # there's an error when using 1.15.
     'bmi-python>=0.2.6', 
     'rasterio>=1.0',
-    'rtree>=0.8.1',
-    'click>=6.7',
+    'rtree',
+    'click',
     'configparser',
     'python-dateutil',
     'termcolor'
 ]
 
-setup(name='glofrim',
-        version='2.0',
+setup(name='glofrim', 
+      version='2.1',
+      master,
       description="functions to couple hydrologic and hydrodynamic models using BMI",
       long_desciption="""""",
       classifiers=[
@@ -22,8 +23,8 @@ setup(name='glofrim',
         "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
         "Topic :: Scientific/Engineering",
         "Topic :: Software Development :: Libraries",
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.7',
       ], 
       keywords='hydro',
       author='J.M. Hoch, D.M. Eilander, H. Ikeuchi',
