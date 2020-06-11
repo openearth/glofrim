@@ -15,7 +15,6 @@ install_requires = [
 
 setup(name='glofrim', 
       version='2.1b1',
-      master,
       description="functions to couple hydrologic and hydrodynamic models using BMI",
       long_desciption="""""",
       classifiers=[
