@@ -25,7 +25,7 @@ def tryexcept(msg, errors=(Exception, ), fail=False):
                 out = func(self, *args, **kwargs)
                 print(prefix + msg + colored('PASS', 'green'))
                 return out
-            except errors as e:
+            except errors, e:
                 print(prefix + msg + colored('FAILED', 'red'))
                 self.errors += 1
                 if fail:
@@ -108,7 +108,7 @@ class integration_test(object):
     @tryexcept('initialize BMI: ', fail=True)
     def test_init_coupled_bmi(self, _loglevel='INFO'):
         bmi = getattr(glofrim, self.mod)
-        bmi_kwargs = {'loglevel': _loglevel, 'config_fn': self.config_fn}
+        bmi_kwargs = {'loglevel': _loglevel, config_fn=self.config_fn}
         return bmi(**bmi_kwargs)
 
     @tryexcept('initialize config: ', fail=True)

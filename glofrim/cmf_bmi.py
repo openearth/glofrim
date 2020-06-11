@@ -10,10 +10,10 @@ import re
 
 from bmi.wrapper import BMIWrapper as _bmi
 
-from glofrim.utils import setlogger, closelogger
-from glofrim.gbmi import GBmi 
-from glofrim.grids import UCGrid
-import glofrim.glofrim_lib as glib 
+from utils import setlogger, closelogger
+from gbmi import GBmi 
+from grids import UCGrid
+import glofrim_lib as glib 
 
 class CMF(GBmi):
     """

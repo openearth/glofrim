@@ -4,17 +4,16 @@ import rasterio
 import click
 import glob
 
-
 @click.command()
 @click.argument('in_fn')
-# , required=True,
-# help='filename of binary map control (*.ctl) file or directory with control files')
+                # , required=True,
+                # help='filename of binary map control (*.ctl) file or directory with control files')
 @click.option('-o', '--fn_out', default=None,
-              help='filename of output file name, defaults to same basename as input file')
+                help='filename of output file name, defaults to same basename as input file')
 @click.option('--epsg', default=4326, help='crs epsg code, 4326 by default.')
 @click.option('--force_dtype', help='overwrite ctl file based dtype (numpy dtype format)')
 @click.option('--force_endian', type=click.Choice(['little', 'big']),
-              help='overwrite little / big endian setting from ctl file')
+                help='overwrite little / big endian setting from ctl file')
 @click.option('--force_overwrite', help='force overwrite of existing output geotiff file', is_flag=True)
 @click.option('--cell_center/--cell_corner', default=True)
 def bin_2_tif(in_fn, fn_out=None, epsg=4326, force_overwrite=False,
@@ -27,7 +26,7 @@ def bin_2_tif(in_fn, fn_out=None, epsg=4326, force_overwrite=False,
     fns = []
     if os.path.isdir(fn):
         fns = [fn for fn in glob.glob(os.path.join(fn, '*.ctl'))
-               if not os.path.basename(fn).startswith('inpmat')]
+                    if not os.path.basename(fn).startswith('inpmat')]
         if (fn_out is not None) and (len(fns) > 1):
             click.echo('fn_out is ignored as multiple output files are found')
             fn_out = None
@@ -40,29 +39,25 @@ def bin_2_tif(in_fn, fn_out=None, epsg=4326, force_overwrite=False,
 
     for fn in fns:
         if fn_out is None:
-            fno = os.path.join(os.path.dirname(
-                fn), os.path.basename(fn).replace('.ctl', '.tif'))
+            fno = os.path.join(os.path.dirname(fn), os.path.basename(fn).replace('.ctl', '.tif'))
         else:
             fno = fn_out
 
         if force_overwrite and os.path.isfile(fno):
             os.unlink(fno)
         elif os.path.isfile(fno):
-            click.echo(
-                "File {} already exists. Use --force_overwrite to overwrite.".format(os.path.basename(fno)))
+            click.echo("File {} already exists. Use --force_overwrite to overwrite.".format(os.path.basename(fno)))
             continue
 
         click.echo("processing {:s}".format(os.path.basename(fn)))
         data, prof = read_bin(fn, dtype=force_dtype, force_endian=force_endian,
-                              cell_center=cell_center)
+                                cell_center=cell_center)
         # write to geotiff
         crs = {'init': 'epsg:{:d}'.format(int(epsg))}
-        prof.update(driver='GTiff', compress='lzw',
-                    dtype=str(data.dtype), crs=crs)
+        prof.update(driver='GTiff', compress='lzw', dtype=str(data.dtype), crs=crs)
         with rasterio.open(fno, 'w', **prof) as dst:
             for i in xrange(prof['count']):
                 dst.write(data[i, :, :], i+1)
-
 
 def read_bin(fn_ctl, dtype=None, force_endian=None, cell_center=True):
     # read data props
@@ -75,42 +70,38 @@ def read_bin(fn_ctl, dtype=None, force_endian=None, cell_center=True):
     if force_endian is not None:
         if force_endian not in ['big', 'little']:
             raise ValueError('force_endian must be "big" or "little"')
-        force_endian = '>' if force_endian == 'big' else '<'
+        force_endian = '>' if force_endian=='big' else '<'
         prof['dtype'] = force_endian + prof['dtype'][1:]
     try:
-        data = np.fromfile(ctl['fn'], prof['dtype']
-                           ).reshape(nlayer, nrow, ncol)
+        data = np.fromfile(ctl['fn'], prof['dtype']).reshape(nlayer, nrow, ncol)
     except ValueError:
         if 'f4' in prof['dtype']:
             prof['dtype'] = prof['dtype'].replace('f4', 'f8')
-        data = np.fromfile(ctl['fn'], prof['dtype']
-                           ).reshape(nlayer, nrow, ncol)
+        data = np.fromfile(ctl['fn'], prof['dtype']).reshape(nlayer, nrow, ncol)
     if not ctl['options']['yrev']:
         data = data[:, ::-1, :]
     return data, prof
 
 # read files via ctl
-
-
 def ctl_parser(fn):
     """ parse grads ctl file, return dict with all values
 
     for more information about the ctl files see:
     http://cola.gmu.edu/grads/gadoc/descriptorfile.html#XDEF"""
     ctl_map = {'dset': {'fmt': [str]},
-               'undef': {'fmt': [int]},
-               'title': {'fmt': [str]},
-               'options': {'fmt': [str, str], 'names': ['yrev', 'endian']},
-               'xdef': {'fmt': [int, str, float, float],
-                        'names': ['n', 'mapping', 'start', 'increment']},
-               'ydef': {'fmt': [int, str, float, float],
-                        'names': ['n', 'mapping', 'start', 'increment']},
-               'zdef': {'fmt': [int, str, float, float],
-                        'names': ['n', 'mapping', 'start', 'increment']},
-               'tdef': {'fmt': [int, str, str, str],
-                        'names': ['n', 'mapping', 'start', 'increment']},
-               'vars': {'fmt': [int]},
-               }
+        'undef': {'fmt': [int]},
+        'title': {'fmt': [str]},
+        'options': {'fmt': [str, str], 'names': ['yrev', 'endian']},
+        'xdef': {'fmt': [int, str, float, float],
+                 'names': ['n', 'mapping', 'start', 'increment']},
+        'ydef': {'fmt': [int, str, float, float],
+                 'names': ['n', 'mapping', 'start', 'increment']},
+        'zdef': {'fmt': [int, str, float, float],
+                 'names': ['n', 'mapping', 'start', 'increment']},
+        'tdef': {'fmt': [int, str, str, str],
+                 'names': ['n', 'mapping', 'start', 'increment']},
+        'vars': {'fmt': [int]},
+    }
     # mapping from grads to numpy dtype
     vars_unity_dtype = {'-1,40,2,-1': 'i2',
                         '-1,40,4': 'i4',
@@ -141,8 +132,7 @@ def ctl_parser(fn):
     assert ctl['tdef']['n'] == 1
 
     # read n variables metadata
-    ctl['endian'] = '<' if ctl['options']['endian'].startswith(
-        'little') else '>'
+    ctl['endian'] = '<' if ctl['options']['endian'].startswith('little') else '>'
     ivar = [i for i, line in enumerate(lines) if line.startswith('var')][0] + 1
     nvar = ctl['vars']
     ctl['vars'] = {}
@@ -158,15 +148,13 @@ def ctl_parser(fn):
         # check for known datatypes others should be implemented, see link above for more datatype
         if ctl['vars'][var_name]['units'] in vars_unity_dtype.keys():
             # map grads dtype to numpy dtype
-            ctl['vars'][var_name]['units'] = vars_unity_dtype[ctl['vars']
-                                                              [var_name]['units']]
+            ctl['vars'][var_name]['units'] = vars_unity_dtype[ctl['vars'][var_name]['units']]
         else:
             raise ValueError("unknown dtype")
 
     ctl['var_names'] = var_names
     ctl['fn'] = os.path.join(os.path.dirname(fn), ctl['dset'])
     return ctl
-
 
 def get_ctlvalue(name, lines, fmt, ignore='**'):
     """function to read values from a *.ctl file"""
@@ -183,7 +171,7 @@ def get_ctlvalue(name, lines, fmt, ignore='**'):
             settings = settings.replace(name, '')
             if n > 1:
                 v = settings.split()
-                values = [f(v[i].strip()) for i, f in enumerate(fmt)]
+                values = [f(v[i].strip()) for i,f in enumerate(fmt)]
             else:
                 values = fmt[0](settings.strip())
             break
@@ -194,13 +182,11 @@ def ctl_2_rasterio_profile(ctl, dtype=None, cell_center=True):
     from rasterio.transform import from_origin
     prof = {}
     if dtype is None:
-        prof['dtype'] = ctl['endian'] + ctl['vars'][ctl['var_names']
-                                                    [-1]]['units']  # assume same dtype for all variables
+        prof['dtype'] = ctl['endian'] + ctl['vars'][ctl['var_names'][-1]]['units'] #assume same dtype for all variables
     else:
         prof['dtype'] = dtype
     prof['width'], prof['height'] = ctl['xdef']['n'], ctl['ydef']['n']
-    prof['count'] = np.sum([ctl['vars'][name]['nlayers']
-                            for name in ctl['var_names']])
+    prof['count'] = np.sum([ctl['vars'][name]['nlayers'] for name in ctl['var_names']])
     prof['nodata'] = ctl['undef']
     # calculate transform
     resx = float(np.abs(ctl['xdef']['increment']))
@@ -216,7 +202,6 @@ def ctl_2_rasterio_profile(ctl, dtype=None, cell_center=True):
     else:
         prof['transform'] = from_origin(xmin, ymax, resx, resy)
     return prof
-
 
 if __name__ == "__main__":
     bin_2_tif()

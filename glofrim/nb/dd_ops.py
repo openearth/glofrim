@@ -5,31 +5,28 @@
 # Created: Nov-2017
 
 import numpy as np
-from .nb_ops import MaskedWdwArray
+from nb_ops import MaskedWdwArray
 # TODO: add io, check if sound and bbox-clip options
 # TODO: test if drainge area etc function work fast compared to pcraster
-
 
 class DrainageDirection(object):
     """Drainage direction numpy-based object to do fast operations on (nextx, nexty),
     LDD or D8 drainge direction networks"""
 
-    def __init__(self, stype, dd, raster, transform,
+    def __init__(self, stype, dd, raster, transform, 
                  pit_value=0, fill_value=255,
                  search_radius=1, **kwargs):
         # general properties
         self.type = stype
-        self.dd = dd
+        self.dd = dd 
         self.pit_value = pit_value
         # create up and downstream nb patterns
-        if dd is not None:
+        if dd is not None: 
             self._dd_ds = self.dd.flatten()
             self._dd_us = np.fliplr(np.flipud(self.dd)).flatten()
-            self._dd_ds = np.where(
-                self._dd_ds == pit_value, pit_value-5, self._dd_ds)
-            self._dd_us = np.where(
-                self._dd_us == pit_value, pit_value-5, self._dd_us)
-        else:  # in case of nextxy
+            self._dd_ds = np.where(self._dd_ds==pit_value, pit_value-5, self._dd_ds)
+            self._dd_us = np.where(self._dd_us==pit_value, pit_value-5, self._dd_us)
+        else: # in case of nextxy
             self._dd_ds, self._dd_us = None, None
         # initialize masked array
         raster = np.ma.masked_equal(raster, fill_value, copy=False)
@@ -38,32 +35,31 @@ class DrainageDirection(object):
         if self.r.ndim == 3:
             self._mask2d = ~self.r.mask[0, :, :]
         else:
-            self._mask2d = ~self.r.mask
+            self._mask2d = ~self.r.mask   
         # set geo properties
         self.transform = transform
-
-    # general relations
+        
+    # general relations 
     def _nb_downstream_idx(self, row, col):
         """neighborhood downstream index"""
         row, col = np.atleast_1d(row), np.atleast_1d(col)
         valid = np.logical_not(self._pit(row, col), self.r.mask[row, col])
         row, col = row[valid], col[valid]
-        wdw_bool = self._dd_ds[None, :] == self.r.data[row, col][:, None]
+        wdw_bool = self._dd_ds[None,:] == self.r.data[row, col][:, None]
         wdw_rows, wdw_cols = self.r.wdw(row, col)[1]
-        row_ds, col_ds = np.atleast_1d(
-            wdw_rows[wdw_bool]), np.atleast_1d(wdw_cols[wdw_bool])
+        row_ds, col_ds = np.atleast_1d(wdw_rows[wdw_bool]), np.atleast_1d(wdw_cols[wdw_bool])
         return (row_ds, col_ds), valid
 
     def _nb_upstream_idx(self, row, col):
         """neighborhood upstream index"""
-        (row_us, col_us), valid = self.r.wdw_eq(row, col, self._dd_us)
+        (row_us, col_us), valid =  self.r.wdw_eq(row, col, self._dd_us)
         return (row_us, col_us), valid
 
     def _pit(self, row=None, col=None):
         """pit predicate"""
-        if (row is None) and (col is None):  # full raster
+        if (row is None) and (col is None): # full raster
             return self.r == self.pit_value
-        else:  # selected points
+        else: # selected points
             return self.r[row, col] == self.pit_value
 
     # flux functions
@@ -72,18 +68,15 @@ class DrainageDirection(object):
         r0, c0 = np.where(self._mask2d)
         (self._r_ds, self._c_ds), valid = self._nb_downstream_idx(r0, c0)
         self._r, self._c = r0[valid], c0[valid]
-        self._idx_ds = np.ravel_multi_index(
-            (self._r_ds, self._c_ds), self.shape[-2:])
+        self._idx_ds = np.ravel_multi_index((self._r_ds, self._c_ds), self.shape[-2:])
         # keep unique indices
         self._idx_ds_u, u = np.unique(self._idx_ds, return_index=True)
         self._r_ds_u, self._c_ds_u = self._r_ds[u], self._c_ds[u]
 
     def dd_flux(self, state):
-        if not hasattr(self, '_idx_ds_u'):
-            self._set_dd()
+        if not hasattr(self, '_idx_ds_u'): self._set_dd()
         assert state.shape == self.shape[-2:]
-        state_1d = (state[self._r, self._c]).astype(
-            np.float64)  # errors occur with float32
+        state_1d = (state[self._r, self._c]).astype(np.float64) # errors occur with float32
         # group at confluence of streamflows
         flux = np.zeros_like(state)
         flux_1d = np.bincount(self._idx_ds, weights=state_1d,)[self._idx_ds_u]
@@ -92,14 +85,14 @@ class DrainageDirection(object):
         return flux
 
     def dd_accuflux(self, initial_state, maxiter=1e5):
-        converged = False
+        converged = False 
         state = initial_state.copy()
         i = 0
         while (not converged) or (i <= maxiter):
             previous_state = state.copy()
             flux = self.dd_flux(previous_state)
             state = initial_state.copy() + flux
-            converged = True if np.sum(state-previous_state) == 0 else False
+            converged = True if np.sum(state-previous_state)==0 else False
             assert state.max() <= initial_state.sum()
             i += 1
         return state, converged
@@ -170,7 +163,7 @@ class DrainageDirection(object):
         col : nd array
             column indices of upstream cells
         """
-        pit_bool = self.is_pit()  # 2d array
+        pit_bool = self.is_pit() # 2d array
         if return_index:
             if pit_bool.ndim == 3:
                 pit_bool = pit_bool[0, :, :]
@@ -233,10 +226,8 @@ class DrainageDirection(object):
                 msg = "The stop_flags array does not have the same shape as the drainage direction array."
                 raise ValueError(msg)
             if not np.issubdtype(type(stop_flags), np.bool):
-                raise ValueError(
-                    "The stop_flags array is not of boolean dtype.")
-        assert np.issubdtype(type(row), np.integer), np.issubdtype(
-            type(col), np.integer)
+                raise ValueError("The stop_flags array is not of boolean dtype.")
+        assert np.issubdtype(type(row), np.integer), np.issubdtype(type(col), np.integer)
         row, col = np.atleast_1d(row), np.atleast_1d(col)
         # loop
         path, i, n_up = [], 0, 1
@@ -246,7 +237,7 @@ class DrainageDirection(object):
             row, col = self.next_upstream(row, col)
             n_up = len(row)
             # stop if flag in stop_flags or after n iterations
-            if (i == n) or ((stop_flags is not None) and stop_flags[row, col]):
+            if (i == n) or ((stop_flags is not None) and stop_flags[row,col]):
                 path.append((row[0], col[0]))
                 break
         return path, row, col
@@ -285,12 +276,10 @@ class DrainageDirection(object):
                 msg = "The stop_flags array does not have the same shape as the drainage direction array."
                 raise ValueError(msg)
             if not np.issubdtype(type(stop_flags), np.bool):
-                raise ValueError(
-                    "The stop_flags array is not of boolean dtype.")
-        assert np.issubdtype(type(row), np.integer), np.issubdtype(
-            type(col), np.integer)
+                raise ValueError("The stop_flags array is not of boolean dtype.")
+        assert np.issubdtype(type(row), np.integer), np.issubdtype(type(col), np.integer)
         row, col = np.atleast_1d(row), np.atleast_1d(col)
-
+        
         # loop
         path, i, at_outlet = [], 0, False
         while not at_outlet:
@@ -298,7 +287,7 @@ class DrainageDirection(object):
             path.append((row[0], col[0]))
             row, col = self.next_downstream(row, col)
             at_outlet = self.is_pit(row, col) or (len(row) == 0)
-            if (i == n) or ((stop_flags is not None) and stop_flags[row, col]):
+            if (i == n) or ((stop_flags is not None) and stop_flags[row,col]):
                 path.append((row[0], col[0]))
                 break
         return path, row, col
@@ -315,17 +304,15 @@ class DrainageDirection(object):
                     break
         return np.ma.masked_equal(catchment, fill_value, copy=False)
 
-    # plot
+    # plot 
     def plot_dd(self, ax=None, **kwargs):
         import matplotlib.pyplot as plt
-        if not hasattr(self, '_idx_ds_u'):
-            self._set_dd()
+        if not hasattr(self, '_idx_ds_u'): self._set_dd()
         if ax is None:
             fig = plt.figure(figsize=self.shape[-2:])
             ax = fig.add_subplot(111)
         ax.set_aspect('equal')
-        ax.quiver(self._c, self._r, self._c_ds-self._c, self._r -
-                  self._r_ds, units='xy', scale=1, **kwargs)
+        ax.quiver(self._c, self._r, self._c_ds-self._c, self._r-self._r_ds, units = 'xy', scale = 1, **kwargs)
         ax.set_title('{} quiver'.format(self.type))
         return ax
 
@@ -335,16 +322,15 @@ class NextXY(DrainageDirection):
                  search_radius=1, fill_value=-9999, zero_based=False, **kwargs):
         """initialize drainage direction object based on nextxy definition"""
 
-        assert (nextxy.shape[0] == 2) and (
-            nextxy.ndim == 3), "check nextxy dimensions"
+        assert (nextxy.shape[0] == 2) and (nextxy.ndim==3), "check nextxy dimensions"
         # convert fortran to python numbering
         if not zero_based:
-            nextxy = np.where(nextxy > 0, nextxy - 1, nextxy)
+            nextxy = np.where(nextxy>0, nextxy - 1, nextxy)
         # pits definition
         pit_value = np.array([-9, -9])[:,  None, None]
 
-        super(NextXY, self).__init__('nextxy', dd=None,
-                                     raster=nextxy, transform=transform,
+        super(NextXY, self).__init__('nextxy', dd=None, 
+                                     raster=nextxy, transform=transform, 
                                      pit_value=pit_value, fill_value=fill_value,
                                      search_radius=search_radius, **kwargs)
 
@@ -352,9 +338,7 @@ class NextXY(DrainageDirection):
     def _nb_downstream_idx(self, row, col):
         """neighborhood downstream index"""
         row, col = np.atleast_1d(row), np.atleast_1d(col)
-        # skip outlets and outside mask
-        is_valid = np.logical_not(
-            self._pit(row, col), self.r.mask[0, row, col])
+        is_valid = np.logical_not(self._pit(row, col), self.r.mask[0, row, col]) # skip outlets and outside mask
         col_ds, row_ds = self.r[:, row[is_valid], col[is_valid]]
         return (row_ds, col_ds), is_valid
 
@@ -362,7 +346,7 @@ class NextXY(DrainageDirection):
         """neighborhood upstream index"""
         xy = np.array([col, row]).reshape(2, len(row), 1)
         (row_us, col_us), is_valid = self.r.wdw_eq(row, col, xy)
-        row_us, col_us = np.atleast_1d(row_us), np.atleast_1d(col_us)
+        row_us, col_us= np.atleast_1d(row_us), np.atleast_1d(col_us)
         return (row_us, col_us), is_valid
 
     def _pit(self, row, col):
@@ -370,12 +354,11 @@ class NextXY(DrainageDirection):
         if (row is None) and (col is None):
             return self.r == self.pit_value
         else:
-            return np.all(self.r[:, row, col] == self.pit_value, axis=(0, 1))
-
+            return np.all(self.r[:, row, col] == self.pit_value, axis=(0,1))
 
 class LDD(DrainageDirection):
     def __init__(self, ldd, transform,
-                 fill_value=255, flipud=False, **kwargs):
+                 fill_value=255, **kwargs):
         """initialize drainage direction object based on pcraster ldd definition,
         for more info on the ldd data format see:
         http://pcraster.geo.uu.nl/pcraster/4.1.0/doc/manual/secdatbase.html#formldd
@@ -383,12 +366,9 @@ class LDD(DrainageDirection):
 
         # ldd defintion
         dd = np.array([[7, 8, 9], [4, 5, 6], [1, 2, 3]])
-        if flipud:
-            dd = np.flipud(dd)
-            ldd = np.flipud(ldd)
         pit_value = 5
-        super(LDD, self).__init__('ldd', dd=dd, raster=ldd, transform=transform,
-                                  pit_value=pit_value, fill_value=fill_value,
+        super(LDD, self).__init__('ldd', dd=dd, raster=ldd, transform=transform, 
+                                  pit_value=pit_value, fill_value=fill_value, 
                                   search_radius=1, **kwargs)
 
 
@@ -403,10 +383,9 @@ class D8(DrainageDirection):
         dd = np.array([[32, 64, 128], [16, 0, 1], [8, 4, 2]])
         pit_value = 0
 
-        super(D8, self).__init__('d8', dd=dd, raster=d8, transform=transform,
-                                 pit_value=pit_value, fill_value=fill_value,
-                                 search_radius=1, **kwargs)
-
+        super(D8, self).__init__('d8', dd=dd, raster=d8, transform=transform, 
+                                  pit_value=pit_value, fill_value=fill_value, 
+                                  search_radius=1, **kwargs)
 
 class D8plus(DrainageDirection):
     def __init__(self, d8, transform,
@@ -418,30 +397,28 @@ class D8plus(DrainageDirection):
 
         # d8 plus defintion
         dd = np.array([[32, 64, 128], [16, -1, 1], [8, 4, 2]])
-        self.rivmth_value = 0  # river mouth
-        pit_value = -1  # inland depression
-        super(D8plus, self).__init__('d8', dd=dd, raster=d8, transform=transform,
-                                     pit_value=pit_value, fill_value=fill_value,
-                                     search_radius=1, **kwargs)
+        self.rivmth_value = 0 # river mouth
+        pit_value = -1 # inland depression
+        super(D8plus, self).__init__('d8', dd=dd, raster=d8, transform=transform, 
+                                  pit_value=pit_value, fill_value=fill_value, 
+                                  search_radius=1, **kwargs)
 
     # overwrite parent general method
     def _pit(self, row=None, col=None):
         """pit predicate"""
         if (row is None) and (col is None):
-            return np.logical_or(self.r == self.pit_value,
+            return np.logical_or(self.r == self.pit_value, 
                                  self.r == self.rivmth_value)
         else:
-            return np.logical_or(self.r[row, col] == self.pit_value,
+            return np.logical_or(self.r[row, col] == self.pit_value, 
                                  self.r[row, col] == self.rivmth_value)
 
 # TODO: test if faster than bincount in dd_flux function
-
-
 def group(values):
     values.sort()
     dif = np.ones(values.shape, values.dtype)
     dif[1:] = np.diff(values)
-    idx = np.concatenate((np.where(dif)[0], [len(values)]))
+    idx = np.concatenate((np.where(dif)[0],[len(values)])) 
     vals = values[idx[:-1]]
     count = np.diff(idx)
     return vals, count
