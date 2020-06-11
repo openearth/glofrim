@@ -10,6 +10,7 @@
 
 import numpy as np
 
+
 class MaskedWdwArray(np.ma.MaskedArray):
     """cast of numpy masked array with window functions"""
     def __new__(cls, input_array, sr=1):
@@ -96,10 +97,11 @@ class MaskedWdwArray(np.ma.MaskedArray):
         wdw_bool : nd array
             boolean flattend representation of windows, True where value
         """
-        
+
         value = np.atleast_1d(value)
         wdw_data, wdw_idx = self.wdw(row, col)
-        wdw_bool = np.logical_and(wdw_data.data == value, wdw_data.mask == False)
+        wdw_bool = np.logical_and(
+            wdw_data.data == value, wdw_data.mask == False)
         if self.ndim == 3:
             wdw_bool = np.all(wdw_bool, axis=0)
         row = np.atleast_1d(wdw_idx[0][wdw_bool])

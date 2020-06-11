@@ -5,15 +5,16 @@ import logging
 import os
 from os.path import join, isfile, abspath, dirname, basename, relpath
 from datetime import datetime, timedelta
+from scipy.signal import convolve2d
 import rasterio
 import re
 
 from bmi.wrapper import BMIWrapper as _bmi
 
-from utils import setlogger, closelogger
-from gbmi import GBmi 
-from grids import RGrid
-import glofrim_lib as glib 
+from glofrim.utils import setlogger, closelogger
+from glofrim.gbmi import GBmi
+from glofrim.grids import RGrid
+import glofrim.glofrim_lib as glib
 
 class LFP(GBmi):
     """
@@ -82,7 +83,7 @@ class LFP(GBmi):
     def update(self, dt=None):
         # dt in seconds. if not given model timestep is used
         if self._t >= self._endTime:
-		    raise Exception("endTime already reached, model not updated")
+            raise Exception("endTime already reached, model not updated")
         if (dt is not None) and (dt != self._dt.total_seconds()):
             dt = timedelta(seconds=dt)
             # because of the adaptive timestep scheme do not check the dt value
@@ -164,16 +165,37 @@ class LFP(GBmi):
     """
     Variable Getter and Setter Functions
     """
-    
+    def get_mask(self, long_var_name):
+        if long_var_name in ['Qx', 'QxSGold', 'Qy', 'QySGold']:
+            if long_var_name in ['Qx', 'QxSGold']:
+                # expand mask in x-direction
+                mask = np.vstack([self.grid.mask, np.zeros((1, self.grid.mask.shape[1]))])
+                conv_filt = np.array([[1, 1]])  # horizontal convolution
+            elif long_var_name in ['Qy', 'QySGold']:
+                mask = np.hstack([self.grid.mask, np.zeros((self.grid.mask.shape[0], 1))])
+                conv_filt = np.array([[1], [1]])  # vertical convolution
+            mask = np.array(convolve2d(mask, conv_filt), dtype='bool')
+        else:
+            mask = self.grid.mask
+        return mask
+
     def get_value(self, long_var_name, **kwargs):
-        return np.asarray(self._bmi.get_var(long_var_name)).copy()
+        var = np.asarray(self._bmi.get_var(long_var_name)).copy()
+        mask = self.get_mask(long_var_name)
+        var[~mask] = np.nan
+        return var
 
     def get_value_at_indices(self, long_var_name, inds, **kwargs):
         return self.get_value(long_var_name).flat[inds]
 
-    def set_value(self, long_var_name, src, **kwargs):
+    def set_value(self, long_var_name, src, fill_value=0., **kwargs):
+        # set nans that lie within to_mod model domain to zeros to prevent model crashes
+        mask = self.get_mask(long_var_name)
+        src[mask & np.isnan(src)] = 0.
+        # set remaining nans to missing value
+        src = np.where(np.isnan(src), fill_value, src).astype(self.get_var_type(long_var_name))
         # LFP does not have a set_var function, but used the get_var function with an extra argument
-        self._bmi.get_var(long_var_name)[:] = src.astype(self.get_var_type(long_var_name))
+        self._bmi.get_var(long_var_name)[:] = src
 
     def set_value_at_indices(self, long_var_name, inds, src, **kwargs):
         val = self.get_value(long_var_name)
@@ -198,7 +220,7 @@ class LFP(GBmi):
                 row, col = np.where(ds.read(1)>0)
                 x, y = self.grid.xy(row=row, col=col)
                 inds = self.grid.ravel_multi_index(row, col)
-            self.grid.set_1d(nodes=np.array(zip(x, y)), links=None, inds=inds)
+            self.grid.set_1d(nodes=np.vstack((x, y)).transpose(), links=None, inds=inds)  # python2.7 nodes=np.array(zip(x, y))
         return self.grid
 
 
