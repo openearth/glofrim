@@ -12,20 +12,16 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys
-import os
+import sys, os
 
 from mock import Mock as MagicMock
-
 
 class Mock(MagicMock):
     __all__ = []
     __version__ = "1.6"
-
     @classmethod
     def __getattr__(cls, name):
-        return Mock()
-
+            return Mock()
 
 # Mock modules so that we can build on readthedocs.org
 MOCK_MODULES = ['pcraster']
@@ -51,20 +47,20 @@ needs_sphinx = '1.6'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc',
-              'sphinx.ext.autosummary',
-              'sphinx.ext.todo',
-              'sphinx.ext.coverage',
-              'sphinx.ext.viewcode',
-              'sphinx.ext.mathjax',
-              'sphinx.ext.napoleon',
-              'sphinx.ext.autosectionlabel',
-              ]
+    'sphinx.ext.autosummary',
+    'sphinx.ext.todo',
+    'sphinx.ext.coverage',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.mathjax',
+    'sphinx.ext.napoleon',
+    'sphinx.ext.autosectionlabel',
+    ]
 
 napoleon_google_docstring = False
 napoleon_use_param = False
 napoleon_use_ivar = True
 
-todo_include_todos = True
+todo_include_todos=True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -215,6 +211,7 @@ texinfo_documents = [
 ]
 
 
+
 # -- Options for Epub output ----------------------------------------------
 
 # Bibliographic Dublin Core info.
@@ -234,3 +231,5 @@ epub_copyright = copyright
 
 # A list of files that should not be packed into the epub file.
 epub_exclude_files = ['search.html']
+
+

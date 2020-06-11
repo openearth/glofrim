@@ -1,16 +1,13 @@
-from glofrim.grids import GridType
+from grids import GridType
 import os
 from os.path import isfile, relpath, dirname
-import glofrim.glofrim_lib as glib
-import rasterio.warp
-import rasterio.enums
-
+import glofrim_lib as glib
 import numpy as np
 
 class SpatialCoupling(object):
     _methods = ['grid_2_grid', 'grid_2_1d', 'grid_us_2_1d_us']
 
-    def __init__(self, to_bmi, from_bmi, method=None, filename=None, to_coords=None):
+    def __init__(self, to_bmi, from_bmi, method=None, filename=None):
         # this info can be filled now or when coupling
         self.method = method
         if not self.method in self._methods:
@@ -23,7 +20,6 @@ class SpatialCoupling(object):
         self.from_name = from_bmi.get_component_name()
         # to
         self.to_bmi = to_bmi
-        self.reproject = None
         self.to_name = to_bmi.get_component_name()
         # this info is filled when coupling
         self.from_ind = np.array([]) # 1d array with indices
@@ -32,7 +28,6 @@ class SpatialCoupling(object):
         self.to_ind = np.array([])
         self.to_grp = np.array([])
         self.to_grp_n = np.array([])
-        self.to_coords = to_coords
         self.frac = np.array([])
         self._nodes_outside_domain = []
 
@@ -48,7 +43,7 @@ class SpatialCoupling(object):
             not_coupled = coupled_dict.pop(-1)
             print(not_coupled)
             # TODO warning
-        self.to_ind, self.to_grp, self.to_grp_n = group_index(coupled_dict.values())
+        self.to_ind, self.to_grp, self.to_grp_n = group_index(coupled_dict.values()) 
         self.from_ind, self.from_grp, self.from_grp_n = group_index(coupled_dict.keys()) 
     
     def set_frac(self, from_area=True):
@@ -92,27 +87,13 @@ class SpatialCoupling(object):
         """
         """
         # rgrid to rgrid
-        if (self.to_bmi.grid.type == 1) and (self.from_bmi.grid.type == 1):
+        if (self.to_bmi.grid.type == self.from_bmi.grid.type == 1):
             # just check grid types. do nothing
-            # TODO make a configurable Resampling choice, now Resampling.average used hard coded
             check_bounds= np.all(self.to_bmi.grid.bounds == self.from_bmi.grid.bounds)
             check_shape = np.all(self.to_bmi.grid.shape == self.from_bmi.grid.shape)
             if not (check_shape and check_bounds):
-                # make a reprojection function, note that rasterio sees rasters flipped 
-                # vertically with respect to BMI convention, so a flipud is required
-                self.reproject = lambda data, nodata: rasterio.warp.reproject(
-                    data,
-                    destination=np.zeros((self.to_bmi.grid.height, self.to_bmi.grid.width)),
-                    src_transform=self.from_bmi.grid.transform,
-                    src_crs=self.from_bmi.grid.crs,
-                    src_nodata=nodata,
-                    dst_transform=self.to_bmi.grid.transform,
-                    dst_crs=self.to_bmi.grid.crs,
-                    dst_nodata=nodata,
-                    resampling=rasterio.enums.Resampling.average
-                    )[0]
-                # raise ValueError('both model grids should have the shape and bounding box')
-            # TODO make special case to cover same rgrid and same ugrid coupling
+                raise ValueError('both model grids should have the shape and bounding box')
+            # TODO make special case to cover same rgrid and same urgrid coupling
         # rgrid to ucgrid
         elif (self.from_bmi.grid.type == 1) and (self.to_bmi.grid.type == 3):
             # set inpmat
@@ -166,25 +147,14 @@ class SpatialCoupling(object):
         if not self.to_bmi.grid.has_1d():
             raise ValueError('1d network not set for model  {}'.format(self.to_name))
         # get 1d nodes
-        if self.to_coords is None:
-            to_coords = self.to_bmi.grid._1d.nodes
-            to_inds = self.to_bmi.grid._1d.inds
-        else:
-            # get 1d nodes from user-configured list of coordinates in .ini file
-            to_coords = np.array(self.to_coords)
-            x, y = zip(*to_coords)
-            row, col = rasterio.transform.rowcol(self.to_bmi.grid.transform, x, y)
-            try:
-                to_inds = np.array(self.to_bmi.grid.ravel_multi_index(row, col))
-            except:
-                raise IndexError('Some or all of manually configured 1D nodes fall outside valid model domain')
-
+        to_coords = self.to_bmi.grid._1d.nodes
+        to_inds = self.to_bmi.grid._1d.inds
         # get short handles for function
         fup = self.from_bmi.grid._dd.next_upstream
         findex = self.from_bmi.grid.ravel_multi_index
         frowcol = self.from_bmi.grid.unravel_index
         # find cells indices for all nodes
-        from_inds = self.from_bmi.grid.index(to_coords[:, 0], to_coords[:, 1], src_crs=self.to_bmi.grid.crs)
+        from_inds = self.from_bmi.grid.index(to_coords[:, 0], to_coords[:, 1])
         valid = from_inds >= 0
         if np.any(~valid):
             print('1D nodes found outside of valid 2D domain')
@@ -214,9 +184,11 @@ class SpatialCoupling(object):
         """check if coupling at indices"""
         return self.from_ind.size > 0
 
+
+
 def dictinvert(d):
     inv = {}
-    for k, v in d.items():
+    for k, v in d.iteritems():
         keys = inv.setdefault(v, [])
         keys.append(k)
     return inv
@@ -230,9 +202,8 @@ def group_index(indices):
     returns
     index:  [0, 1, 2, 3, 4]
     groups: [0, 0, 0, 1, 1]
-    length: [3, 2]
     """
-    x = np.array(list(indices)).flatten()
+    x = np.array(indices)
     if isinstance(x[0], (list, tuple)): # check if jagged array
         grp_n = np.array([len(a) for a in x])
         grp = np.repeat(np.arange(x.size), grp_n)
