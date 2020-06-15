@@ -13,6 +13,7 @@ https://github.com/eWaterCycle/bmi/blob/master/src/main/python/bmi.py
 
 from abc import ABCMeta, abstractmethod
 
+
 class Bmi(object):
     """
     Interface (abstract base class) for a model that implements the CSDMS BMI (Basic Model Interface).
@@ -99,7 +100,6 @@ class Bmi(object):
     """
     Variable Information Functions
     """
-
 
     def get_var_type(self, long_var_name):
         """
@@ -239,7 +239,6 @@ class Bmi(object):
         """
         pass
 
-    
     # NOTE all methods are replaced by Grid object methods using rasterio, pyugrid etc., see grid.py
     # """
     # Grid Information Functions
@@ -344,10 +343,10 @@ class Bmi(object):
     #     ???
     #     """
     #     pass
-    
-    
+
+
 class EBmi(Bmi):
-    
+
     @abstractmethod
     def initialize_config(self, config_fn):
         """
@@ -355,7 +354,7 @@ class EBmi(Bmi):
         This allows a user to then change settings and parameters before fully initializing the model
         """
         pass
-    
+
     @abstractmethod
     def initialize_model(self, source_directory):
         """
@@ -363,7 +362,7 @@ class EBmi(Bmi):
         reading/setting values.
         """
         pass
-    
+
     @abstractmethod
     def set_start_time(self, start_time):
         """
@@ -371,7 +370,7 @@ class EBmi(Bmi):
         and before initialize_model. Expects a value in the time units of the model
         """
         pass
-    
+
     @abstractmethod
     def set_end_time(self, end_time):
         """
@@ -379,7 +378,7 @@ class EBmi(Bmi):
         and before initialize_model. Expects a value in the time units of the model.
         """
         pass
-    
+
     @abstractmethod
     def get_attribute_names(self):
         """
@@ -387,7 +386,7 @@ class EBmi(Bmi):
         the meta-data of a model, for instance author, version, model specific settings, etc.
         """
         pass
-    
+
     @abstractmethod
     def get_attribute_value(self, attribute_name):
         """
@@ -395,7 +394,7 @@ class EBmi(Bmi):
         the meta-data of a model, for instance author, version, model specific settings, etc.
         """
         pass
-    
+
     @abstractmethod
     def set_attribute_value(self, attribute_name, attribute_value):
         """
@@ -403,7 +402,7 @@ class EBmi(Bmi):
         Attributes can be considered the meta-data of a model, for instance author, version, model specific settings, etc.
         """
         pass
-    
+
     # @abstractmethod
     # def save_state(self, destination_directory):
     #     """
@@ -413,17 +412,16 @@ class EBmi(Bmi):
     #     File destination_directory: the directory in which the state files should be written.
     #     """
     #     pass
-    
+
     # @abstractmethod
     # def load_state(self, source_directory):
     #     """
     #     Ask the model to load its complete internal current state from one or more state files in the given directory.
- 
+
     #     Input parameters:
     #     File source_directory: the directory from which the state files should be read.
     #     """
     #     pass
-
 
 
 class GBmi(EBmi):
@@ -461,7 +459,6 @@ class GBmi(EBmi):
         """
         pass
 
-
     """
     Model control function
     """
@@ -469,7 +466,6 @@ class GBmi(EBmi):
     def spinup(self):
         """PCR specific spinup function"""
         pass
-
 
     """
     set and get attribute / config 

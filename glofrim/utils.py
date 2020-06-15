@@ -2,15 +2,17 @@ import sys
 import logging
 import logging.handlers
 
-_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+_formatter = logging.Formatter(
+    "%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+
 
 def setlogger(logfilename=None, loggername='glofrim', thelevel=logging.INFO, show_in_console=True, formatter=_formatter):
     """
     Set-up the logging system and return a logger object. Exit if this fails
     """
 
-    try:    
-        #create logger
+    try:
+        # create logger
         logger = logging.getLogger(loggername)
         # remove any existing handlers
         while logger.handlers:
@@ -25,13 +27,14 @@ def setlogger(logfilename=None, loggername='glofrim', thelevel=logging.INFO, sho
             console.setLevel(logger.level)
             console.setFormatter(formatter)
             logger.addHandler(console)
-        #add filehandler to logger
+        # add filehandler to logger
         if logfilename is not None:
             add_file_handler(logger, logfilename)
         return logger
     except IOError:
         print("ERROR: Failed to initialize logger with logfile: " + logfilename)
         sys.exit(2)
+
 
 def add_file_handler(logger, logfilename, formatter=_formatter):
     ch = logging.FileHandler(logfilename, mode='w')
@@ -40,6 +43,7 @@ def add_file_handler(logger, logfilename, formatter=_formatter):
     logger.addHandler(ch)
     logger.debug("File logging to {}".format(logfilename))
 
+
 def closelogger(logger):
     while logger.handlers:
         i = logger.handlers[0]
@@ -47,6 +51,7 @@ def closelogger(logger):
         i.flush()
         i.close()
     return logger
+
 
 def close_with_error(logger, msg):
     logger.error(msg)
