@@ -121,10 +121,11 @@ autosummary_generate = True
 # a list of builtin themes.
 #
 # html_theme = 'sphinx_rtd_theme'
-html_theme = 'sphinxdoc'
+# html_theme = 'sphinxdoc'
 # html_theme = 'pyramid'
 # html_theme = 'bootstrap'
 # html_theme = 'alabaster'
+html_theme = 'pydata_sphinx_theme'
 
 html_theme_options = {
 }
