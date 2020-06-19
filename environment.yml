@@ -14,8 +14,8 @@ dependencies:
   - python>=3.6
   - python-dateutil>=2.8
   - pytz>=2019.3
-  - rasterio>=1.1
-  - rtree>=0.9.3
+  - rasterio==1.1
+  - rtree==0.9.3
   - six>=1.14
   - wflow
   - pip:
