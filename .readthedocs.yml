@@ -21,5 +21,5 @@ python:
   version: 3.6
   install:
     - requirements: doc/requirements.rtd.txt
-    - method: conda
+    - method: pip
       path: .
