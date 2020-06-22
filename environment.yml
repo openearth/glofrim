@@ -1,4 +1,4 @@
-name: glofrim3
+name: glofrim
 
 channels:
   - conda-forge
@@ -11,12 +11,13 @@ dependencies:
   - numpy
   - pcraster
   - pip>=20.0
-  - python>=3.7
+  - python>=3.6
   - python-dateutil>=2.8
   - pytz>=2019.3
   - rasterio>=1.1
   - rtree>=0.9.3
   - six>=1.14
   - wflow
+  - pydata-sphinx-theme
   - pip:
     - bmi-python>=0.2.6
