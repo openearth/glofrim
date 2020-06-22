@@ -38,3 +38,7 @@ p.rubric {
     font-weight: 400;
     line-height:1.15
 }
+
+.wy-nav-content {
+    max-width: 100% !important;
+}

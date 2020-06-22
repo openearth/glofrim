@@ -121,12 +121,12 @@ autosummary_generate = True
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-# html_theme = 'sphinx_rtd_theme'
+html_theme = 'sphinx_rtd_theme'
 # html_theme = 'sphinxdoc'
 # html_theme = 'pyramid'
 # html_theme = 'bootstrap'
 # html_theme = 'alabaster'
-html_theme = 'pydata_sphinx_theme'
+# html_theme = 'pydata_sphinx_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -134,7 +134,8 @@ html_theme = 'pydata_sphinx_theme'
 #
 html_theme_options = {
     "github_url": "https://github.com/openearth/glofrim",
-    "use_edit_page_button": False
+    "use_edit_page_button": False,
+    "search_bar_position": "sidebar"
 }
 
 # The name of an image file (relative to this directory) to place at the top

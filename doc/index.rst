@@ -74,8 +74,6 @@ Structure
    running_GLOFRIM.rst
    references.rst  
    codeDocumentation.rst
-   contributing.rst
-   code_of_conduct.rst
 
 Indices and tables
 ==================
