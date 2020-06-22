@@ -1,7 +1,7 @@
 .. _gridCoupling:
 
 *******************************
-Coupling different models
+Model coupling
 *******************************
 When different models with different scopes are coupled, this may in a range of possible coupling
 designs. To cater for this flexibility, GLOFRIM allows for various ways of coupling grids and exchanging
@@ -37,8 +37,12 @@ channels and can therefore be used for the separation.
     GLOFRIM aims at using the default input files of the models to perform the spatial coupling of grids and networks. For
     CMF, however, it is still needed to convert bin/ctl-files to geoTiff-files, particularly the nextxy.bin file for look-up of
     the flow direction.
-    We provide a script to convert bin/ctl-files to tif-files.::
-        python <path/to>/ cama_maps_io.py <map/folder>/nextxy.ctl. 
+
+We provide a script to convert bin/ctl-files to tif-files:
+
+.. code-block:: console
+
+    python <path/to>/ cama_maps_io.py <map/folder>/nextxy.ctl. 
 
 Exchange of model information
 =============================

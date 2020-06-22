@@ -3,28 +3,62 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to GLOFRIM's documentation!
-===================================
+*******************************
+GLOFRIM
+*******************************
 
-GLOFRIM v1.0 was developed as part of Jannis Hoch's PhD studies at Utrecht University in the Netherlands.
-The current version, GLOFRIM v2.0, was developed in a collaboration with Dirk Eilander (*IVM, VU Amsterdam*) 
-and Hiroaki Ikeuchi (*University of Tokyo*).
+Main development by Jannis M. Hoch (Utrecht University, Deltares), Dirk Eilander (VU Amsterdam, Deltares), Hiroaki Ikeuchi (University of Tokyo), Hessel Winsemius (Deltares) and Fedor Baart (Deltares).
 
-Thanks to all contributors, co-authors, and collaborators!
+Contact: Jannis M. Hoch (j.m.hoch@uu.nl), Dirk Eilander (dirk.eilander@vu.nl)
+
+We also want to acknowledge the contributions of all colleagues involved in the development of GLOFRIM.
+
+.. image:: https://zenodo.org/badge/90723537.svg
+   :target: https://zenodo.org/badge/latestdoi/90723537
+
+.. image:: https://readthedocs.org/projects/glofrim/badge/?version=latest
+   :target: https://glofrim.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
+
+.. image:: https://img.shields.io/badge/License-GPLv3-blue.svg
+   :target: https://www.gnu.org/licenses/gpl-3.0
+
+Description
+================
+
+GLOFRIM offers a flexible and modular tool to couple hydrologic, routing, and hydodynamic models across scales. This enables integration of physical processes from different models. The coupling process is spatially explicit (i.e. on grid-to-grid basis) and model information is exchanged online (i.e. per time step).
+
+GLOFRIM is designed as a “human interface” with additional and user friendly Python functions on top of the basic model interface (BMI), which makes it easy to setup and run coupled model simulations. For the model developer, only the BMI needs to be implemented in the model in a scripting language of choice, which makes it easy to develop and maintain. 
+
+With the available models, different coupled hydrologic and hydrodynamic model runs can be done, for instance:
+
+* 2-step coupling: hydrology -> 1D routing or hydrology -> full 2D hydrodynamics
+* 3-step coupling: hydrology -> 1D routing -> full 2D hydrodynamics
+
+.. image:: _images/GLOFRIM_flows_wLegend.png 
+    :scale: 40%
+    :align: center
 
 GLOFRIM download
 ================
 
-Together with the recently published article in `NHESS <https://www.nat-hazards-earth-syst-sci.net/19/1723/2019/nhess-19-1723-2019.html>`_, 
-a stable release of the GLOFRIM 2.0 code is now available via `Zenodo <https://doi.org/10.5281/zenodo.3364388>`_.
+The current stable release is GLOFRIM 2.0 and downloadable from `Zenodo <https://doi.org/10.5281/zenodo.3364388>`_. 
+Version 2.0 was used in the description artile published in `NHESS <https://www.nat-hazards-earth-syst-sci.net/19/1723/2019/nhess-19-1723-2019.html>`_.
 
-.. image:: https://zenodo.org/badge/90723537.svg
-   :target: https://zenodo.org/badge/latestdoi/90723537
-   :align: left
+GLOFRIM is hosted on `GitHub <https://github.com/openearth/glofrim>`_. All unreleased developments can be found there.
 
-GLOFRIM is hosted on `GitHub <https://github.com/openearth/glofrim>`_.
+All GLOFRIM code is licensed under the GNU General Public License v3.0.
 
-All GLOFRIM code is licensed under the GNU General Public License v3.0
+Acknowledgments
+===============
+
+The development of GLOFRIM was only possible due to the contribution of many colleagues at various departments and universities.
+
+Particular shout-outs go to:
+
+Jeffrey Neal, Paul Bates, Arthur van Dam, Herman Kernkamp, Edwin Sutanudjaja, Rens van Beek, and Marc Bierkens.
+
+Research was funded by the European Institute of Innovation and Technology (EIT) Climate-KIC and Netherlands Organisation for Scientific Research (NWO).
 
 Structure
 =========================
@@ -38,56 +72,10 @@ Structure
    BMI.rst
    requirements.rst
    running_GLOFRIM.rst
-   applications.rst
    references.rst  
    codeDocumentation.rst
-   license.rst
    contributing.rst
    code_of_conduct.rst
-
-Acknowledgments
-===============
-
-The development of GLOFRIM was only possible due to the contribution of many colleagues at various departments and universities.
-
-Particular shout-outs go to:
-
-Fedor Baart (*Deltares*), Jeffrey Neal (*University of Bristol*), Paul Bates (*University of Bristol*), Arthur van Dam (*Deltares*), Herman Kernkamp (*Deltares*),
-Edwin Sutanudjaja (*Utrecht University*), Hessel Winsemius (*Deltares*, *VU Amsterdam*), Rens van Beek (*Utrecht University*), and Marc Bierkens (*Utrecht University*)
-
-Research was funded by the European Institute of Innovation and Technology (EIT) Climate-KIC and Netherlands Organisation for Scientific Research (NWO).
-
-.. |logo_CKIC| image:: _images/ClimateKIC.png
-    :width: 50pt
-    :height: 50pt
-    :align: bottom
-
-.. |logo_Utre| image:: _images/Logo_UU.jpg
-    :width: 120pt
-    :height: 50pt
-    :align: bottom
-
-.. |logo_Delt| image:: _images/Logo_Deltares.jpg
-    :width: 100pt
-    :height: 50pt
-    :align: bottom
-
-.. |logo_Bris| image:: _images/Bristol.png
-    :width: 120pt
-    :height: 50pt
-    :align: bottom
-
-.. |logo_VUam| image:: _images/logo_IVM_2.png
-    :width: 200pt
-    :height: 50pt
-    :align: bottom
-
-.. |logo_Toky| image:: _images/logo_UoT_2.png
-    :width: 35pt
-    :height: 35pt
-    :align: bottom
-
-|logo_Utre|         |logo_Delt|         |logo_Bris|         |logo_VUam|         |logo_Toky|
 
 Indices and tables
 ==================

@@ -8,11 +8,14 @@ GLOFRIM exists of a series of uniformed BMI wrappers for each model and a overar
 
 Run GLOFRIM from Python
 =======================
+
 Coupled run
 -----------
 
 To run a coupled model from python use the following lines. 
-The glofrim.ini (see example in root directory) configuration file hold the information of the individual model configuration files and exchanges between the models::
+The glofrim.ini (see example in root directory) configuration file hold the information of the individual model configuration files and exchanges between the models.
+
+.. code-block:: python
 
   # import GLOFRIM
   from glofrim import Glofrim 
@@ -21,7 +24,9 @@ The glofrim.ini (see example in root directory) configuration file hold the info
   # initialize the coupling with the glofrim.ini configuration file
   cbmi.initialize_config(/path/to/glofrim.ini) 
 
-A basic model run uses the following statements::
+A basic model run uses the following statements:
+
+.. code-block:: python
 
   # optional: get the model start time
   bmi.get_start_time() 
@@ -35,7 +40,9 @@ A basic model run uses the following statements::
 Stand-alone run
 ---------------
 
-To run stand alone models via the GLOFRIM BMI wrapper you can use the lines below, followed by the same statements as before::
+To run stand alone models via the GLOFRIM BMI wrapper you can use the lines below, followed by the same statements as before.
+
+.. code-block:: python
 
   # import the CaMa-Flood bmi wrapper
   from glofrim import CMF 
@@ -50,17 +57,23 @@ Run GLOFRIM from command line
 The GLOFRIM library contains a script to run combined and single models with a single line from a terminal. 
 This script can be found in the glofirm-py/scripts folder.
 
-GLOFRIM can be executed as follows on Linux command line::
+GLOFRIM can be executed as follows on Linux command line:
+
+.. code-block:: console
 
   python glofrim_runner.py run /path/to/glofrim.ini --env /path/to/glofrim.env -s startdate -e enddate
 
 Both *startdate* and *enddate* must be in yyyy-mm-dd format.
 
-For more info on coupled runs, check::
+For more info on coupled runs, check:
+
+.. code-block:: console
 
   python glofrim_runner.py run –help
 
-and for stand-alone runs::
+and for stand-alone runs:
+
+.. code-block:: console
 
   python glofrim_runner.py run_single –help
 

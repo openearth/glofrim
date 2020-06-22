@@ -1,7 +1,7 @@
 .. _basicModelInterface:
 
 *******************************
-The Basic Model Interface
+The BMI
 *******************************
 
 Introduction
