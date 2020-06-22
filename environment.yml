@@ -18,5 +18,6 @@ dependencies:
   - rtree>=0.9.3
   - six>=1.14
   - wflow
+  - pydata-sphinx-theme
   - pip:
     - bmi-python>=0.2.6
