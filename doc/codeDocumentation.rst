@@ -2,7 +2,7 @@
 
 
 **************************
-GLOFRIM API documentation
+GLOFRIM API
 **************************
 
 Initialization

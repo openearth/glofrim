@@ -12,30 +12,31 @@ two hydrodynamic models (Delft3D Flexible Mesh and LISFLOOD-FP).
 
 PCR-GLOBWB
 ----------
-PCR-GLOBWB (hereafter PCR) is a global hydrology and water resources model, fully integrating water use.Sector-specific water demand, groundwater and surface water withdrawal, 
-water consumption, and return flows are dynamically calculated at every time step and interact directly with the simulated hydrology. PCR runs at both 5 and 30 arc-min spatial
-resolution (that is, roughly 10km x 10km and 50km x 50km at the Equator, respectively).
+PCR-GLOBWB (hereafter PCR) is a global hydrology and water resources model, fully integrating water use. Sector-specific water demand, groundwater and surface water withdrawal, 
+water consumption, and return flows are dynamically calculated at every time step and interact directly with the simulated hydrology.
 
 The model simulates vertical exchanges between surface, two soil moistere layers, and a groundwater layer. Exchange precipitation is, after accounting for irrigatoin and water use abstractions,
 routed along a local drainage network using the kinematic wave approximation.
 
 For more information about PCR, we refer to [Sutanudjaja2018]_.
 
-**Model availability**
+Model availability
+^^^^^^^^^^^^^^^^^^^
 
-A non bmi'ed version of PCR is available at `PCR-GLOBWB GitHub <https://github.com/UU-Hydro/PCR-GLOBWB_model>`_ which is, however, not suitable for application within GLOFRIM.
+The default and published stable version of PCR is available at `Zenodo <https://doi.org/10.5281/zenodo.595656>`_ which is, however, not suitable for application within GLOFRIM.
 
 To apply PCR within GLOFRIM, a separate model version of PCR-GLOBWB needs to be used. It can be found `here <https://doi.org/10.5281/zenodo.3345900>`_.
 
 .. note::
 
     Due to the evolving nature of model code and thus also of PCR-GLOBWB, recently added functionality of 
-    PCR-GLOBWB may not be available in the here downloadable version.
+    PCR-GLOBWB may not be available in the here downloadable version. The overall functionalities of the supported PCR-BMI model are nevertheless equal to those of PCR-GLOBWB 2.0 [Sutanudjaja2018]_.
     If you encounter any issues, please contact the developers!
 
 .. note::
 
-    PCR within GLOFRIM was successfully applied at 30 arc-min spatial resolutions. The 05 arc-min version or schematization at any finer spatial resolution were so far only used in test model and not for detailed studies.
+    PCR within GLOFRIM was successfully applied at 30 arc-min spatial resolutions. 
+    The 05 arc-min version or schematization at any finer spatial resolution were so far only used in test model and not for detailed studies.
 
 WFLOW
 -----
@@ -47,7 +48,8 @@ Despite the different models available, WFL ensures that the main model properti
 
 For a full documentation of WFL code, models, application, and other functionalities, please visit the `WFLOW readthedocs <https://wflow.readthedocs.io/en/latest/>`_ page.
 
-**Model availability**
+Model availability
+^^^^^^^^^^^^^^^^^^^
 
 WFL contains a BMI adapter by default and therefore no alternative version has to be applied to use it within GLOFRIM.
 
@@ -56,11 +58,6 @@ All code is available at `WFLOW GitHub <https://github.com/openstreams/wflow/>`_
 .. note::
 
     For GLOFRIM, only the SBM and W3RA models were tested successfully. Application of other WFL models should be straightforward, but that is uncharted territory at the moment.
-
-.. warning::
-    
-    WFL was recently upgraded to Python 3. However, GLOFRIM is still running with Python 2. To be able to run WFL within GLOFRIM, make sure that you the branch corresponding to 
-    the (probably older) Python 2 version of WFL!
 
 CaMa-Flood
 ----------
@@ -73,11 +70,18 @@ in input data are marginal.
 
 For further model description and application, please see [Yamazaki2011]_ as well as the model's `manual <http://hydro.iis.u-tokyo.ac.jp/~yamadai/cama-flood/Manual_CaMa-Flood_v362.pdf>`_.
 
-**Model availability**
+.. note::
+
+    For the development of GLOFRIM, we applied version 3.6.2. Higher version may differ.
+
+Model availability
+^^^^^^^^^^^^^^^^^^^
 
 The original non bmi'ed model code is available upon request `here <http://hydro.iis.u-tokyo.ac.jp/~yamadai/cama-flood/>`_.
 
-To obtain a bmi'ed version (v.3.6.2) to be applied within GLOFRIM, please contact the developers.
+.. note::
+
+    To obtain a bmi'ed version (v.3.6.2) to be applied within GLOFRIM, please contact the developers.
 
 Delft3D Flexible Mesh
 ---------------------
@@ -96,7 +100,8 @@ Since DFM genercially contains a BMI adapter, any DFM version can be used as lon
 For documentation of the model scheme, [Kernkamp2011]_ provides the theoretical and computatonal background. Besides, extensive `technical <https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_Technical_Reference_Manual.pdf>`_ 
 and `user <https://content.oss.deltares.nl/delft3d/manuals/D-Flow_FM_User_Manual.pdf>`_ manuals are available.
 
-**Model availability**
+Model availability
+^^^^^^^^^^^^^^^^^^^
 
 The model is free to use, but currently not yet openly available. The DFM development team needs to be contacted for a DFM version.
 Please see the `DFM website <https://oss.deltares.nl/web/delft3dfm/home>`_ for contact information.
@@ -117,7 +122,8 @@ well as the river bank height. The computational grid is regular in all applicat
 
 The initial paper documenting LFP's computational scheme is [Bates2010]_. More model and background information can be found on the `LISFLOOD-FP <https://www.bristol.ac.uk/geography/research/hydrology/models/lisflood/>`_ website.
 
-**Model availability**
+Model availability
+^^^^^^^^^^^^^^^^^^^
 
 The bmi'ed version of LFP (v. 5.9) can freely be downloaded from `Zenodo <https://doi.org/10.5281/zenodo.1479836>`_. 
 A test version of the default model can be requested via this `form <https://www.bristol.ac.uk/geography/research/hydrology/models/lisflood/downloads/>`_.
@@ -127,12 +133,7 @@ A test version of the default model can be requested via this `form <https://www
     The downloadable bmi'ed version is based on LFP version 5.9 and not updated with recent updates.
     The computational scheme is, nevertheless, identical and inundation simulations are not affected.
 
-LFP was developed at the University of Bristol. Bristol also has a nice `bridge <https://en.wikipedia.org/wiki/Clifton_Suspension_Bridge>`_:
-
-.. image:: _images/bridge.png
-
-
 Adding new models
 -----------------
-It's easy to extend with new models via provided template.
+It's (relatively) easy to extend GLOFRIM with new models.
 A requirement is that the model to be added contains BMI functions and follows the conventions used in the python-BMI files of the other models.
