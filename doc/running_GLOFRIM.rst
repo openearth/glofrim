@@ -4,10 +4,36 @@
 Running GLOFRIM
 ***************
 
-GLOFRIM exists of a series of uniformed BMI wrappers for each model and a overarching BMI wrapper for running coupled models.
+GLOFRIM workflow
+================
+By applyting the BMI functions (see ::ref:`basicModelInterface` ), the following workflow is followed in GLOFRIM. The example shows coupling between a
+hydrologic and a hydrodynamic model, but would be identical if other or more models were coupled.
+
+.. image:: _images/workflow.png
+    :scale: 40%
+    :align: center
+
+After the model are chosen and coupling settings are defined in the GLOFRIM ini-file, the ini-file is read by GLOFRIM
+to first initialize the model-specific configuration files and then initialize both models as a coupled entity.
+
+Essential part of creating the coupled entity is the coupling of grids which is explained in more detail in :ref:`gridCoupling`.
+
+Once the coupled models are initialized, a loop is entered, starting at the start time and terminating at the end time
+as specified in the python executiont command (see :ref:`run_from_commandline`).
+
+During the loop, models are individually updated from the upstream end of the model cascade to the most downstream model,
+depending on the number of models coupled.
+
+After a model is updated, the variables to be exchanged (as defined in GLOFRIM ini-file) are retrieved from the providing model,
+if necessary aligned, and inserted to the receiving model. Only then, model time of the receiving model is forward integrated
+until the model time of the providing model is reached.
+
+If model end time is reached, model execution is finalized.
 
 Run GLOFRIM from Python
 =======================
+
+GLOFRIM exists of a series of uniformed BMI wrappers for each model and a overarching BMI wrapper for running coupled models.
 
 Coupled run
 -----------

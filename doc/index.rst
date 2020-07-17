@@ -45,6 +45,9 @@ GLOFRIM download
 The current stable release is GLOFRIM 2.0 and downloadable from `Zenodo <https://doi.org/10.5281/zenodo.3364388>`_. 
 Version 2.0 was used in the description artile published in `NHESS <https://www.nat-hazards-earth-syst-sci.net/19/1723/2019/nhess-19-1723-2019.html>`_.
 
+.. note::
+   GLOFRIM 2.0 still works with Python 2.7. On GitHub, an unreleased but tested GLOFRIM version working with Python 3.x is available.
+
 GLOFRIM is hosted on `GitHub <https://github.com/openearth/glofrim>`_. All unreleased developments can be found there.
 
 All GLOFRIM code is licensed under the GNU General Public License v3.0.
@@ -69,9 +72,9 @@ Structure
    intro.rst
    models.rst
    gridCoupling.rst
-   BMI.rst
    requirements.rst
    running_GLOFRIM.rst
+   BMI.rst
    references.rst  
    codeDocumentation.rst
 

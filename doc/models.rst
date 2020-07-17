@@ -30,7 +30,7 @@ To apply PCR within GLOFRIM, a separate model version of PCR-GLOBWB needs to be 
 .. note::
 
     Due to the evolving nature of model code and thus also of PCR-GLOBWB, recently added functionality of 
-    PCR-GLOBWB may not be available in the here downloadable version.
+    PCR-GLOBWB may not be available in the here downloadable version. The overall functionalities of the supported PCR-BMI model are nevertheless equal to those of PCR-GLOBWB 2.0 [Sutanudjaja2018]_.
     If you encounter any issues, please contact the developers!
 
 .. note::
