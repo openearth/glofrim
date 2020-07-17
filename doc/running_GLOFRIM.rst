@@ -83,8 +83,9 @@ The GLOFRIM configuration file
 ==============================
 The GLOFRIM configuration (or .ini) file has four sections, the engines, models, coupling and exchanges settings, each is shortly explained here.
 
-
-The **engines** section contains paths to the shared libraries of each non-python model. For convenience the absolute paths in the engine and models sections 
+engines
+--------
+The engines section contains paths to the shared libraries of each non-python model. For convenience the absolute paths in the engine and models sections 
 may also be set in a seperate environment.env file in the GLOFRIM root folder.::
 
     [engines]
@@ -94,7 +95,9 @@ may also be set in a seperate environment.env file in the GLOFRIM root folder.::
     DFM = /path/to/libdflowfm.so
     LFP = /path/to/liblisflood.so
 
-The **models** section needs the paths to all model configuraiton files. Together with the model engine, this allows GLOFRIM to know the model schematisation and to 
+models
+-------
+The models section needs the paths to all model configuraiton files. Together with the model engine, this allows GLOFRIM to know the model schematisation and to 
 communicate with that model via BMI. Add only models which are part of the (coupled) run. The paths should be either relative to the root_dir option (if set), this ini file directory or absolute.::
 
     [models]
@@ -117,10 +120,14 @@ communicate with that model via BMI. Add only models which are part of the (coup
 .. note::
     CMF only listens to the configuration file if it is called *input_flood.nam*, therefore the original configuration file should be called different, for instance input_flood.nam.org.
 
-The **coupling** section contains general settings for the exchanges between models.
-**dt** indicates the time step at which information should be exchanged between models. This usually should be at least one full time step of the model that runs with the largest time step.
+coupling
+---------
+The coupling section contains general settings for the exchanges between models.
+dt indicates the time step at which information should be exchanged between models. This usually should be at least one full time step of the model that runs with the largest time step.
 In the example we assume that a WFlow model dictates daily time steps, and that a coupled lisflood model
-has smaller time steps. The section furthermore contains projections of the different model instances. These can be provided in EPSG code (e.g. "EPSG:4326" would indicate regular WGS84 lat lon projection) or as proj string, as shown in the example.::
+has smaller time steps. 
+
+The section furthermore contains projections of the different model instances. GLOFRIM then reprojects the models to enable spatially correct coupling. The projections can be provided in EPSG code (e.g. "EPSG:4326" would indicate regular WGS84 lat lon projection) or as proj string, as shown in the example.::
 
     [coupling]
     # timestep for exchanges [sec]
@@ -128,8 +135,9 @@ has smaller time steps. The section furthermore contains projections of the diff
     WFL=+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs
     LFP=+proj=utm +zone=34 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 
-
-The **exchanges** section contains the information about how the models communicate on run time. This part has a slightly complex syntax as it contains a lot of information.
+exchanges
+----------
+The exchanges section contains the information about how the models communicate on run time. This part has a slightly complex syntax as it contains a lot of information.
 Every line indicates one exchange from the left (upstream/get) model.variable to the right (downstream/set) model.variable. This can be further extended by multipliers which can be model variables 
 or scalar values in order to make sure the variable units match. Behind the @ the spatial location to get (upstream) and set (downstream) the model variables.
 Current options are @1d,  @1d_us (the most upstream 1d cells or nodes) and @grid_us (the upstream cell for each grid cell). Finally, behind the location of the downstream/set model, a user may set a `|` sign and then specify the grid cell coordinates (in the projection of the model) in python list form, that should be coupled with the upstream grid cells of the upstream/get model. This should be done as follows::
