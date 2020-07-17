@@ -4,15 +4,44 @@
 Running GLOFRIM
 ***************
 
-GLOFRIM exists of a series of uniformed BMI wrappers for each model and a overarching BMI wrapper for running coupled models.
+GLOFRIM workflow
+================
+By applyting the BMI functions (see ::ref:`basicModelInterface` ), the following workflow is followed in GLOFRIM. The example shows coupling between a
+hydrologic and a hydrodynamic model, but would be identical if other or more models were coupled.
+
+.. image:: _images/workflow.png
+    :scale: 40%
+    :align: center
+
+After the model are chosen and coupling settings are defined in the GLOFRIM ini-file, the ini-file is read by GLOFRIM
+to first initialize the model-specific configuration files and then initialize both models as a coupled entity.
+
+Essential part of creating the coupled entity is the coupling of grids which is explained in more detail in :ref:`gridCoupling`.
+
+Once the coupled models are initialized, a loop is entered, starting at the start time and terminating at the end time
+as specified in the python executiont command (see :ref:`run_from_commandline`).
+
+During the loop, models are individually updated from the upstream end of the model cascade to the most downstream model,
+depending on the number of models coupled.
+
+After a model is updated, the variables to be exchanged (as defined in GLOFRIM ini-file) are retrieved from the providing model,
+if necessary aligned, and inserted to the receiving model. Only then, model time of the receiving model is forward integrated
+until the model time of the providing model is reached.
+
+If model end time is reached, model execution is finalized.
 
 Run GLOFRIM from Python
 =======================
+
+GLOFRIM exists of a series of uniformed BMI wrappers for each model and a overarching BMI wrapper for running coupled models.
+
 Coupled run
 -----------
 
 To run a coupled model from python use the following lines. 
-The glofrim.ini (see example in root directory) configuration file hold the information of the individual model configuration files and exchanges between the models::
+The glofrim.ini (see example in root directory) configuration file hold the information of the individual model configuration files and exchanges between the models.
+
+.. code-block:: python
 
   # import GLOFRIM
   from glofrim import Glofrim 
@@ -21,7 +50,9 @@ The glofrim.ini (see example in root directory) configuration file hold the info
   # initialize the coupling with the glofrim.ini configuration file
   cbmi.initialize_config(/path/to/glofrim.ini) 
 
-A basic model run uses the following statements::
+A basic model run uses the following statements:
+
+.. code-block:: python
 
   # optional: get the model start time
   bmi.get_start_time() 
@@ -35,7 +66,9 @@ A basic model run uses the following statements::
 Stand-alone run
 ---------------
 
-To run stand alone models via the GLOFRIM BMI wrapper you can use the lines below, followed by the same statements as before::
+To run stand alone models via the GLOFRIM BMI wrapper you can use the lines below, followed by the same statements as before.
+
+.. code-block:: python
 
   # import the CaMa-Flood bmi wrapper
   from glofrim import CMF 
@@ -50,17 +83,23 @@ Run GLOFRIM from command line
 The GLOFRIM library contains a script to run combined and single models with a single line from a terminal. 
 This script can be found in the glofirm-py/scripts folder.
 
-GLOFRIM can be executed as follows on Linux command line::
+GLOFRIM can be executed as follows on Linux command line:
+
+.. code-block:: console
 
   python glofrim_runner.py run /path/to/glofrim.ini --env /path/to/glofrim.env -s startdate -e enddate
 
 Both *startdate* and *enddate* must be in yyyy-mm-dd format.
 
-For more info on coupled runs, check::
+For more info on coupled runs, check:
+
+.. code-block:: console
 
   python glofrim_runner.py run –help
 
-and for stand-alone runs::
+and for stand-alone runs:
+
+.. code-block:: console
 
   python glofrim_runner.py run_single –help
 
@@ -70,8 +109,9 @@ The GLOFRIM configuration file
 ==============================
 The GLOFRIM configuration (or .ini) file has four sections, the engines, models, coupling and exchanges settings, each is shortly explained here.
 
-
-The **engines** section contains paths to the shared libraries of each non-python model. For convenience the absolute paths in the engine and models sections 
+engines
+--------
+The engines section contains paths to the shared libraries of each non-python model. For convenience the absolute paths in the engine and models sections 
 may also be set in a seperate environment.env file in the GLOFRIM root folder.::
 
     [engines]
@@ -81,7 +121,9 @@ may also be set in a seperate environment.env file in the GLOFRIM root folder.::
     DFM = /path/to/libdflowfm.so
     LFP = /path/to/liblisflood.so
 
-The **models** section needs the paths to all model configuraiton files. Together with the model engine, this allows GLOFRIM to know the model schematisation and to 
+models
+-------
+The models section needs the paths to all model configuraiton files. Together with the model engine, this allows GLOFRIM to know the model schematisation and to 
 communicate with that model via BMI. Add only models which are part of the (coupled) run. The paths should be either relative to the root_dir option (if set), this ini file directory or absolute.::
 
     [models]
@@ -104,10 +146,14 @@ communicate with that model via BMI. Add only models which are part of the (coup
 .. note::
     CMF only listens to the configuration file if it is called *input_flood.nam*, therefore the original configuration file should be called different, for instance input_flood.nam.org.
 
-The **coupling** section contains general settings for the exchanges between models.
-**dt** indicates the time step at which information should be exchanged between models. This usually should be at least one full time step of the model that runs with the largest time step.
+coupling
+---------
+The coupling section contains general settings for the exchanges between models.
+dt indicates the time step at which information should be exchanged between models. This usually should be at least one full time step of the model that runs with the largest time step.
 In the example we assume that a WFlow model dictates daily time steps, and that a coupled lisflood model
-has smaller time steps. The section furthermore contains projections of the different model instances. These can be provided in EPSG code (e.g. "EPSG:4326" would indicate regular WGS84 lat lon projection) or as proj string, as shown in the example.::
+has smaller time steps. 
+
+The section furthermore contains projections of the different model instances. GLOFRIM then reprojects the models to enable spatially correct coupling. The projections can be provided in EPSG code (e.g. "EPSG:4326" would indicate regular WGS84 lat lon projection) or as proj string, as shown in the example.::
 
     [coupling]
     # timestep for exchanges [sec]
@@ -115,8 +161,9 @@ has smaller time steps. The section furthermore contains projections of the diff
     WFL=+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs
     LFP=+proj=utm +zone=34 +south +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 
-
-The **exchanges** section contains the information about how the models communicate on run time. This part has a slightly complex syntax as it contains a lot of information.
+exchanges
+----------
+The exchanges section contains the information about how the models communicate on run time. This part has a slightly complex syntax as it contains a lot of information.
 Every line indicates one exchange from the left (upstream/get) model.variable to the right (downstream/set) model.variable. This can be further extended by multipliers which can be model variables 
 or scalar values in order to make sure the variable units match. Behind the @ the spatial location to get (upstream) and set (downstream) the model variables.
 Current options are @1d,  @1d_us (the most upstream 1d cells or nodes) and @grid_us (the upstream cell for each grid cell). Finally, behind the location of the downstream/set model, a user may set a `|` sign and then specify the grid cell coordinates (in the projection of the model) in python list form, that should be coupled with the upstream grid cells of the upstream/get model. This should be done as follows::
