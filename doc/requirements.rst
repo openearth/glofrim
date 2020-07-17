@@ -1,4 +1,4 @@
-.. requirements:
+.. _requirements:
 
 *******************************
 GLOFRIM requirements and set-up
@@ -6,9 +6,6 @@ GLOFRIM requirements and set-up
 
 .. note::
     GLOFRIM is available for Python 3.x on GitHub. The v2.0 release on Zenodo is still based on Python 2.7 though!
-
-.. warning::
-    Note that GLOFRIM is not Windows-compatible! Work-arounds via for instance mingw32 are possible.
 
 To install and run GLOFRIM on your Linux machine, several python packages are required.
 For convenience, we recommend to set up GLOFRIM within its own python environment.
@@ -20,7 +17,7 @@ This should also install the required python BMI-wrapper for you.
 .. code-block:: console
 
     conda env create -f environment.yml
-    source activate glofrim    
+    conda activate glofrim    
 
 To install GLOFRIM do:
 
