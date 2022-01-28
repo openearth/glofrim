@@ -82,7 +82,7 @@ class Sfincs(GBmi):
             self.initialize_config(config_fn)
         self.initialize_model()
             
-    def update(self, dt=None):
+    def update(self, dt=None, verbose=False):
         # dt in seconds. if not given model timestep is used
         if self._t >= self._endTime:
             raise Exception("endTime already reached, model not updated")
@@ -99,6 +99,8 @@ class Sfincs(GBmi):
         while self._t < t_next:
             self._bmi.update()
             self._t = self.get_current_time()
+            if verbose:
+                self.logger.info(f"Time of model is {self.get_current_time()} with time step {self.get_time_step()}. ")
             i += 1
         self.logger.info('updated model to datetime {} in {:d} iterations'.format(self._t.strftime("%Y-%m-%d %H:%M:%S"), i))
 
@@ -168,47 +170,36 @@ class Sfincs(GBmi):
     def get_time_units(self):
         return self._timeunit
 
-
     """
     Variable Getter and Setter Functions
     """
-    def get_mask(self, long_var_name):
-        if long_var_name in ['Qx', 'QxSGold', 'Qy', 'QySGold']:
-            if long_var_name in ['Qx', 'QxSGold']:
-                # expand mask in x-direction
-                mask = np.vstack([self.grid.mask, np.zeros((1, self.grid.mask.shape[1]))])
-                conv_filt = np.array([[1, 1]])  # horizontal convolution
-            elif long_var_name in ['Qy', 'QySGold']:
-                mask = np.hstack([self.grid.mask, np.zeros((self.grid.mask.shape[0], 1))])
-                conv_filt = np.array([[1], [1]])  # vertical convolution
-            mask = np.array(convolve2d(mask, conv_filt), dtype='bool')
-        else:
-            mask = self.grid.mask
-        return mask
+    def get_mask(self):
+        return self.grid.mask
 
-    def get_value(self, long_var_name, **kwargs):
-        var = np.rot90(np.asarray(self._bmi.get_var(long_var_name)).copy())
-        mask = self.get_mask(long_var_name)
+    def get_value(self, long_var_name, fill_value=-99999):
+        var = np.rot90(np.asarray(self._bmi.get_var(long_var_name).copy()))
+        mask = self.get_mask()
         var[~mask] = np.nan
         # ensure boundary vals are also set to NaN
-        var[var==-99999] = np.nan
+        var[var==fill_value] = np.nan
         return var
 
-    def get_value_at_indices(self, long_var_name, inds, **kwargs):
+    def get_value_at_indices(self, long_var_name, inds):
         return self.get_value(long_var_name).flat[inds]
 
-    def set_value(self, long_var_name, src, fill_value=0., **kwargs):
+    def set_value(self, long_var_name, src, fill_value=-99999):
         # set nans that lie within to_mod model domain to zeros to prevent model crashes
-        mask = self.get_mask(long_var_name)
-        src[mask & np.isnan(src)] = 0.
-        # set remaining nans to missing value
-        src = np.where(np.isnan(src), fill_value, src).astype(self.get_var_type(long_var_name))
-        # LFP does not have a set_var function, but used the get_var function with an extra argument
-        self._bmi.set_var(long_var_name, np.rot90(src, k=3))  # rotate to match the order of Sfincs internal grids
+        mask = self.get_mask()
+        src[mask & np.isnan(src)] = fill_value
+        # Set variable in Sfincs model
+        self._bmi.set_var(long_var_name, np.rot90(src, k=3)[:])  # rotate to match the order of Sfincs internal grids
 
-    def set_value_at_indices(self, long_var_name, inds, src, **kwargs):
+    def set_value_at_indices(self, long_var_name, inds, src, additive=False):
         val = self.get_value(long_var_name)
-        val.flat[inds] = src
+        if additive:
+            val.flat[inds] += src
+        else:
+            val.flat[inds] = src
         self.set_value(long_var_name, val)
 
     """
@@ -217,7 +208,7 @@ class Sfincs(GBmi):
     def get_grid(self):
         if not hasattr(self, 'grid') or (self.grid is None):
             # get the 2d dem values directly from bmi
-            dem_grid = np.rot90(self._bmi.get_var("zb"))
+            dem_grid = np.rot90(self._bmi.get_var("zb").copy())
             transform = rasterio.transform.Affine(
                 float(self.get_attribute_value('dx')),
                 0.,
