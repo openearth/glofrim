@@ -14,6 +14,7 @@ from glofrim.cmf_bmi import CMF
 from glofrim.dfm_bmi import DFM
 from glofrim.wfl_bmi import WFL
 from glofrim.lfp_bmi import LFP
+from glofrim.sfincs_bmi import Sfincs
 from glofrim.spatial_coupling import SpatialCoupling, groupby_sum
 
 class Glofrim(EBmi):
@@ -44,7 +45,7 @@ class Glofrim(EBmi):
 
     _name = 'GLOFRIM'
     _version = '2.0'
-    _models = {'PCR': PCR, 'CMF': CMF, 'DFM': DFM, 'WFL': WFL, 'LFP': LFP}
+    _models = {'PCR': PCR, 'CMF': CMF, 'DFM': DFM, 'WFL': WFL, 'LFP': LFP, 'Sfincs': Sfincs}
     _init_pre_exchange = ['DFM'] # need to initialize before we can know the grid
 
     def __init__(self, loglevel=logging.INFO):
@@ -103,7 +104,7 @@ class Glofrim(EBmi):
         for mod in self.bmimodels:
             dt_mod = self.bmimodels[mod].get_time_step()
             if not glib.check_dts_divmod(self._dt, dt_mod):
-                msg = "Invalid value for dt in comparison to model dt. Make sure a whole number of model timesteps fit in the set GLOFRIM dt"  
+                msg = f"Invalid value for dt {self._dt} in comparison to model dt {dt_mod}. Make sure a whole number of model timesteps fit in the set GLOFRIM dt"
                 self.logger.error(msg)
                 raise AssertionError(msg)
 
@@ -309,7 +310,7 @@ class Glofrim(EBmi):
                 exdict['to_vars'].append(var_to) # model variable
                 exdict['to_unit'].append(to_bmi.get_var_units(var_to))
                 if isinstance(var_to, str) and var_to not in to_model_vars:
-                    self.logger.Warning("Unkonwn variable {} for model {}".format(var_to, to_bmi._name))
+                    self.logger.warning("Unkonwn variable {} for model {}".format(var_to, to_bmi._name))
             # with second call to set variable add instead of replace
             if exdict['to_vars'][0] in vars_set:
                 exdict['add'] = True 
@@ -545,9 +546,15 @@ class Glofrim(EBmi):
             assert np.all(np.not_equal(div, 0)) # make sure not to divide by zero
             vals /= div
         # SET data
+        # ensure no missing values appear
+        vals[np.isnan(vals)] = 0.
+        vals = np.maximum(vals, 0)
         if add:  # add to current state
             vals += self.bmimodels[to_mod].get_value(to_vars[0])
+
         self.bmimodels[to_mod].set_value(to_vars[0], vals)
+        # import matplotlib.pyplot as plt
+        # import pdb;pdb.set_trace()
         return tot_volume
 
     def exchange_at_indices(self, from_mod, to_mod, from_vars, to_vars, coupling, add=False, **kwargs):
