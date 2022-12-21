@@ -16,6 +16,55 @@ from glofrim.gbmi import GBmi
 from glofrim.grids import RGrid
 import glofrim.glofrim_lib as glib
 
+def read_binary_map_index(fn_ind):
+    """Read binary map index file.
+    Parameters
+    ----------
+    fn_ind: str, Path
+        Path to map index file.
+    Returns
+    -------
+    ind: np.ndarray
+        1D array of flat index of binary maps.
+    """
+    _ind = np.fromfile(fn_ind, dtype="u4")
+    ind = _ind[1:] - 1  # convert to zero based index
+    assert _ind[0] == ind.size
+    return ind
+
+def read_binary_map(
+    fn,
+    ind,
+    shape,
+    mv=-9999.0,
+    dtype="f4",
+):
+    """Read binary map.
+    Parameters
+    ----------
+    fn: str, Path
+        Path to map file.
+    ind: np.ndarray
+        1D array of flat index of binary maps.
+    shape: tuple of int
+        (nrow, ncol) shape of output map.
+    mv: int or float
+        missing value, by default -9999.0.
+    dtype: str, np.dtype, optional
+        Data type, by default "f4". For sfincs.msk file use dtype="u1".
+    Returns
+    -------
+    ind: np.ndarray
+        1D array of flat index of binary maps.
+    """
+    assert ind.max() <= np.multiply(*shape)
+    nrow, ncol = shape
+    data = np.full((ncol, nrow), mv, dtype=dtype)
+    data.flat[ind] = np.fromfile(fn, dtype=dtype)
+    data = data.transpose()
+    return data
+
+
 class Sfincs(GBmi):
     """
     Glofrim implementation of the Sfincs BMI adaptor.
@@ -42,6 +91,7 @@ class Sfincs(GBmi):
     Model Control Functions
     """
     def initialize_config(self, config_fn, config_defaults={}):
+
         if self.initialized:
             raise Warning("model already initialized, it's therefore not longer possible to initialize the config")
         # config settings
@@ -85,13 +135,9 @@ class Sfincs(GBmi):
     def update(self, dt=None, verbose=False):
         # dt in seconds. if not given model timestep is used
         if self._t >= self._endTime:
-            raise Exception("endTime already reached, model not updated")
+            raise Exception(f"endTime {self._endTime} already reached or passed by {self._t}, model not updated")
         if (dt is not None) and (dt != self._dt.total_seconds()):
             dt = timedelta(seconds=dt)
-            # because of the adaptive timestep scheme do not check the dt value
-            # if not glib.check_dts_divmod(dt, self._dt):
-            #     msg = "Invalid value for dt in comparison to model dt. Make sure a whole number of model timesteps ({}) fit in the given dt ({})"
-            #     raise ValueError(msg.format(self._dt, dt))
         else:
             dt = self._dt
         t_next = self.get_current_time() + dt
@@ -101,6 +147,8 @@ class Sfincs(GBmi):
             self._t = self.get_current_time()
             if verbose:
                 self.logger.info(f"Time of model is {self.get_current_time()} with time step {self.get_time_step()}. ")
+            if self.get_time_step().total_seconds() < 1:
+                print("We have a ridiculously small time step")
             i += 1
         self.logger.info('updated model to datetime {} in {:d} iterations'.format(self._t.strftime("%Y-%m-%d %H:%M:%S"), i))
 
@@ -110,9 +158,8 @@ class Sfincs(GBmi):
         while self._t < t:
             self.update(dt=dt)
 
-    # not defined in CMF
+    # not defined in Sfincs
     def spinup(self):
-        """PCR specific spinup function"""
         raise NotImplementedError()
 
     def finalize(self):
@@ -146,15 +193,17 @@ class Sfincs(GBmi):
             return self.get_start_time()
 
     def get_end_time(self):
-        if self.initialized:
-            ref_timestr = self.get_attribute_value('tref')
-            refTime = datetime.strptime(ref_timestr, self._datefmt)
-            endTime_float = self._bmi.get_end_time()
-            endTime = refTime + timedelta(**{self.get_time_units(): endTime_float})
-
-        else:
-            stop_timestr = self.get_attribute_value('tstop')
-            endTime = datetime.strptime(stop_timestr, self._datefmt)
+        # TODO: BUG IN SFINCS MAKES RUN TO BE AT 100% AFTER ONE TIME STEP IN BMI. UNQUOTE BELOW ONCE BUG IS FIXED
+        # if self.initialized:
+        #     ref_timestr = self.get_attribute_value('tref')
+        #     refTime = datetime.strptime(ref_timestr, self._datefmt)
+        #     endTime_float = self._bmi.get_end_time()
+        #     # endTime = refTime + timedelta(**{self.get_time_units(): endTime_float})
+        #
+        # else:
+        stop_timestr = self.get_attribute_value('tstop')
+        endTime = datetime.strptime(stop_timestr, self._datefmt)
+        # END OF BUG REPORT PROBLEM
 
         self._endTime = endTime
         return self._endTime
@@ -190,9 +239,16 @@ class Sfincs(GBmi):
     def set_value(self, long_var_name, src, fill_value=-99999):
         # set nans that lie within to_mod model domain to zeros to prevent model crashes
         mask = self.get_mask()
+        src = src.copy()
+        if long_var_name == "zs":
+            # make sure flood level is never below elevation level
+            src = np.maximum(src, self.get_value("zb"))
+        # src[src < self._bmi.get_var("zb")] == 0.
         src[mask & np.isnan(src)] = fill_value
+        src = src.astype(self.get_var_type(long_var_name))
         # Set variable in Sfincs model
-        self._bmi.set_var(long_var_name, np.rot90(src, k=3)[:])  # rotate to match the order of Sfincs internal grids
+
+        self._bmi.set_var(long_var_name, np.rot90(src, k=3).flatten()[:])  # rotate to match the order of Sfincs internal grids
 
     def set_value_at_indices(self, long_var_name, inds, src, additive=False):
         val = self.get_value(long_var_name)
@@ -208,7 +264,17 @@ class Sfincs(GBmi):
     def get_grid(self):
         if not hasattr(self, 'grid') or (self.grid is None):
             # get the 2d dem values directly from bmi
-            dem_grid = np.rot90(self._bmi.get_var("zb").copy())
+            _ind_fn = glib.getabspath(str(self.get_attribute_value('indexfile')), self._mapdir)
+            _dem_fn = glib.getabspath(str(self.get_attribute_value('depfile')), self._mapdir)
+            ind = read_binary_map_index(_ind_fn)
+            shape = (int(self.get_attribute_value("nmax")), int(self.get_attribute_value("mmax")))
+            # ind
+            _dep = np.flipud(read_binary_map(_dem_fn, ind, shape))
+            # add two rows and columns with missings for boundary conditions
+            dep_grid = np.ones((shape[0] + 2, shape[1] + 2)) * -99999
+            dep_grid[1:-1, 1:-1] = _dep
+
+            # dem_grid = np.rot90(self._bmi.get_var("zb").copy())
             transform = rasterio.transform.Affine(
                 float(self.get_attribute_value('dx')),
                 0.,
@@ -222,16 +288,9 @@ class Sfincs(GBmi):
                 int(self.get_attribute_value('nmax')) + 2,  # the +2 is for the boundary conditions
                 int(self.get_attribute_value('mmax')) + 2,  # the +2 is for the boundary conditions
                 crs=int(self.get_attribute_value('epsg')),
-                mask=np.isfinite(dem_grid)
+                mask=np.isfinite(dep_grid),
+                flip_transform=True
             )
-            # # riv width file used for "1D coords"
-            # _width_fn = glib.getabspath(str(self.get_attribute_value('SGCwidth')), self._mapdir)
-            # if not isfile(_width_fn): raise IOError('SGCwidth file not found')
-            # with rasterio.open(_width_fn, 'r') as ds:
-            #     row, col = np.where(ds.read(1)>0)
-            #     x, y = self.grid.xy(row=row, col=col)
-            #     inds = self.grid.ravel_multi_index(row, col)
-            # self.grid.set_1d(nodes=np.vstack((x, y)).transpose(), links=None, inds=inds)  # python2.7 nodes=np.array(zip(x, y))
         return self.grid
 
 
@@ -247,7 +306,7 @@ class Sfincs(GBmi):
                 refdate = start_time # str
                 start_time = datetime.strptime(start_time, self._datefmt) # check format
             except ValueError:
-                raise ValueError('wrong date format, use "yyyy-mm-dd"')
+                raise ValueError('wrong date format, use "yyyymmdd HHMMSS"')
         else:
             raise ValueError('wrong start_date datatype')
         self._startTime = start_time
@@ -259,19 +318,21 @@ class Sfincs(GBmi):
             try:
                 end_time = datetime.strptime(end_time, self._datefmt)
             except ValueError:
-                raise ValueError('wrong end_date format, use "yyyy-mm-dd"')
+                raise ValueError('wrong end_date format, use "yyyymmdd HHMMSS"')
         if not isinstance(end_time, datetime):
             raise ValueError('wrong end_date datatype')
         refdate = self.get_start_time()
-        assert end_time >  refdate
+        assert end_time >  refdate, f"End time {end_time} is smaller than ref date {refdate}"
         TStop = (end_time - refdate).seconds + (end_time - refdate).days * 86400
         TStop = '{:.0f}'.format(TStop)
         self._endTime = end_time
         self.set_attribute_value('sim_time', TStop)
 
     def set_out_dir(self, out_dir):
-        self.set_attribute_value('dirroot', relpath(out_dir, dirname(self._config_fn)))
-        self._outdir = abspath(out_dir)
+        """
+        Sfincs does not offer a specific out dir, so not implemented
+        """
+        raise NotImplementedError("Sfincs does not offer an output path in the configuration file, so the output directory cannot be set")
 
     def get_attribute_names(self):
         glib.configcheck(self, self.logger)

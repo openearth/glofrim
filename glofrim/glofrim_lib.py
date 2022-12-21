@@ -1,6 +1,7 @@
 
 import re
 import codecs
+import numpy as np
 import sys
 from configparser import ConfigParser
 from collections import OrderedDict
@@ -113,4 +114,4 @@ def subcall(msg, cwd='./'):
 
 def check_dts_divmod(dt, dt_mod):
     dt_diff = dt.total_seconds() % dt_mod.total_seconds()
-    return dt_diff == 0
+    return np.isclose(dt_diff, 0)
